@@ -1,29 +1,36 @@
 import 'react-navigation'
-
 import {createStackNavigator} from 'react-navigation-stack'
-import Home from './screens/Home'
-import Search from './screens/Search'
-import RunningMyBookings from './screens/RunningMyBookings'
-import PastMyBookings from './screens/PastMyBookings'
-import AddBooking from './screens/AddBooking'
-import RateCard from './screens/RateCard'
-import VehicleList from './screens/VehicleList'
-import GoodsList from './screens/GoodsList'
-import FavouriteLocations from './screens/FavouriteLocations'
-import ActiveFleet from './screens/ActiveFleet'
-import RequestsFleet from './screens/RequestsFleet'
-import MGWallet from './screens/MGWallet'
-import AddMoney from './screens/AddMoney'
-import Notifications from './screens/Notifications'
-import PendingPOD from './screens/PendingPOD'
-import TransactionHistory from './screens/TransactionHistory'
-import RateCard_LR from './screens/RateCard_LR'
-import RateCard_AL from './screens/RateCard_AL'
-import RateCard_PU from './screens/RateCard_PU'
-import RateCard_TA from './screens/RateCard_TA'
-import Settings from './screens/Settings'
-import SettingsAll from './screens/SettingsAll'
-import TermsConditions from './screens/TermsConditions'
+
+import Home from './src/Home'
+import Search from './src/Search'
+import RunningMyBookings from './src/my_bookings/RunningMyBookings'
+import PastMyBookings from './src/my_bookings/PastMyBookings'
+import AddBooking from './src/add_booking/AddBooking'
+import RateCard from './src/add_booking/RateCard'
+import VehicleList from './src/add_booking/VehicleList'
+import GoodsList from './src/add_booking/GoodsList'
+import FavouriteLocations from './src/FavouriteLocations'
+import ActiveFleet from './src/manage_fleet/ActiveFleet'
+import RequestsFleet from './src/manage_fleet/RequestsFleet'
+import MGWallet from './src/wallet/MGWallet'
+import AddMoney from './src/wallet/AddMoney'
+import Notifications from './src/Notifications'
+import PendingPOD from './src/pod/PendingPOD'
+import TransactionHistory from './src/wallet/TransactionHistory'
+import RateCard_LR from './src/rate_card/RateCard_LR'
+import RateCard_AL from './src/rate_card/RateCard_AL'
+import RateCard_PU from './src/rate_card/RateCard_PU'
+import RateCard_TA from './src/rate_card/RateCard_TA'
+import Settings from './src/settings/Settings'
+import SettingsAll from './src/settings/SubSettings'
+import TermsConditions from './src/TermsConditions'
+import Login from './src/sign_in_up/Login'
+import Signup from './src/sign_in_up/Signup'
+import ForgotPassword from './src/sign_in_up/ForgotPassword'
+import GetOTP from './src/sign_in_up/GetOTP'
+import ChangePassword from './src/sign_in_up/ChangePassword'
+import CreateProfile from './src/sign_in_up/CreateProfile'
+import DrawerContentComponent from './src/DrawerContentComponent'
 
 import { createAppContainer } from 'react-navigation'
 import { createDrawerNavigator } from 'react-navigation-drawer'
@@ -31,11 +38,11 @@ import {createMaterialTopTabNavigator} from 'react-navigation-tabs'
 import React, {Component} from 'react';
 import {Easing, Animated, Image} from 'react-native'
 
-import DrawerContentComponent from './screens/DrawerContentComponent'
+
 
 const ACCENT = '#FFCB28' // 255, 203, 40
 
-const vehicleIcon = require('./res/vehicle.png')
+const vehicleIcon = require('./assets/vehicle.png')
 
 const LOAD_RICK = 'Loading Rickshaw'
 const TATA_ACE = 'Tata Ace'
@@ -64,7 +71,7 @@ const MyBookingsTabs = createMaterialTopTabNavigator({
       borderBottomColor: ACCENT
     }
   }
-});
+})
 
 const ManageFleetTabs = createMaterialTopTabNavigator({
   Active: ActiveFleet,
@@ -88,7 +95,7 @@ const ManageFleetTabs = createMaterialTopTabNavigator({
       borderBottomColor: ACCENT
     }
   }
-});
+})
 
 const PendingPODTabs = createMaterialTopTabNavigator({
   PendingPOD: {screen: PendingPOD,
@@ -114,7 +121,7 @@ const PendingPODTabs = createMaterialTopTabNavigator({
       borderBottomColor: ACCENT
     }
   }
-});
+})
 
 const RateCardTabs = createMaterialTopTabNavigator({
   LR: {screen: RateCard_LR,
@@ -165,9 +172,9 @@ const RateCardTabs = createMaterialTopTabNavigator({
       width: 'auto'
     }
   }
-});
+})
 
-const HomeNavigator = createStackNavigator({
+const DrawerStackNavigator = createStackNavigator({
   TermsConditions: {screen: TermsConditions},
 
   SettingsAll : {screen: SettingsAll},
@@ -243,13 +250,15 @@ transitionConfig: () => ({
   }),
 })
 
-const AppStackNavigator = createStackNavigator({
-    AppStack: { screen: HomeNavigator,
+
+const HomeStackNavigator = createStackNavigator({
+    AppStack: { screen: DrawerStackNavigator,
       navigationOptions: () => ({
         headerStyle: {display: 'none'},
       })},
     RateCard: { screen: RateCard },
   }, {
+    initialRouteName: "AppStack",
     mode: 'modal',
     defaultNavigationOptions: {
       gesturesEnabled: false,
@@ -282,7 +291,7 @@ const AppStackNavigator = createStackNavigator({
 );
 
 const DrawerNavigator = createDrawerNavigator({
-  Home: {screen: AppStackNavigator},
+  Home: {screen: HomeStackNavigator},
 }, 
 {
   initialRouteName: 'Home',
@@ -293,6 +302,50 @@ const DrawerNavigator = createDrawerNavigator({
   contentComponent: DrawerContentComponent,
 })
 
-const App = createAppContainer(DrawerNavigator)
+const MainStackNavigator = createStackNavigator({
+  HomeDrawerNavigator: {screen: DrawerNavigator,
+  navigationOptions: {
+    headerStyle: {display: 'none'}
+  }},
+
+  SelectGoods: {screen: GoodsList},
+  CreateProfile: {screen: CreateProfile},
+  ChangePassword: {screen: ChangePassword},
+  GetOTP: {screen: GetOTP},
+  ForgotPassword: {screen: ForgotPassword},
+  Signup: {screen: Signup},
+  Login: {screen: Login,
+    navigationOptions: () => ({
+      headerStyle: {display: 'none'},
+    })}
+  },
+  {initialRouteName: 'Login',
+  transitionConfig: () => ({
+    transitionSpec: {
+      duration: 300,
+      easing: Easing.out(Easing.poly(4)),
+      timing: Animated.timing,
+    },
+    screenInterpolator: sceneProps => {
+      const { layout, position, scene } = sceneProps;
+      const { index } = scene;
+
+      const width = layout.initWidth;
+      const translateX = position.interpolate({
+        inputRange: [index - 1, index, index + 1],
+        outputRange: [width, 0, 0],
+      });
+
+      const opacity = position.interpolate({
+        inputRange: [index - 1, index - 0.99, index],
+        outputRange: [0, 1, 1],
+      });
+
+      return { opacity, transform: [{ translateX }] };
+    },
+  }),
+})
+
+const App = createAppContainer(MainStackNavigator)
 
 export default App;
