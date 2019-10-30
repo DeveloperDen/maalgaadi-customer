@@ -1,0 +1,79 @@
+{
+  "project_info": {
+    "project_number": "820057099779",
+    "firebase_url": "https://maalgaadi-customer-application.firebaseio.com",
+    "project_id": "maalgaadi-customer-application",
+    "storage_bucket": "maalgaadi-customer-application.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:820057099779:android:f9c5e2974ffe327d",
+        "android_client_info": {
+          "package_name": "com.maalgaadi"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "820057099779-horku8p89i2vamju12uccgeatmoi9f98.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.maalgaadi",
+            "certificate_hash": "a90998ed132e635c52a3b2ab077709a9d4773c1b"
+          }
+        },
+        {
+          "client_id": "820057099779-jdn3qrkillp4or8dkhnftqudophbvl09.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.maalgaadi",
+            "certificate_hash": "c0d8b1f08718ac8361c83e713cf09638b4e6e4f4"
+          }
+        },
+        {
+          "client_id": "820057099779-ingi4bdd0nu2l1d4h76prea0bdol9du8.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.maalgaadi",
+            "certificate_hash": "eca14ed1c88381003c8ece1d6d2d576b4a866467"
+          }
+        },
+        {
+          "client_id": "820057099779-k6kv4tgchf1i3f1lp0arul4fkuno49b1.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.maalgaadi",
+            "certificate_hash": "895775ece21a60877f3ba3043575881f6ef6f229"
+          }
+        },
+        {
+          "client_id": "820057099779-etiqrvq8i46sn7ioor7uljte7encrtii.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC4YrHXpl0tQhpDXGVt3WU7_bYyaHd0ZbQ"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "820057099779-etiqrvq8i46sn7ioor7uljte7encrtii.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
