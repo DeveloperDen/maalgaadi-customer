@@ -7,6 +7,9 @@ import {
   StatusBar
 } from 'react-native';
 import { TextInput, TouchableHighlight, TouchableOpacity } from 'react-native-gesture-handler';
+import {getDeviceId} from 'react-native-device-info';
+
+const Constants = require('../utils/AppConstants')
 
 const ACCENT = '#FFCB28' // 255, 203, 40
 const ACCENT_DARK = '#F1B800'
@@ -18,6 +21,26 @@ export default class Login extends Component {
         this.state = {
             showPass: false
         }
+
+        this.Constants = Constants
+    }
+
+    callLoginAPI = () => {
+        const reqBody = {
+            [Constants.FIELDS.CUSTOMER_PHONE] : this.state.phone,
+            [Constants.FIELDS.CUSTOMER_PASSWORD] : this.state.pass,
+            [Constants.FIELDS.DEVICE_FCM_TOKEN] : '',
+            [Constants.FIELDS.DEVICE_ID] : getDeviceId()
+        }
+        console.log('Request Body: ', reqBody)
+
+        return fetch(Constants.BASE_URL + Constants.CUSTOMER_LOGIN, {
+            method: 'POST',
+            body: JSON.stringify(reqBody)
+        }).then((response) => response.json())
+        .then((responseJson) => {
+            console.log(responseJson);
+        })
     }
 
     render() {
@@ -44,6 +67,12 @@ export default class Login extends Component {
                     <Image source={{uri: 'https://cdn3.iconfinder.com/data/icons/google-material-design-icons/48/ic_stay_primary_portrait_48px-512.png'}}
                     style={{width: 25, height: 25, opacity: 0.3}}/>
                     <TextInput placeholder="Mobile Number" keyboardType='decimal-pad' maxLength={10}
+                    onChangeText={(text) => {
+                        this.setState(prevState => {
+                            prevState.phone = text
+                            return prevState
+                        })
+                    }}
                     style={{flex: 1, marginStart: 10}}/>
                 </View>
                 
@@ -57,6 +86,12 @@ export default class Login extends Component {
 
                     <TextInput placeholder="Password" secureTextEntry={true}
                     keyboardType={this.state.showPass? 'visible-password' : 'default'}
+                    onChangeText={(text) => {
+                        this.setState(prevState => {
+                            prevState.pass = text
+                            return prevState
+                        })
+                    }}
                     style={{flex: 1, marginHorizontal: 10}}/>
 
                     <TouchableOpacity
@@ -75,6 +110,8 @@ export default class Login extends Component {
                 </View>
 
                 <TouchableHighlight
+                underlayColor={ACCENT_DARK}
+                onPress={this.callLoginAPI}
                 style={{
                     justifyContent:'center', alignItems: 'center', backgroundColor: ACCENT,
                     borderRadius: 4, width: '80%', alignSelf: 'center', paddingVertical: 15, marginTop: 25

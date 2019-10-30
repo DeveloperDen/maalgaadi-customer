@@ -13,9 +13,9 @@ export const CCAVENUE_IP_LIVE = "http://customer.maalgaadi.net/api/v1/customerMo
 export const SMS_ORIGIN = "MLGADI";
 export const OTP_DELIMITER = ":";
 
+// Usable links starts from here
 export const CCAVENUE = CCAVENUE_IP_LIVE;
 export const BASE_URL = BASE_URL_IP_DEMO;
-
 export const IMAGE_BASE_URL = BASE_URL_DEMO;
 
 export const PAYMENT_GATEWAY_URL = "https://secure.ccavenue.com/transaction/initTrans";
@@ -91,5 +91,12 @@ export const SEND_PAYNOW_TRANSACTION_STATUS = "successPayNowPaymentResponse";
 export const GET_CUSTOMER_BILLING_INFO = "getCustomerDetials";
 export const GET_TRACK_COMPLA = "trackComplaint";
 export const RETROFIT_TIME_OUT = 60;
+
+export const FIELDS = {
+    CUSTOMER_PHONE: "customer_phone",
+    CUSTOMER_PASSWORD: "customer_password",
+    DEVICE_ID: "device_id",
+    DEVICE_FCM_TOKEN: "device_fcm_token"
+}
 
 export const TERMSANDCONDITION = "http://maalgaadi.net/terms-and-condition.html";
