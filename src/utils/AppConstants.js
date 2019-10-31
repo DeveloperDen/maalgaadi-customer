@@ -92,11 +92,26 @@ export const GET_CUSTOMER_BILLING_INFO = "getCustomerDetials";
 export const GET_TRACK_COMPLA = "trackComplaint";
 export const RETROFIT_TIME_OUT = 60;
 
-export const FIELDS = {
+export const MESSAGE_DURATION = 2000
+export const SPLASH_TIMEOUT = 3000
+
+export const OTP_MISMATCH = "OTP did not match"
+export const PASS_CHANGE_SUCCESS = "Password changed successfully. Please Login to continue."
+export const PASS_MISMATCH = "Password and Confirm Password did not match"
+
+export const FIELDS_LOGIN = {
     CUSTOMER_PHONE: "customer_phone",
     CUSTOMER_PASSWORD: "customer_password",
     DEVICE_ID: "device_id",
     DEVICE_FCM_TOKEN: "device_fcm_token"
+}
+
+export const FIELDS = {
+    CUSTOMER_PHONE: "phone",
+    CUSTOMER_PASSWORD: "password",
+    REF_CODE: "referral_code",
+    LAT: "lat",
+    LNG: "lng"
 }
 
 export const TERMSANDCONDITION = "http://maalgaadi.net/terms-and-condition.html";

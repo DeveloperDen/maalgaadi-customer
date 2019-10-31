@@ -34,6 +34,21 @@ export default class Login extends Component {
 
     async componentDidMount() {
         this.FCM_TOKEN = await firebase.messaging().getToken();
+
+        this.willFocusListener = this.props.navigation.
+        addListener('willFocus', () => {
+        if(this.props.navigation.state.params){
+            if(this.props.navigation.getParam("status", "") === Constants.FORGET_PASSWORD_URL) {
+                this.setState(prevState => {
+                    prevState.message = Constants.PASS_CHANGE_SUCCESS
+                    return prevState
+                })
+
+                this.animTop()
+            }
+        }
+            
+        })
     }
 
     callLoginAPI = async () => {
@@ -43,10 +58,10 @@ export default class Login extends Component {
         })
 
         const reqBody = new FormData()
-        reqBody.append(Constants.FIELDS.CUSTOMER_PHONE, this.state.phone)
-        reqBody.append(Constants.FIELDS.CUSTOMER_PASSWORD, this.state.pass)
-        reqBody.append(Constants.FIELDS.DEVICE_ID, getDeviceId())
-        reqBody.append(Constants.FIELDS.DEVICE_FCM_TOKEN, this.FCM_TOKEN)
+        reqBody.append(Constants.FIELDS_LOGIN.CUSTOMER_PHONE, this.state.phone)
+        reqBody.append(Constants.FIELDS_LOGIN.CUSTOMER_PASSWORD, this.state.pass)
+        reqBody.append(Constants.FIELDS_LOGIN.DEVICE_ID, getDeviceId())
+        reqBody.append(Constants.FIELDS_LOGIN.DEVICE_FCM_TOKEN, this.FCM_TOKEN)
 
         console.log('Request Body: ', reqBody)
 
@@ -75,6 +90,14 @@ export default class Login extends Component {
             Animated.timing(
                 this.state.messageTop,
                 {
+                    toValue: -100,
+                    easing: Easing.ease,
+                    duration: 200,
+                }
+            ),
+            Animated.timing(
+                this.state.messageTop,
+                {
                     toValue: 0,
                     easing: Easing.ease,
                     duration: 200
@@ -86,7 +109,7 @@ export default class Login extends Component {
                     toValue: -100,
                     easing: Easing.ease,
                     duration: 200,
-                    delay: 2000
+                    delay: Constants.MESSAGE_DURATION
                 }
             )
         ]).start()
@@ -183,7 +206,7 @@ export default class Login extends Component {
                         color: 'white', fontSize: 14, fontWeight: '700',
                         opacity: this.state.isLoading? 0.3 : 1
                     }}>
-                        {this.state.isLoading? "Checking..." : "Login"}
+                        {this.state.isLoading? "Processing..." : "Login"}
                     </Text>
                 </TouchableHighlight>
  

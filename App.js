@@ -31,6 +31,7 @@ import GetOTP from './src/sign_in_up/GetOTP'
 import ChangePassword from './src/sign_in_up/ChangePassword'
 import CreateProfile from './src/sign_in_up/CreateProfile'
 import DrawerContentComponent from './src/DrawerContentComponent'
+import Splash from './src/Splash'
 
 import { createAppContainer } from 'react-navigation'
 import { createDrawerNavigator } from 'react-navigation-drawer'
@@ -308,6 +309,7 @@ const MainStackNavigator = createStackNavigator({
     headerStyle: {display: 'none'}
   }},
 
+  Splash: {screen: Splash},
   SelectGoods: {screen: GoodsList},
   CreateProfile: {screen: CreateProfile},
   ChangePassword: {screen: ChangePassword},
@@ -319,7 +321,7 @@ const MainStackNavigator = createStackNavigator({
       headerStyle: {display: 'none'},
     })}
   },
-  {initialRouteName: 'Login',
+  {initialRouteName: 'Splash',
   transitionConfig: () => ({
     transitionSpec: {
       duration: 300,
