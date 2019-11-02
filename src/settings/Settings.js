@@ -26,7 +26,7 @@ const settings = [
     },
     {
         title: POD_INV,
-        icon: {uri: 'https://cdn2.iconfinder.com/data/icons/pittogrammi/142/81-512.png'}
+        icon: {uri: 'https://cdn3.iconfinder.com/data/icons/google-material-design-icons/48/ic_markunread_48px-512.png'}
     },
     {
         title: POD_MAIL,

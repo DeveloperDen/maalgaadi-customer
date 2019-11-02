@@ -5,7 +5,8 @@ import {
   Text,
   Image,
   StatusBar,
-  Animated, Easing
+  Animated, Easing,
+  ToastAndroid
 } from 'react-native';
 import { TextInput, TouchableHighlight, TouchableOpacity } from 'react-native-gesture-handler';
 
@@ -62,10 +63,16 @@ export default class ChangePassword extends Component {
                 prevState.isLoading = false
                 return prevState
             })
-        })
-
-        this.props.navigation.navigate("Login", {
+            this.props.navigation.navigate("Login", {
             status: Constants.FORGET_PASSWORD_URL
+            })
+        }).catch(err => {
+            console.log(err)
+            this.setState(prevState => {
+                prevState.isLoading = false
+                return prevState
+            })
+            ToastAndroid.show(Constants.ERROR_UPDATE_PROFILE, ToastAndroid.SHORT);
         })
     }
 

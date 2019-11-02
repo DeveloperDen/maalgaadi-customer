@@ -47,6 +47,7 @@ export default class GetOTP extends Component {
         this.pass = this.props.navigation.getParam("pass")
     }
 
+    // API call to Signup user and navigate to Main screen.
     signupUser = async () => {
         this.setState(prevState => {
             prevState.isLoading = true
@@ -88,11 +89,21 @@ export default class GetOTP extends Component {
             })
             console.log("Response: ", value)
             console.log("Written Data: ", dataToWrite)
-        })
 
-        this.props.navigation.navigate("HomeDrawerNavigator")
+            this.props.navigation.navigate("HomeDrawerNavigator")
+            
+        }).catch(err => {
+            console.log(err)
+            ToastAndroid.show(Constants.ERROR_SIGNUP, ToastAndroid.SHORT);
+
+            this.setState(prevState => {
+                prevState.isLoading = true
+                return prevState
+            })
+        })
     }
 
+    // Navigate to ChangePassword screen.
     resetPassword = () => {
         this.props.navigation.navigate('ChangePassword', {
             number: this.number
@@ -129,6 +140,7 @@ export default class GetOTP extends Component {
         ]).start()
     }
 
+    // API call to get OTP for Signup
     registerCustomer = async () => {
         this.setState(prevState => {
             prevState.isLoading = true
@@ -155,11 +167,18 @@ export default class GetOTP extends Component {
                 return prevState
             })
             this.animTop()
-            
+        }).catch(err => {
+            this.setState(prevState => {
+                prevState.isLoading = false
+                return prevState
+            })
+            console.log(err)
+            ToastAndroid.show(Constants.ERROR_OTP, ToastAndroid.SHORT);
         })
         
     }
 
+    // API call to get OTP for Forgot Password
     setPasswordByNumber = async () => {
         this.setState(prevState => {
             prevState.isLoading = true
@@ -197,6 +216,14 @@ export default class GetOTP extends Component {
                 })
             }
             
+        })
+        .catch(err => {
+            this.setState(prevState => {
+                prevState.isLoading = false
+                return prevState
+            })
+            console.log(err)
+            ToastAndroid.show(Constants.ERROR_OTP, ToastAndroid.SHORT);
         })
     }
 

@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component,} from 'react';
 import {
   StyleSheet,
   View,
@@ -6,13 +6,16 @@ import {
   Image,
   StatusBar,
   Animated,
-  Easing
+  Easing,
+  ToastAndroid
 } from 'react-native';
 import { TextInput, TouchableHighlight, TouchableOpacity } from 'react-native-gesture-handler';
 import {getDeviceId} from 'react-native-device-info';
 import {firebase} from '@react-native-firebase/messaging'
+import {NavigationEvents} from 'react-navigation';
 
 const Constants = require('../utils/AppConstants')
+const DataController = require('../utils/DataStorageController')
 const logo = require('../../assets/logo_login.png')
 const graphics = require('../../assets/login_graphics.png')
 const ACCENT = '#FFCB28' // 255, 203, 40
@@ -34,6 +37,7 @@ export default class Login extends Component {
 
     async componentDidMount() {
         this.FCM_TOKEN = await firebase.messaging().getToken();
+
         if(this.props.navigation.getParam("status", "") === Constants.LOGOUT_API) {
             console.log(Constants.LOGOUT_SUCCESS);
 
@@ -43,18 +47,6 @@ export default class Login extends Component {
             })
 
             this.animTop()
-        } 
-        else if(this.props.navigation.state.params){
-            if(this.props.navigation.getParam("status", "") === Constants.FORGET_PASSWORD_URL) {
-                console.log(Constants.PASS_CHANGE_SUCCESS);
-
-                this.setState(prevState => {
-                    prevState.message = Constants.PASS_CHANGE_SUCCESS
-                    return prevState
-                })
-
-                this.animTop()
-            }
         }
     }
 
@@ -87,10 +79,24 @@ export default class Login extends Component {
                 dataToWrite.append(DataController.CUSTOMER_ID, value.data.id.toString())
                 dataToWrite.append(DataController.CUSTOMER_MOBILE, value.data.cust_number)
                 dataToWrite.append(DataController.BUFFER_TIME, value.data.configure_setting.buffered_schedule_time.toString())
-                dataToWrite.append(DataController.CONFIGURE_SETTING, JSON.stringify(value.data.configure_setting))
+                
+                console.log(JSON.stringify(value.data.configure_setting));
+                // dataToWrite.append(DataController.CONFIGURE_SETTING, JSON.stringify(value.data.configure_setting))
 
                 if(value.data.cust_name !== "") {
                     dataToWrite.append(DataController.IS_PROFILE_COMPLETED, "true")
+                    dataToWrite.append(DataController.CUSTOMER_NAME, value.data.cust_name)
+                    dataToWrite.append(DataController.RATING, value.data.rating.toString())
+                    dataToWrite.append(DataController.EMAIL, value.data.cust_email)
+                    dataToWrite.append(DataController.ORG, value.data.cust_organization)
+                    
+                    // TODO: Decide on the basis of city_list
+                    dataToWrite.append(DataController.CITY, "Indore")
+                    
+                    dataToWrite.append(DataController.ADDRESS, value.data.cust_address)
+                    dataToWrite.append(DataController.GOODS_NAME, value.data.goods_name)
+                    dataToWrite.append(DataController.GOODS_ID, value.data.goods_id.toString())
+                    dataToWrite.append(DataController.TRIP_FREQ, value.data.selected_trip_frequency)
                 } else dataToWrite.append(DataController.IS_PROFILE_COMPLETED, "false")
                 
 
@@ -102,11 +108,28 @@ export default class Login extends Component {
                 })
                 console.log("Response: ", value)
                 console.log("Written Data: ", dataToWrite)
+
+                this.props.navigation.navigate("HomeDrawerNavigator")
             }
-            
+            else {
+                console.log(value)
+                this.setState(prevState => {
+                    prevState.isLoading = false
+                    prevState.message = value.message
+                    return prevState
+                })
+                this.animTop()
+            }
+        }).catch(err => {
+            console.log(err)
+            this.setState(prevState => {
+                prevState.isLoading = false
+                return prevState
+            })
+            ToastAndroid.show(Constants.ERROR_LOGIN, ToastAndroid.SHORT);
         })
 
-        this.props.navigation.navigate("HomeDrawerNavigator")
+        
         
     }
 
@@ -268,6 +291,19 @@ export default class Login extends Component {
                     tintColor='white' style={{width: 30, height: 30, marginEnd: 20}}/>
                     <Text style={{fontSize: 15, color: 'white', flex: 1}}>{this.state.message}</Text>
                 </Animated.View>
+            
+                <NavigationEvents onDidFocus={() => {
+                    if(this.props.navigation.getParam("status", "") === Constants.FORGET_PASSWORD_URL) {
+                        console.log(Constants.PASS_CHANGE_SUCCESS);
+        
+                        this.setState(prevState => {
+                            prevState.message = Constants.PASS_CHANGE_SUCCESS
+                            return prevState
+                        })
+        
+                        this.animTop()
+                    }
+                }}/>
             </View>
         )
     }

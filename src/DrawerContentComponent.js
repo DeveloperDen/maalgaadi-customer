@@ -1,10 +1,11 @@
-import React from 'react';
+import React, {useState} from 'react';
 import {NavigationActions} from 'react-navigation';
-import { Text, View, StyleSheet, Image, Alert} from 'react-native'
+import { Text, View, StyleSheet, Image, Alert, ToastAndroid} from 'react-native'
 import { ScrollView, TouchableHighlight } from 'react-native-gesture-handler';
 import {getDeviceId} from 'react-native-device-info';
 
 const ACCENT = '#FFCB28'
+const ACCENT_DARK = '#F1B800'
 const Constants = require('./utils/AppConstants')
 const DataController = require('./utils/DataStorageController')
 const bookMG = require('../assets/truck.png')
@@ -110,6 +111,9 @@ const logoutUser = async (props) => {
                 const toWrite = new FormData();
                 toWrite.append(DataController.IS_LOGIN, "false");
                 toWrite.append(DataController.CUSTOMER_ID, "0")
+                toWrite.append(DataController.CUSTOMER_MOBILE, "")
+                toWrite.append(DataController.RATING, "")
+                toWrite.append(DataController.CUSTOMER_NAME, "")
                 console.log("To write: ", toWrite)
 
                 await DataController.setItems(toWrite)
@@ -118,6 +122,15 @@ const logoutUser = async (props) => {
                     status: Constants.LOGOUT_API
                 })
             }
+            else {
+                console.log(value.data.message);
+                props.navigation.closeDrawer()
+                ToastAndroid.show(Constants.ERROR_LOGOUT, ToastAndroid.SHORT);
+            }
+        }).catch(err => {
+            console.log(err)
+            props.navigation.closeDrawer()
+            ToastAndroid.show(Constants.ERROR_LOGOUT, ToastAndroid.SHORT)
         })
 }
 
@@ -130,21 +143,57 @@ const showAlert = (props) => {
 }
 
  DrawerContentComponent = (props) => {
+    const [rating, setRating] = useState("")
+    const [name, setName] = useState("")
+    const [number, setNumber] = useState("")
+    const [profCheck, setProfCheck] = useState("")
+
+    const toGet = new Array()
+        toGet.push(DataController.RATING, DataController.CUSTOMER_NAME,
+            DataController.CUSTOMER_MOBILE, DataController.IS_PROFILE_COMPLETED)
+
+    DataController.getItems(toGet)
+        .then(res => {
+            console.log(res)
+            setRating(res[0][1])
+            setName(res[1][1])
+            setNumber("+91 " + res[2][1])
+            setProfCheck(res[3][1])
+        })
+
     return (
         <View style={{flex: 1}}>
-            <View style={styles.headerContainer}>
+            <TouchableHighlight
+            style={styles.headerContainer}
+                underlayColor={ACCENT_DARK}
+                onPress={() => {
+                    if(profCheck === "true"){
+                        console.log("Completed Profile!")
+                        props.navigation.navigate("Profile")
+                    }
+                    else
+                        console.log("Incomplete Profile")
+                }}>
                 <View 
                 style={{
                     flex: 1, justifyContent: 'center',
                 }} >
                     <Text style={styles.titleText}>
-                        Profile (5 {String.fromCharCode(9733)})
+                        {rating !== ""?
+                            "Profile (" + rating + String.fromCharCode(9733) + ")"
+                            :
+                            "Profile " + String.fromCharCode(9888)
+                        }
                     </Text>
                     <Text style={styles.subtitleText}>
-                        Some Name (+91 9838538381)
+                        {
+                            ((number === "") || (name === ""))?
+                            "(Incomplete Profile)" :
+                            name + " (" + number + ")"
+                        }
                     </Text>
                 </View>
-            </View>
+            </TouchableHighlight>
 
             <ScrollView contentContainerStyle={styles.screenContainer} >
                 {screens.map((screen, index) => {
@@ -155,7 +204,11 @@ const showAlert = (props) => {
                                 props.navigation.closeDrawer()
                                 props.navigation.navigate(screen.screen)
                             }
-                            else showAlert(props);
+                            else {
+                                props.navigation.closeDrawer()
+                                showAlert(props);
+                            }
+                            
                         }}
                         key={index}>
                             <View style={styles.screenListItem}>

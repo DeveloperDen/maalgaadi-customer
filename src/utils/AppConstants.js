@@ -100,6 +100,10 @@ export const PASS_CHANGE_SUCCESS = "Password changed successfully. Please Login 
 export const PASS_MISMATCH = "Password and Confirm Password did not match"
 export const LOGOUT_MESSAGE = "Are you sure you want to Logout?"
 export const LOGOUT_SUCCESS = "Logged out successfully"
+export const ERROR_UPDATE_PROFILE = "Error while updating profile"
+export const ERROR_OTP = "Error while generating OTP"
+export const ERROR_SIGNUP = "Error while SignUp"
+export const ERROR_LOGIN = "Error while LogIn"
 
 export const IS_NEW_USER = "is_new_user"
 
@@ -131,5 +135,24 @@ export const FIELDS = {
     PAYMENT_DATA: "payment_data",
     IS_EXCLUSIVE: "is_exclusive_status"
 }
+
+
+export const T_C = [
+    `MaalGaadi being just an aggregation tech platform, connecting customers to LCV drivers/ owners, will not hold any responsibility what so ever for any loss/ damage caused to either customers, LCV drivers/ owners or any 3 rd party in course of service delivery by the LCV drivers/ owners to their respective customers.`,
+
+    `The MaalGaadi suggested rates mentioned on application while a customer is placing a booking are only suggestions by MaalGaadi based on current market price trends &amp; only meant to help customers do correct price estimations for the booking. Eventually the rates entered/ offered by customer and subsequently accepted by driver shall be the final rates for the service without any further disputes. The rates can be amended/ changed as per the mutual understanding &amp; consent of the driver and customer for any particular booking.`,
+
+    `Though MaalGaadi checks & verifies the basic KYC documents of the LCV drivers/ owners while registering them. It is the customer onus to check the documents while availing services from the driver. MaalGaadi shall not be responsible for any legal or other issue arising due to lack of documents on the part of LCV drivers/owners.`,
+
+    `In case any issue arises during the services provided by the LCV drivers to customers, the same shall has to be resolved between the driver and the customer amicably on their own &amp; MaalGaadi will not get involved, intervene or arbitrage in the dispute resolution.`,
+
+    `In case of any change in trip details/ parameters entered by the customer resulting in change in charges has to be mutually decided, finalised &amp; settled between the drivers and the customers.`,
+
+    `The responsibility of delivery of POD, Delivery Challans or any similar document shall be of the LCV driver/owner and customer may withhold his payment in case of non delivery.`,
+
+    `MaalGaadi is hereby authorized to use the location based information provided by any of the telecommunication companies when the Customer uses the mobile phone to make a booking. The location based information will be used only to facilitate and improve the probability of locating vehicles for the Customer.`,
+
+    `The courts of Indore, India shall have the sole and exclusive jurisdiction in respect of any matters arising from the use of the services offered by MaalGaadi or the agreement or arrangement between MaalGaadi and the Customer.`
+]
 
 export const TERMSANDCONDITION = "http://maalgaadi.net/terms-and-condition.html";

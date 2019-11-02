@@ -8,6 +8,15 @@ export const IS_PROFILE_COMPLETED = "is_profile_completed"
 export const BUFFER_TIME = "buffer_time"
 export const CONFIGURE_SETTING = "configure_setting"
 export const CITY_LIST = "city_list"
+export const CUSTOMER_NAME = "cust_name"
+export const RATING = "rating"
+export const EMAIL = "email"
+export const ORG = "organization"
+export const CITY = "city"
+export const ADDRESS = "address"
+export const GOODS_NAME = "goods_name"
+export const GOODS_ID = "goods_id"
+export const TRIP_FREQ = "trip_freq"
 
 export const getItem = async (key) => {
     try {
@@ -24,6 +33,16 @@ export const getItem = async (key) => {
 export const setItems = async (keys) => {
     try {
         await AsyncStorage.multiSet(keys._parts);
+    }
+    catch (err) {
+        console.log(err);
+    }
+}
+
+export const getItems = async (keys) => {
+    try {
+        const value = await AsyncStorage.multiGet(keys);
+        return (value);
     }
     catch (err) {
         console.log(err);

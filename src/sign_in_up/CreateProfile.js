@@ -105,17 +105,33 @@ export default class CreateProfile extends Component {
         const response = await request.json().then(async value => {
             const dataToWrite = new FormData()
             dataToWrite.append(DataController.IS_PROFILE_COMPLETED, "true")
+            dataToWrite.append(DataController.IS_LOGIN, "true")
+            dataToWrite.append(DataController.CUSTOMER_ID, value.data.id.toString())
+            dataToWrite.append(DataController.CUSTOMER_MOBILE, value.data.cust_number)
+            dataToWrite.append(DataController.BUFFER_TIME, value.data.configure_setting.buffered_schedule_time.toString())
+            dataToWrite.append(DataController.CUSTOMER_NAME, this.state.name)
+            dataToWrite.append(DataController.RATING, value.data.rating.toString())
+            dataToWrite.append(DataController.EMAIL, value.data.cust_email)
+            dataToWrite.append(DataController.ORG, value.data.cust_organization)
+            
+            // TODO: Decide on the basis of city_list
+            dataToWrite.append(DataController.CITY, "Indore")
+
+            dataToWrite.append(DataController.ADDRESS, value.data.cust_address)
+            dataToWrite.append(DataController.GOODS_NAME, value.data.goods_name)
+            dataToWrite.append(DataController.GOODS_ID, value.data.goods_id.toString())
+            dataToWrite.append(DataController.TRIP_FREQ, value.data.selected_trip_frequency)
 
             await DataController.setItems(dataToWrite)
 
             console.log("Response: ", value)
             console.log("Written Data: ", dataToWrite)
+            console.log("Profile Updated")
         })
         .catch(err => {
             console.log(err);
-        }) 
-
-        console.log("Profile Updated")
+            ToastAndroid.show(Constants.ERROR_UPDATE_PROFILE, ToastAndroid.SHORT);
+        })
         this.props.navigation.replace("Main")
     }
 

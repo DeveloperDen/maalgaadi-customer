@@ -5,7 +5,8 @@ import {
   Text,
   Image,
   Animated,
-  Easing
+  Easing,
+  ToastAndroid
 } from 'react-native';
 import { TextInput, TouchableHighlight, TouchableOpacity } from 'react-native-gesture-handler';
 
@@ -75,7 +76,14 @@ export default class Signup extends Component {
                 pass: this.state.pass})
             }
             
-        })
+        }).catch(err => {
+            console.log(err)
+            this.setState(prevState => {
+                prevState.isLoading = false
+                return prevState
+            })
+            ToastAndroid.show(Constants.ERROR_SIGNUP, ToastAndroid.SHORT);
+        }) 
     }
 
     animTop = () => {

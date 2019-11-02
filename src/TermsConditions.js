@@ -2,8 +2,11 @@ import React, { Component } from 'react';
 import {
   StyleSheet,
   View,
+  Text
 } from 'react-native';
+import { ScrollView } from 'react-native-gesture-handler';
 
+const Constants = require('./utils/AppConstants')
 const ACCENT = '#FFCB28' // 255, 203, 40
 const ACCENT_DARK = '#F1B800' 
 
@@ -21,9 +24,16 @@ export default class Notifications extends Component {
 
     render() {
         return(
-            <View style={{flex: 1}}>
-                
-            </View>
+            <ScrollView style={{flex: 1}}>
+                {
+                    Constants.T_C.map((value, index) => {return(
+                        <View style={{flexDirection: 'row', marginHorizontal: 30, marginTop: 20}}>
+                            <Text style={{fontWeight: '700', fontSize: 16}}>{index + 1 + '. '}</Text>
+                            <Text style={{fontSize: 16, textAlign: 'left'}}>{value}</Text>
+                        </View>
+                    )})
+                }
+            </ScrollView>
         )
     }
 }

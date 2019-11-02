@@ -32,6 +32,7 @@ import ChangePassword from './src/sign_in_up/ChangePassword'
 import CreateProfile from './src/sign_in_up/CreateProfile'
 import DrawerContentComponent from './src/DrawerContentComponent'
 import Splash from './src/Splash'
+import Profile from './src/Profile'
 
 import { createAppContainer, createSwitchNavigator } from 'react-navigation'
 import { createDrawerNavigator } from 'react-navigation-drawer'
@@ -176,6 +177,7 @@ const RateCardTabs = createMaterialTopTabNavigator({
 })
 
 const DrawerStackNavigator = createStackNavigator({
+  Profile: {screen: Profile},
   CreateProfile: {screen: CreateProfile},
 
   TermsConditions: {screen: TermsConditions},
