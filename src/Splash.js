@@ -10,7 +10,7 @@ const Constants = require('./utils/AppConstants')
 const DataController = require('./utils/DataStorageController')
 const logo = require('../assets/logo_splash.png')
 const ACCENT = '#FFCB28' // 255, 203, 40
-const ACCENT_DARK = '#F1B800' 
+const ACCENT_DARK = '#F1B800'
 
 export default class Splash extends Component {
     static navigationOptions = ({navigation}) => {
@@ -25,9 +25,10 @@ export default class Splash extends Component {
     }
 
     componentDidMount() {
-        setTimeout(() => {
-            const screen = DataController.getItem(DataController.IS_LOGIN) === true? 'HomeDrawerNavigator' : 'Login'
-            this.props.navigation.replace(screen)
+        setTimeout(async () => {
+            const screen = (await DataController.getItem(DataController.IS_LOGIN) === "true")? 
+            'HomeDrawerNavigator' : 'RegistrationNavigator'
+            this.props.navigation.navigate(screen)
         }, Constants.SPLASH_TIMEOUT)
     }
 

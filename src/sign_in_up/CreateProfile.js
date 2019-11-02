@@ -12,6 +12,7 @@ import {
 import { ScrollView, TextInput, TouchableOpacity } from 'react-native-gesture-handler';
 
 const Constants = require('../utils/AppConstants')
+const DataController = require('../utils/DataStorageController')
 
 const ACCENT = '#FFCB28' // 255, 203, 40
 const ACCENT_DARK = '#F1B800' 
@@ -19,7 +20,7 @@ const ACCENT_DARK = '#F1B800'
 export default class CreateProfile extends Component {
     static navigationOptions = ({navigation}) => {
         return{
-            headerTitle: 'Create Profile',
+            headerTitle: navigation.getParam(Constants.IS_NEW_USER)? 'Create Profile' : 'Edit Profile',
         }
     }
 
@@ -34,13 +35,88 @@ export default class CreateProfile extends Component {
             "More than 60 Trips"
         ]
 
+        this.selectedCityId = "1"
+        this.planId = 0
+        this.paymentData = ""
+        this.tripCode = "",
+        this.isExc = false
+
         this.state = {
             tripFreq: 0,
+            name: '',
+            address: '',
+            number: '',
+            email: '',
+            org: '',
+            goodsType: 'Electrical/Electronics',
+            goodsId: 0
         }
     }
 
-    setGoodsType = (goods) => {
-        this.props.navigation.setParams({goodsType: goods})
+    async componentDidMount() {
+        await DataController.getItem(DataController.CUSTOMER_MOBILE)
+        .then(value => {
+            console.log(value)
+            this.setState(prevState => {
+                prevState.number = value
+                return prevState
+            })
+        })
+    }
+
+    setGoodsType = (goods, id) => {
+        this.setState(prevState => {
+            prevState.goodsType = goods
+            prevState.goodsId = id
+            return prevState
+        })
+    }
+
+    updateUserProfile = async () => {
+        const reqBody = new FormData()
+        const custId = await DataController.getItem(DataController.CUSTOMER_ID)
+        reqBody.append(Constants.FIELDS.CUSTOMER_ID, custId)
+        reqBody.append(Constants.FIELDS.NAME, this.state.name)
+        reqBody.append(Constants.FIELDS.ADDRESS, this.state.address)
+        reqBody.append(Constants.FIELDS.EMAIL, this.state.email)
+        reqBody.append(Constants.FIELDS.ORG, this.state.org)
+        reqBody.append(Constants.FIELDS.TRIP_CODE, this.tripCode)
+        reqBody.append(Constants.FIELDS.NUMBER, this.state.number)
+        reqBody.append(Constants.FIELDS.GOODS_ID, this.state.goodsId)
+        reqBody.append(Constants.FIELDS.GOODS_NAME, this.state.goodsType)
+        reqBody.append(Constants.FIELDS.TRIP_FREQ, this.tripFreqArray[this.state.tripFreq])
+        reqBody.append(Constants.FIELDS.CITY_ID, this.selectedCityId)
+        reqBody.append(Constants.FIELDS.PLAN_ID, this.planId)
+        reqBody.append(Constants.FIELDS.PAYMENT_DATA, this.paymentData),
+        reqBody.append(Constants.FIELDS.IS_EXCLUSIVE, this.isExc)
+
+        console.log('Request: ', reqBody)
+
+        const request = await fetch(Constants.BASE_URL + Constants.UPDATE_CUSTOMER_PROFILE, {
+            method: 'POST',
+            body: reqBody,
+            headers: {
+                key: "21db33e221e41d37e27094153b8a8a02"
+            }
+        })
+
+        console.log(request)
+
+        const response = await request.json().then(async value => {
+            const dataToWrite = new FormData()
+            dataToWrite.append(DataController.IS_PROFILE_COMPLETED, "true")
+
+            await DataController.setItems(dataToWrite)
+
+            console.log("Response: ", value)
+            console.log("Written Data: ", dataToWrite)
+        })
+        .catch(err => {
+            console.log(err);
+        }) 
+
+        console.log("Profile Updated")
+        this.props.navigation.replace("Main")
     }
 
     render() {
@@ -58,15 +134,25 @@ export default class CreateProfile extends Component {
                 <ScrollView>
                     <View style={{marginTop: 140, backgroundColor: 'white', paddingHorizontal: 20, paddingTop: 30}}>
                         <TextInput placeholder='NAME'
-                        style={styles.inputs}/>
-                        <TextInput placeholder='MOBILE' keyboardType='decimal-pad' maxLength={10}
+                        style={styles.inputs}
+                        onChangeText={text => this.setState(prevState => {
+                            prevState.name = text;
+                            return prevState
+                        })}/>
+
+                        <TextInput placeholder='MOBILE' keyboardType='decimal-pad' maxLength={10} editable={false}
+                        defaultValue={this.state.number}
                         style={styles.inputs}/>
 
                         <View
                         style={[styles.inputs, {flexDirection: 'row', alignItems: 'center',}]}>
 
                             <TextInput placeholder='EMAIL' keyboardType='email-address' textContentType='emailAddress'
-                            style={{flex: 1}}/>
+                            style={{flex: 1}}
+                            onChangeText={text => this.setState(prevState => {
+                                prevState.email = text;
+                                return prevState
+                            })}/>
 
                             <TouchableOpacity
                             onPress={() => {
@@ -85,7 +171,11 @@ export default class CreateProfile extends Component {
                         style={[styles.inputs, {flexDirection: 'row', alignItems: 'center',}]}>
 
                             <TextInput placeholder='ORGANIZATION'
-                            style={{flex: 1}}/>
+                            style={{flex: 1}}
+                            onChangeText={text => this.setState(prevState => {
+                                prevState.org = text;
+                                return prevState
+                            })}/>
 
                             <TouchableOpacity
                             onPress={() => {
@@ -100,10 +190,15 @@ export default class CreateProfile extends Component {
                             
                         </View>
                         
-                        <TextInput placeholder='CITY' editable={false}
+                        <TextInput placeholder='CITY' editable={false} defaultValue="Indore"
                         style={styles.inputs}/>
+
                         <TextInput placeholder='ADDRESS' textContentType='fullStreetAddress'
-                        style={styles.inputs}/>
+                        style={styles.inputs}
+                        onChangeText={text => this.setState(prevState => {
+                            prevState.address = text;
+                            return prevState
+                        })}/>
 
                         <View
                         style={{
@@ -114,7 +209,7 @@ export default class CreateProfile extends Component {
                             <TouchableHighlight
                             underlayColor='white'
                             onPress={() => {
-                                this.props.navigation.navigate('SelectGoods', {setGoodsType: this.setGoodsType.bind(this)})
+                                this.props.navigation.navigate('GoodsList', {setGoodsType: this.setGoodsType.bind(this)})
                             }}
                             style={{
                                 padding: 10
@@ -137,7 +232,7 @@ export default class CreateProfile extends Component {
                                 fontSize: 15,
                                 opacity: 0.4
                             }}>
-                                {this.props.navigation.getParam('goodsType', 'Electrical/Electronics')}
+                                {this.state.goodsType}
                             </Text>
                         </View>
                     
@@ -184,7 +279,7 @@ export default class CreateProfile extends Component {
                 <TouchableHighlight
                 underlayColor={ACCENT_DARK}
                 onPress={() => {
-                    ToastAndroid.show("Profile has been created", ToastAndroid.SHORT)
+                    this.updateUserProfile()
                 }}
                 style={{
                     backgroundColor: ACCENT,
@@ -193,7 +288,9 @@ export default class CreateProfile extends Component {
                     alignItems: 'center',
                     elevation: 10
                 }}>
-                    <Text style={{fontSize: 18, fontWeight: '700', color: 'white'}}>Create Profile</Text>
+                    <Text style={{fontSize: 18, fontWeight: '700', color: 'white'}}>
+                        {this.props.navigation.getParam(Constants.IS_NEW_USER)? 'Create Profile' : 'Save'}
+                    </Text>
                 </TouchableHighlight>
             </View>
         )

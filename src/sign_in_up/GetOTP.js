@@ -12,6 +12,7 @@ import {
 import { TextInput, TouchableHighlight, TouchableOpacity } from 'react-native-gesture-handler';
 import {getDeviceId} from 'react-native-device-info';
 import {firebase} from '@react-native-firebase/messaging'
+import { StackActions} from 'react-navigation';
 
 const Constants = require('../utils/AppConstants')
 const DataController = require('../utils/DataStorageController')
@@ -71,7 +72,7 @@ export default class GetOTP extends Component {
             }
         })
 
-        const response = await request.json().then(value => {
+        const response = await request.json().then(async value => {
             const dataToWrite = new FormData()
             dataToWrite.append(DataController.IS_LOGIN, "true")
             dataToWrite.append(DataController.CUSTOMER_ID, value.data.id.toString())
@@ -79,7 +80,7 @@ export default class GetOTP extends Component {
             dataToWrite.append(DataController.IS_PROFILE_COMPLETED, "false")
             dataToWrite.append(DataController.BUFFER_TIME, value.data.configure_setting.buffered_schedule_time.toString())
 
-            DataController.setItems(dataToWrite)
+            await DataController.setItems(dataToWrite)
 
             this.setState(prevState => {
                 prevState.isLoading = false
@@ -89,7 +90,7 @@ export default class GetOTP extends Component {
             console.log("Written Data: ", dataToWrite)
         })
 
-        //this.props.navigation.navigate("CreateProfile")
+        this.props.navigation.navigate("HomeDrawerNavigator")
     }
 
     resetPassword = () => {

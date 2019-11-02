@@ -1,10 +1,12 @@
 import React from 'react';
 import {NavigationActions} from 'react-navigation';
-import { Text, View, StyleSheet, Image, ToastAndroid} from 'react-native'
+import { Text, View, StyleSheet, Image, Alert} from 'react-native'
 import { ScrollView, TouchableHighlight } from 'react-native-gesture-handler';
+import {getDeviceId} from 'react-native-device-info';
 
 const ACCENT = '#FFCB28'
-
+const Constants = require('./utils/AppConstants')
+const DataController = require('./utils/DataStorageController')
 const bookMG = require('../assets/truck.png')
 const favLoc = require('../assets/fav_loc.png')
 const notifications = require('../assets/notification.png')
@@ -86,6 +88,47 @@ const screens = [
     }
 ]
 
+const logoutUser = async (props) => {
+    const deviceId = getDeviceId()
+    const custId = await DataController.getItem(DataController.CUSTOMER_ID)
+    console.log("Device Id: ", deviceId, "\n Customer Id: ", custId);
+
+    const reqURL = Constants.BASE_URL + Constants.LOGOUT_API + '?' + 
+                        Constants.FIELDS.CUSTOMER_ID + '=' + parseInt(custId) + '&' +
+                        Constants.FIELDS_LOGIN.DEVICE_ID + '=' + deviceId
+
+        const request = await fetch(reqURL, {
+            method: 'GET',
+            headers: {
+                key: "21db33e221e41d37e27094153b8a8a02"
+            }
+        })
+
+        const response = await request.json().then(async value => {
+            console.log(value)
+            if(value.success) {
+                const toWrite = new FormData();
+                toWrite.append(DataController.IS_LOGIN, "false");
+                toWrite.append(DataController.CUSTOMER_ID, "0")
+                console.log("To write: ", toWrite)
+
+                await DataController.setItems(toWrite)
+
+                props.navigation.navigate("Login", {
+                    status: Constants.LOGOUT_API
+                })
+            }
+        })
+}
+
+const showAlert = (props) => {
+    Alert.alert("Logout?", Constants.LOGOUT_MESSAGE, 
+    [
+        {text: "Cancel", style: "default"},
+        {text: "Logout", onPress: () => logoutUser(props), style: "destructive"}
+    ])
+}
+
  DrawerContentComponent = (props) => {
     return (
         <View style={{flex: 1}}>
@@ -108,8 +151,11 @@ const screens = [
                     return(
                         <TouchableHighlight underlayColor='#EBEBEB'
                         onPress={() => {
+                            if(screen.name !== "Logout"){
                                 props.navigation.closeDrawer()
                                 props.navigation.navigate(screen.screen)
+                            }
+                            else showAlert(props);
                         }}
                         key={index}>
                             <View style={styles.screenListItem}>

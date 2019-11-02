@@ -22,6 +22,8 @@ import Geocoder from 'react-native-geocoding';
 import { TextInput } from 'react-native-gesture-handler';
 import DateTimePicker from '@react-native-community/datetimepicker';
 
+const Constants = require('./utils/AppConstants')
+const DataController = require('./utils/DataStorageController')
 const vehicleIcon = require('../assets/vehicle.png')
 const instantIcon = require('../assets/instant.png')
 const greenPin = require('../assets/pin_green.png')
@@ -336,6 +338,12 @@ export default class Home extends Component {
   }
 
   async componentDidMount() {
+    const isProfileCompleted = await DataController.getItem(DataController.IS_PROFILE_COMPLETED)
+    isProfileCompleted === "false" ? this.props.navigation.navigate("CreateProfile", {
+      [Constants.IS_NEW_USER] : true
+    }) 
+    : null
+
     await this.requestLocationPermission()
     this.keyboardDidShowListener = Keyboard.addListener('keyboardDidShow', this.keyboardDidShow);
     this.keyboardDidHideListener = Keyboard.addListener('keyboardDidHide', this.keyboardDidHide);
@@ -343,7 +351,6 @@ export default class Home extends Component {
     this.willFocusListener = this.props.navigation.
     addListener('willFocus', () => {
       if(this.props.navigation.state.params){
-        console.log('Not null')
         this.mapView.animateToRegion({
           latitude: this.props.navigation.getParam('latitude'),
           longitude: this.props.navigation.getParam('longitude'),

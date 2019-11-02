@@ -34,11 +34,20 @@ export default class Login extends Component {
 
     async componentDidMount() {
         this.FCM_TOKEN = await firebase.messaging().getToken();
+        if(this.props.navigation.getParam("status", "") === Constants.LOGOUT_API) {
+            console.log(Constants.LOGOUT_SUCCESS);
 
-        this.willFocusListener = this.props.navigation.
-        addListener('willFocus', () => {
-        if(this.props.navigation.state.params){
+            this.setState(prevState => {
+                prevState.message = Constants.LOGOUT_SUCCESS
+                return prevState
+            })
+
+            this.animTop()
+        } 
+        else if(this.props.navigation.state.params){
             if(this.props.navigation.getParam("status", "") === Constants.FORGET_PASSWORD_URL) {
+                console.log(Constants.PASS_CHANGE_SUCCESS);
+
                 this.setState(prevState => {
                     prevState.message = Constants.PASS_CHANGE_SUCCESS
                     return prevState
@@ -47,8 +56,6 @@ export default class Login extends Component {
                 this.animTop()
             }
         }
-            
-        })
     }
 
     callLoginAPI = async () => {
@@ -73,15 +80,33 @@ export default class Login extends Component {
             }
         })
 
-        const response = await request.json().then(value => {
-            this.setState(prevState => {
-                prevState.isLoading = false
-                prevState.message = value.message
-                return prevState
-            })
-            this.animTop()
-            console.log(value)
+        const response = await request.json().then(async value => {
+            if(value.success) {
+                const dataToWrite = new FormData()
+                dataToWrite.append(DataController.IS_LOGIN, "true")
+                dataToWrite.append(DataController.CUSTOMER_ID, value.data.id.toString())
+                dataToWrite.append(DataController.CUSTOMER_MOBILE, value.data.cust_number)
+                dataToWrite.append(DataController.BUFFER_TIME, value.data.configure_setting.buffered_schedule_time.toString())
+                dataToWrite.append(DataController.CONFIGURE_SETTING, JSON.stringify(value.data.configure_setting))
+
+                if(value.data.cust_name !== "") {
+                    dataToWrite.append(DataController.IS_PROFILE_COMPLETED, "true")
+                } else dataToWrite.append(DataController.IS_PROFILE_COMPLETED, "false")
+                
+
+                await DataController.setItems(dataToWrite)
+
+                this.setState(prevState => {
+                    prevState.isLoading = false
+                    return prevState
+                })
+                console.log("Response: ", value)
+                console.log("Written Data: ", dataToWrite)
+            }
+            
         })
+
+        this.props.navigation.navigate("HomeDrawerNavigator")
         
     }
 

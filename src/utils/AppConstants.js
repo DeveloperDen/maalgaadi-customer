@@ -98,6 +98,10 @@ export const SPLASH_TIMEOUT = 3000
 export const OTP_MISMATCH = "OTP did not match"
 export const PASS_CHANGE_SUCCESS = "Password changed successfully. Please Login to continue."
 export const PASS_MISMATCH = "Password and Confirm Password did not match"
+export const LOGOUT_MESSAGE = "Are you sure you want to Logout?"
+export const LOGOUT_SUCCESS = "Logged out successfully"
+
+export const IS_NEW_USER = "is_new_user"
 
 export const FIELDS_LOGIN = {
     CUSTOMER_PHONE: "customer_phone",
@@ -107,11 +111,25 @@ export const FIELDS_LOGIN = {
 }
 
 export const FIELDS = {
+    NUMBER: "number",
     CUSTOMER_PHONE: "phone",
     CUSTOMER_PASSWORD: "password",
     REF_CODE: "referral_code",
     LAT: "lat",
-    LNG: "lng"
+    LNG: "lng",
+    CUSTOMER_ID: "customer_id",
+    NAME: "name",
+    ADDRESS: "address",
+    EMAIL: "email",
+    ORG: "organization",
+    TRIP_CODE: "trip_code",
+    GOODS_ID: "goods_id",
+    GOODS_NAME: "goods_name",
+    TRIP_FREQ: "selected_trip_frequency",
+    CITY_ID: "selected_city_id",
+    PLAN_ID: "plan_id",
+    PAYMENT_DATA: "payment_data",
+    IS_EXCLUSIVE: "is_exclusive_status"
 }
 
 export const TERMSANDCONDITION = "http://maalgaadi.net/terms-and-condition.html";

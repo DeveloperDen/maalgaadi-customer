@@ -33,7 +33,7 @@ import CreateProfile from './src/sign_in_up/CreateProfile'
 import DrawerContentComponent from './src/DrawerContentComponent'
 import Splash from './src/Splash'
 
-import { createAppContainer } from 'react-navigation'
+import { createAppContainer, createSwitchNavigator } from 'react-navigation'
 import { createDrawerNavigator } from 'react-navigation-drawer'
 import {createMaterialTopTabNavigator} from 'react-navigation-tabs'
 import React, {Component} from 'react';
@@ -176,6 +176,8 @@ const RateCardTabs = createMaterialTopTabNavigator({
 })
 
 const DrawerStackNavigator = createStackNavigator({
+  CreateProfile: {screen: CreateProfile},
+
   TermsConditions: {screen: TermsConditions},
 
   SettingsAll : {screen: SettingsAll},
@@ -303,15 +305,7 @@ const DrawerNavigator = createDrawerNavigator({
   contentComponent: DrawerContentComponent,
 })
 
-const MainStackNavigator = createStackNavigator({
-  HomeDrawerNavigator: {screen: DrawerNavigator,
-  navigationOptions: {
-    headerStyle: {display: 'none'}
-  }},
-
-  Splash: {screen: Splash},
-  SelectGoods: {screen: GoodsList},
-  CreateProfile: {screen: CreateProfile},
+const RegistrationNavigator = createStackNavigator({
   ChangePassword: {screen: ChangePassword},
   GetOTP: {screen: GetOTP},
   ForgotPassword: {screen: ForgotPassword},
@@ -320,6 +314,43 @@ const MainStackNavigator = createStackNavigator({
     navigationOptions: () => ({
       headerStyle: {display: 'none'},
     })}
+  },
+  {initialRouteName: 'Login',
+  transitionConfig: () => ({
+    transitionSpec: {
+      duration: 300,
+      easing: Easing.out(Easing.poly(4)),
+      timing: Animated.timing,
+    },
+    screenInterpolator: sceneProps => {
+      const { layout, position, scene } = sceneProps;
+      const { index } = scene;
+
+      const width = layout.initWidth;
+      const translateX = position.interpolate({
+        inputRange: [index - 1, index, index + 1],
+        outputRange: [width, 0, 0],
+      });
+
+      const opacity = position.interpolate({
+        inputRange: [index - 1, index - 0.99, index],
+        outputRange: [0, 1, 1],
+      });
+
+      return { opacity, transform: [{ translateX }] };
+    },
+  }),
+})
+
+const MainSwitchNavigator = createSwitchNavigator({
+  HomeDrawerNavigator: {screen: DrawerNavigator,
+  navigationOptions: {
+    headerStyle: {display: 'none'}
+  }},
+
+  RegistrationNavigator: {screen: RegistrationNavigator},
+
+  Splash: {screen: Splash},
   },
   {initialRouteName: 'Splash',
   transitionConfig: () => ({
@@ -348,6 +379,6 @@ const MainStackNavigator = createStackNavigator({
   }),
 })
 
-const App = createAppContainer(MainStackNavigator)
+const App = createAppContainer(MainSwitchNavigator)
 
 export default App;

@@ -55,7 +55,7 @@ export default class GoodsList extends Component {
                                 <TouchableOpacity
                                 onPress={() => {
                                     if(this.goodsList[index] != 'Others') {
-                                        this.props.navigation.state.params.setGoodsType(this.goodsList[index])
+                                        this.props.navigation.state.params.setGoodsType(this.goodsList[index], index)
                                         this.props.navigation.goBack()
                                     }
                                     else this.setModalVisible(true)
@@ -121,7 +121,7 @@ export default class GoodsList extends Component {
                                 underlayColor='rgba(255, 203, 40, 0.8)'
                                 onPress={() => {
                                     if(this.state.otherGoods != '') {
-                                        this.props.navigation.state.params.setGoodsType(this.state.otherGoods)
+                                        this.props.navigation.state.params.setGoodsType(this.state.otherGoods, this.goodsList.length + 1)
                                         this.props.navigation.goBack()
                                     }
                                     

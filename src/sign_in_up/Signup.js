@@ -75,7 +75,7 @@ export default class Signup extends Component {
                 pass: this.state.pass})
             }
             
-        })  
+        })
     }
 
     animTop = () => {
