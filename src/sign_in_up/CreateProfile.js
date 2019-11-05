@@ -42,37 +42,59 @@ export default class CreateProfile extends Component {
         this.isExc = false
 
         this.state = {
+            isLoading: false,
             tripFreq: 0,
             name: '',
             address: '',
             number: '',
             email: '',
             org: '',
-            goodsType: 'Electrical/Electronics',
+            goodsType: 'Select Goods Type',
             goodsId: 0
         }
     }
 
     async componentDidMount() {
-        await DataController.getItem(DataController.CUSTOMER_MOBILE)
-        .then(value => {
-            console.log(value)
+        const toGet = new Array()
+        toGet.push(DataController.CUSTOMER_NAME,
+        DataController.CUSTOMER_MOBILE, DataController.EMAIL, DataController.ORG,
+        DataController.ADDRESS, DataController.GOODS_NAME, DataController.GOODS_ID, DataController.TRIP_FREQ)
+
+        DataController.getItems(toGet)
+        .then(res => {
+            console.log(res)
             this.setState(prevState => {
-                prevState.number = value
-                return prevState
+                prevState.name = res[0][1]
+                prevState.number = res[1][1]
+                prevState.email = res[2][1]
+                prevState.org = res[3][1]
+                prevState.address = res[4][1]
+                prevState.goodsType = res[5][1]
+                prevState.goodsId = res[6][1]
+                prevState.tripFreq = this.tripFreqArray.indexOf(res[7][1])
+                return(prevState)
             })
+        })
+        .catch(err => {
+            console.log(err)
+            ToastAndroid.show(Constants.ERROR_GET_DETAILS, ToastAndroid.SHORT);
         })
     }
 
-    setGoodsType = (goods, id) => {
+    setGoodsType = (goods) => {
         this.setState(prevState => {
-            prevState.goodsType = goods
-            prevState.goodsId = id
+            prevState.goodsType = goods.goods_name
+            prevState.goodsId = goods.id
             return prevState
         })
     }
 
     updateUserProfile = async () => {
+        this.setState(prevState => {
+            prevState.isLoading = true;
+            return prevState
+        })
+
         const reqBody = new FormData()
         const custId = await DataController.getItem(DataController.CUSTOMER_ID)
         reqBody.append(Constants.FIELDS.CUSTOMER_ID, custId)
@@ -99,8 +121,6 @@ export default class CreateProfile extends Component {
                 key: "21db33e221e41d37e27094153b8a8a02"
             }
         })
-
-        console.log(request)
 
         const response = await request.json().then(async value => {
             const dataToWrite = new FormData()
@@ -132,6 +152,11 @@ export default class CreateProfile extends Component {
             console.log(err);
             ToastAndroid.show(Constants.ERROR_UPDATE_PROFILE, ToastAndroid.SHORT);
         })
+
+        this.setState(prevState => {
+            prevState.isLoading = false
+            return prevState
+        })
         this.props.navigation.replace("Main")
     }
 
@@ -150,6 +175,7 @@ export default class CreateProfile extends Component {
                 <ScrollView>
                     <View style={{marginTop: 140, backgroundColor: 'white', paddingHorizontal: 20, paddingTop: 30}}>
                         <TextInput placeholder='NAME'
+                        defaultValue={this.state.name}
                         style={styles.inputs}
                         onChangeText={text => this.setState(prevState => {
                             prevState.name = text;
@@ -163,7 +189,8 @@ export default class CreateProfile extends Component {
                         <View
                         style={[styles.inputs, {flexDirection: 'row', alignItems: 'center',}]}>
 
-                            <TextInput placeholder='EMAIL' keyboardType='email-address' textContentType='emailAddress'
+                            <TextInput defaultValue={this.state.email}
+                            placeholder='EMAIL' keyboardType='email-address' textContentType='emailAddress'
                             style={{flex: 1}}
                             onChangeText={text => this.setState(prevState => {
                                 prevState.email = text;
@@ -186,7 +213,8 @@ export default class CreateProfile extends Component {
                         <View
                         style={[styles.inputs, {flexDirection: 'row', alignItems: 'center',}]}>
 
-                            <TextInput placeholder='ORGANIZATION'
+                            <TextInput defaultValue={this.state.org}
+                            placeholder='ORGANIZATION'
                             style={{flex: 1}}
                             onChangeText={text => this.setState(prevState => {
                                 prevState.org = text;
@@ -209,7 +237,8 @@ export default class CreateProfile extends Component {
                         <TextInput placeholder='CITY' editable={false} defaultValue="Indore"
                         style={styles.inputs}/>
 
-                        <TextInput placeholder='ADDRESS' textContentType='fullStreetAddress'
+                        <TextInput defaultValue={this.state.address}
+                        placeholder='ADDRESS' textContentType='fullStreetAddress'
                         style={styles.inputs}
                         onChangeText={text => this.setState(prevState => {
                             prevState.address = text;
@@ -292,20 +321,31 @@ export default class CreateProfile extends Component {
                     </View>
                 </ScrollView>
 
+                {/* Overlay to show while loading, to avoid any touches */}
+                <View style={{
+                    position: 'absolute', backgroundColor: 'white', width: '100%',
+                    opacity: 0.5, height: this.state.isLoading? '100%' : 0,
+                }}/>
+
                 <TouchableHighlight
+                disabled={this.state.isLoading}
                 underlayColor={ACCENT_DARK}
                 onPress={() => {
                     this.updateUserProfile()
                 }}
                 style={{
-                    backgroundColor: ACCENT,
+                    backgroundColor: this.state.isLoading? 'gray' : ACCENT,
                     paddingVertical: 15,
                     justifyContent: 'center',
                     alignItems: 'center',
                     elevation: 10
                 }}>
-                    <Text style={{fontSize: 18, fontWeight: '700', color: 'white'}}>
-                        {this.props.navigation.getParam(Constants.IS_NEW_USER)? 'Create Profile' : 'Save'}
+                    <Text style={{
+                        fontSize: 18, fontWeight: '700', color: 'white',
+                        opacity: this.state.isLoading? 0.3 : 1
+                    }}>
+                        {this.state.isLoading? "Saving..." : 
+                            this.props.navigation.getParam(Constants.IS_NEW_USER)? 'Create Profile' : 'Save'}
                     </Text>
                 </TouchableHighlight>
             </View>

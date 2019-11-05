@@ -10,7 +10,8 @@ import {
 } from 'react-native';
 import {ScrollView, TextInput} from 'react-native-gesture-handler';
 
-const vehicleIcon = require('../../assets/vehicle.png')
+const Constants = require('../utils/AppConstants')
+const DataController = require('../utils/DataStorageController')
 
 const ACCENT = '#FFCB28' // 255, 203, 40 
 
@@ -19,17 +20,12 @@ export default class GoodsList extends Component {
         super(props)
         this.state = {
             modalVisible: false,
-            otherGoods: ''
+            othersIndex: 0,
+            otherGoods: '',
+            goodsList: [],
+            waitText: 'Getting Goods Type...'
         }
-        this.goodsList = [
-            'Electrical/Electronics', 'Timber/Plywood', 'Medical', 'Furniture', 'Utensils(Bartan)',
-            'House Shifting', 'Boxes', 'Pipes/Tent Poles', 'Paper/Packaging', 'Batteries/Heavy Boxes', 
-            'Cable Rools (Round)', 'Barbed/Steel Wires', 'Machines/Equipments/Spare Parts',
-            'Powder', 'Tiles', 'FMCG', 'Ceramics', 'Chemicals/Paint', 'Logistivs/Movers & Packers', 
-            'Perishable Food Items', 'Event Management', 'Plastic/Tubber Packing Material',
-            'Construction', 'Catering/Restaurant', 'Textile/Garments', 'Others', 
-            'Boxes (max. size 30x20x30 cm or under 10 kg)'
-          ]
+        
     }
 
     static navigationOptions = ({navigation}) => {
@@ -38,39 +34,92 @@ export default class GoodsList extends Component {
         }
     }
 
-    setModalVisible = (visible) => {
+    setModalVisible = (visible, index) => {
         this.setState(prevState => {
             prevState.modalVisible = visible
+            prevState.othersIndex = index
             return prevState
         })
     }
 
+    async componentDidMount() {
+        await this.getGoodsList()
+    }
+
+    getGoodsList = async () => {
+        const customerId = await DataController.getItem(DataController.CUSTOMER_ID);
+
+        const reqURL = Constants.BASE_URL + Constants.GET_TYPES_OF_GOODS + '?' + 
+                        Constants.FIELDS.CUSTOMER_ID + '=' + customerId + '&' +
+                        Constants.FIELDS.VEHICLE_ID + '=' + ''
+        
+        console.log("Request: ", reqURL)
+
+        const request = await fetch(reqURL, {
+            method: 'GET',
+            headers: {
+                key: "21db33e221e41d37e27094153b8a8a02"
+            }
+        })
+
+        const response = await request.json().then(value => {
+            console.log(value)
+
+            if(!value.success){
+                this.setState(prevState => {
+                    prevState.waitText = value.message
+                    return prevState
+                })
+            }
+            else {
+                this.setState(prevState => {
+                    prevState.goodsList = value.data
+                    return prevState
+                })
+            }
+            
+        }).catch(err => {
+            console.log(err)
+            ToastAndroid.show(Constants.ERROR_GET_GOODS, ToastAndroid.SHORT);
+        }) 
+    }
+
     render() {
         return(
-            <View>
-                <ScrollView>
-                    {this.goodsList.map((goods, index) => {
-                        return(
-                            <View key={index}>
-                                <TouchableOpacity
-                                onPress={() => {
-                                    if(this.goodsList[index] != 'Others') {
-                                        this.props.navigation.state.params.setGoodsType(this.goodsList[index], index)
-                                        this.props.navigation.goBack()
-                                    }
-                                    else this.setModalVisible(true)
-                                }}
-                                style={{flexDirection: 'row', alignItems: 'center', paddingVertical: 10}}>
-                                    <Text style={{marginStart: 20, marginVertical: 10, fontSize: 15}}>{goods}</Text>
-                                </TouchableOpacity>
-                                <View 
-                                    style={{
-                                    borderTopColor:'rgba(0, 0, 0, 0.1)',
-                                    borderTopWidth: 1}}/>
-                            </View> 
-                        )
-                    })}
-                </ScrollView>
+            <View style={{flex: 1}}>
+                {(this.state.goodsList.length !== 0)?
+                    <ScrollView>
+                        {this.state.goodsList.map((goods, index) => {
+                            return(
+                                <View key={index}>
+                                    <TouchableOpacity
+                                    onPress={() => {
+                                        if(this.state.goodsList[index].goods_name !== 'Others' &&
+                                        this.state.goodsList[index].goods_name !== 'others') {
+                                            this.props.navigation.state.params.setGoodsType(this.state.goodsList[index])
+                                            this.props.navigation.goBack()
+                                        }
+                                        else this.setModalVisible(true, index)
+                                    }}
+                                    style={{flexDirection: 'row', alignItems: 'center', paddingVertical: 10}}>
+                                        <Text style={{marginStart: 20, marginVertical: 10, fontSize: 15}}>
+                                            {goods.goods_name}
+                                        </Text>
+                                    </TouchableOpacity>
+                                    <View 
+                                        style={{
+                                        borderTopColor:'rgba(0, 0, 0, 0.1)',
+                                        borderTopWidth: 1}}/>
+                                </View> 
+                            )
+                        })}
+                    </ScrollView>
+                    :
+                    <View style={{justifyContent: 'center', alignItems: 'center', flex: 1}}>
+                        <Text style={{fontSize: 20, opacity: 0.3}}>{this.state.waitText}</Text>
+                    </View>   
+                }
+                
 
                 {/* Dialog box for other goods. */}
                 <Modal
@@ -78,7 +127,7 @@ export default class GoodsList extends Component {
                     transparent={true}
                     visible={this.state.modalVisible}
                     onRequestClose={() => {
-                    this.setModalVisible(false)
+                    this.setModalVisible(false, 0)
                     }}>
                         <View
                         style={{
@@ -98,7 +147,7 @@ export default class GoodsList extends Component {
                                     <Text style={{margin: 20, fontWeight: '700', fontSize: 15}}> Others </Text>
                                     <TouchableOpacity
                                     onPress={() => {
-                                        this.setModalVisible(false)
+                                        this.setModalVisible(false, 0)
                                     }}>
                                         <Image source={{uri: 'https://cdn3.iconfinder.com/data/icons/virtual-notebook/16/button_close-512.png'}}
                                         style={{width: 15, height: 15, margin: 20}}/>
@@ -121,10 +170,10 @@ export default class GoodsList extends Component {
                                 underlayColor='rgba(255, 203, 40, 0.8)'
                                 onPress={() => {
                                     if(this.state.otherGoods != '') {
-                                        this.props.navigation.state.params.setGoodsType(this.state.otherGoods, this.goodsList.length + 1)
+                                        this.state.goodsList[this.state.othersIndex].goods_name = this.state.otherGoods
+                                        this.props.navigation.state.params.setGoodsType(this.state.goodsList[this.state.othersIndex]    )
                                         this.props.navigation.goBack()
-                                    }
-                                    
+                                    }  
                                 }}
                                 style={{
                                     paddingVertical: 15, alignItems: 'center', justifyContent: 'center',

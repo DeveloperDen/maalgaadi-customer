@@ -5,7 +5,8 @@ import {
   Image,
   Text,
   ScrollView,
-  TouchableHighlight
+  TouchableHighlight,
+  ToastAndroid
 } from 'react-native';
 
 const ACCENT = '#FFCB28' // 255, 203, 40
@@ -16,6 +17,7 @@ const ADDRESS = "Address"
 const GOODS = "Goods"
 const TRIP_FREQ = "Trip Frequency"
 const DataController = require('./utils/DataStorageController')
+const Constants = require('./utils/AppConstants')
 
 export default class Profile extends Component {
     static navigationOptions = ({navigation}) => {
@@ -75,6 +77,10 @@ export default class Profile extends Component {
 
                     return(prevState)
                 })
+            })
+            .catch(err => {
+                console.log(err)
+                ToastAndroid.show(Constants.ERROR_GET_DETAILS, ToastAndroid.SHORT);
             })
     }
 

@@ -17,6 +17,7 @@ export const ADDRESS = "address"
 export const GOODS_NAME = "goods_name"
 export const GOODS_ID = "goods_id"
 export const TRIP_FREQ = "trip_freq"
+export const USER_SETTINGS = "settings"
 
 export const getItem = async (key) => {
     try {
@@ -33,6 +34,15 @@ export const getItem = async (key) => {
 export const setItems = async (keys) => {
     try {
         await AsyncStorage.multiSet(keys._parts);
+    }
+    catch (err) {
+        console.log(err);
+    }
+}
+
+export const setItem = async (key, value) => {
+    try {
+        await AsyncStorage.setItem(key, value);
     }
     catch (err) {
         console.log(err);

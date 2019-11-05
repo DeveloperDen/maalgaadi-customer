@@ -8,6 +8,8 @@ import {
 import { TouchableHighlight } from 'react-native-gesture-handler';
 
 const notification = require('../../assets/notification.png')
+const Constants = require('../utils/AppConstants')
+const DataController = require('../utils/DataStorageController')
 
 const SMS = 'SMS Alerts'
 const APP_NOTIF = 'App Notifications'
@@ -47,6 +49,54 @@ export default class Settings extends Component {
 
     constructor(props) {
         super(props)
+
+        this.state = {
+            isLoading: true
+        }
+    }
+
+    async componentDidMount() {
+        await this.getSettings();
+    }
+
+    getSettings = async () => {
+        const reqBody = new FormData()
+        const custId = await DataController.getItem(DataController.CUSTOMER_ID)
+        reqBody.append(Constants.FIELDS.CUSTOMER_ID, parseInt(custId))
+
+        console.log('Request: ', reqBody)
+
+        const request = await fetch(Constants.BASE_URL + Constants.GET_APP_SETTING_DETAIL, {
+            method: 'POST',
+            body: reqBody,
+            headers: {
+                key: "21db33e221e41d37e27094153b8a8a02"
+            }
+        })
+        const response = await request.json().then(async value => {
+            const settings = JSON.stringify(value.data, (key, val) => {
+                if ((typeof val === "boolean") || (typeof val === "number")) {
+                    return String(val);
+                }
+                return val
+            }, null)
+
+            const dataToWrite = settings
+
+            await DataController.setItem(DataController.USER_SETTINGS, dataToWrite)
+
+            console.log("Response: ", value)
+            console.log("Data written: ", dataToWrite)
+        })
+        .catch(err => {
+            console.log(err);
+            ToastAndroid.show(Constants.ERROR_GET_SETTINGS, ToastAndroid.SHORT);
+        })
+
+        this.setState(prevState => {
+            prevState.isLoading = false
+            return prevState
+        })
     }
     
     render() {
@@ -88,6 +138,12 @@ export default class Settings extends Component {
                         )
                     })
                 }
+
+                {/* Overlay to show while loading, to avoid any touches */}
+                <View style={{
+                    position: 'absolute', backgroundColor: 'white', width: '100%',
+                    opacity: 0.8, height: this.state.isLoading? '100%' : 0,
+                }}/>
             </View>
         );
     }

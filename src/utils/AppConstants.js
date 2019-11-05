@@ -104,6 +104,9 @@ export const ERROR_UPDATE_PROFILE = "Error while updating profile"
 export const ERROR_OTP = "Error while generating OTP"
 export const ERROR_SIGNUP = "Error while SignUp"
 export const ERROR_LOGIN = "Error while LogIn"
+export const ERROR_GET_GOODS = "An error occured while getting Goods List"
+export const ERROR_GET_DETAILS = "An error occured while getting User Details"
+export const ERROR_GET_SETTINGS = "An error occured while getting User Settings"
 
 export const IS_NEW_USER = "is_new_user"
 
@@ -133,7 +136,8 @@ export const FIELDS = {
     CITY_ID: "selected_city_id",
     PLAN_ID: "plan_id",
     PAYMENT_DATA: "payment_data",
-    IS_EXCLUSIVE: "is_exclusive_status"
+    IS_EXCLUSIVE: "is_exclusive_status",
+    VEHICLE_ID: "vehicle_id"
 }
 
 
