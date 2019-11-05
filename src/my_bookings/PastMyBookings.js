@@ -11,88 +11,91 @@ const ACCENT = '#FFCB28' // 255, 203, 40
 const GREEN = '#24C800' // 36, 200, 0
 const CANCELLED = 'Cancelled'
 const COMPLETED = 'Completed'
+const Constants = require('../utils/AppConstants')
+const DataController = require('../utils/DataStorageController')
 
 export default class PastMyBookings extends Component {
+
   constructor(props) {
     super(props)
     this.state = {
-      bookings: [
-        {
-          status: CANCELLED,
-          time: new Date(),
-          fare: '160',
-          vehicle: 'Loading Rickshaw',
-          id: '189688',
-          origin: 'Indore, Madhya Pradesh, India',
-          destination: 'Indore, Madhyda Pradesh, India',
-        },
-        {
-          status: COMPLETED,
-          time: new Date(),
-          fare: '160',
-          vehicle: 'Loading Rickshaw',
-          id: '189682',
-          origin: 'Palasia Square, Indore, Madhya Pradesh, India',
-          destination: 'Patnipura Square, Indore, Madhyda Pradesh, India',
-          driverName: 'Name Lastname',
-          vehicleNumber: 'MP09CK0001',
-          rating: 3
-        },
-
-        {
-          status: COMPLETED,
-          time: new Date(),
-          fare: '220',
-          vehicle: 'Tata Ace',
-          id: '1895422',
-          origin: '29/6, Sriram Nagar, South Tukoganj, Indore, Madhya Pradesh 452001, India',
-          destination: 'Patnipura Square, Indore, Madhyda Pradesh, India',
-          driverName: 'Some Name',
-          vehicleNumber: 'MP09CK0001',
-          rating: 5
-        },
-
-        {
-          status: CANCELLED,
-          time: new Date(),
-          fare: '532',
-          vehicle: 'Ashok Layland',
-          id: '189518',
-          origin: 'Nanda Nagar, Patnipura, Indore, Madhya Pradesh, India',
-          destination: 'Indore, Madhyda Pradesh, India',
-        },
-      ]
+      page: 1,
+      isLoading: true,
+      bookings: []
     }
+  }
+
+  async componentDidMount() {
+    await this.getPastBookings()
+  }
+
+  getPastBookings = async () => {
+    const reqBody = new FormData()
+    const custId = await DataController.getItem(DataController.CUSTOMER_ID)
+    reqBody.append(Constants.FIELDS.CUSTOMER_ID, custId)
+    reqBody.append(Constants.FIELDS.PAGE, this.state.page)
+
+    console.log('Request: ', reqBody)
+
+    const request = await fetch(Constants.BASE_URL + Constants.GET_COMPLETED_TRIP, {
+        method: 'POST',
+        body: reqBody,
+        headers: {
+            key: "21db33e221e41d37e27094153b8a8a02"
+        }
+    })
+    const response = await request.json().then(async value => {
+      if(value.success) {
+        this.setState(prevState => {
+          prevState.bookings = value.data.data
+          return prevState
+        })
+      }
+      else {
+        ToastAndroid.show(value.message, ToastAndroid.SHORT);
+      }
+      console.log("Response: ", value)
+    })
+    .catch(err => {
+        console.log(err);
+        ToastAndroid.show(Constants.ERROR_GET_BOOKINGS, ToastAndroid.SHORT);
+    })
+
+    this.setState(prevState => {
+        prevState.isLoading = false
+        return prevState
+    })
   }
 
   render() {
     return(
       <View style={{flex: 1}}>
-        <ScrollView>
+        <ScrollView style={{display: this.state.bookings.length > 0? 'flex' : 'none'}}>
           {
             this.state.bookings.map((value, index) => {
               return(
-                <View key={index} style={{
+                <View
+                key={index} style={{
                   borderRadius: 3, backgroundColor: 'rgba(0, 0, 0, 0.03)', margin: 5,
                   padding: 15,
                 }}>
                   <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
                     <View>
-                      <Text style={{opacity: 0.4, fontSize: 13, marginBottom: 5}}>{value.time.toUTCString()}</Text>
-                      <Text style={{fontWeight: '700', fontSize: 13}}>{value.vehicle}</Text>
-                      <Text style={{opacity: 0.4, fontSize: 13}}>{value.id}</Text>
+                      <Text style={{opacity: 0.4, fontSize: 13, marginBottom: 5}}>{value.date}</Text>
+                      <Text style={{fontWeight: '700', fontSize: 13}}>{value.vehicle_name}</Text>
+                      <Text style={{opacity: 0.4, fontSize: 13}}>{value.trip_id}</Text>
                     </View>
                     <View style={{alignItems: 'flex-end'}}>
                       <Text style={{fontWeight: '700', fontSize: 13, marginBottom: 5}}>
-                        {String.fromCharCode(8377) + ' ' + value.fare}
+                        {String.fromCharCode(8377) + ' ' + value.billOffered}
                       </Text>
-                      {value.driverName? 
+                      {value.driver !== ""? 
                       <Text style={{fontWeight: '700', fontSize: 13}}>
-                        {value.driverName}
+                        {value.driver}
                       </Text> : null}
-                      {value.vehicleNumber? 
+                      {value.driver_number !== ""? 
                       <Text style={{opacity: 0.3, fontSize: 13}}>
-                        {value.vehicleNumber}
+                        {value.driver_number}
                       </Text> : null}
                     </View>
                   </View>
@@ -111,7 +114,7 @@ export default class PastMyBookings extends Component {
                       
                       <Text
                       style={{marginStart: 10, fontWeight: '700', fontSize: 13}}>
-                        {value.origin}
+                        {value.pick_up}
                       </Text>
                     </View>
 
@@ -128,12 +131,12 @@ export default class PastMyBookings extends Component {
                       
                       <Text
                       style={{marginStart: 10, fontWeight: '700', fontSize: 13}}>
-                        {value.destination}
+                        {value.drop}
                       </Text>
                     </View>
                   </View>
 
-                  {value.rating?
+                  {value.rating !== 0?
                   <View style={{flexDirection: 'row', marginTop: 15, alignItems: 'center'}}>
                     <Text style={{fontSize: 13, opacity: 0.3, marginEnd: 10}}>
                     You Rated this Trip
@@ -182,7 +185,7 @@ export default class PastMyBookings extends Component {
         alignContent: 'center', justifyContent: 'center',
         opacity: 0.3, marginHorizontal: 20, display: this.state.bookings.length > 0? 'none' : 'flex'}}>
             <Text style={{textAlign: "center", fontSize: 20,}}>
-                Looks like you have not booked any MaalGaadi yet. Make your first booking today!
+                {this.state.isLoading? "Getting your Past Bookings..." : Constants.PAST_BOOK_EMPTY}
             </Text>
         </View>
       </View>

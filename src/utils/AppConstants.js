@@ -107,6 +107,10 @@ export const ERROR_LOGIN = "Error while LogIn"
 export const ERROR_GET_GOODS = "An error occured while getting Goods List"
 export const ERROR_GET_DETAILS = "An error occured while getting User Details"
 export const ERROR_GET_SETTINGS = "An error occured while getting User Settings"
+export const PAST_BOOK_EMPTY = "Looks like you have not booked any MaalGaadi yet. Make your first booking today!"
+export const ERROR_GET_BOOKINGS = "An error occured while getting User Bookings"
+export const FAV_LOC_EMPTY = "Store your frequently used locations as Favourite and save the hassel of typing long addresses."
+export const ERROR_EDIT_LOC = "An error occured while updating favourite location. Please try again later."
 
 export const IS_NEW_USER = "is_new_user"
 
@@ -137,7 +141,10 @@ export const FIELDS = {
     PLAN_ID: "plan_id",
     PAYMENT_DATA: "payment_data",
     IS_EXCLUSIVE: "is_exclusive_status",
-    VEHICLE_ID: "vehicle_id"
+    VEHICLE_ID: "vehicle_id",
+    PAGE: "page",
+    ID: "id",
+    LANDMARK: "landmark"
 }
 
 

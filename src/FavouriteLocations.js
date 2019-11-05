@@ -6,9 +6,13 @@ import {
   Image,
   Modal,
   TouchableOpacity,
-  TouchableHighlight
+  TouchableHighlight,
+  ToastAndroid
 } from 'react-native';
 import {ScrollView, TextInput} from 'react-native-gesture-handler';
+
+const Constants = require('./utils/AppConstants')
+const DataController = require('./utils/DataStorageController')
 
 const ACCENT = '#FFCB28' // 255, 203, 40 
 
@@ -22,50 +26,27 @@ export default class FavouriteLocations extends Component {
     constructor(props) {
         super(props)
         this.state = {
+            isLoading: true,
             editModalVisible: false,
             delModalVisible: false,
             activeIndex: 0,
-            locations:  [
-                {
-                    name: 'South Tukoganj',
-                    address: 'South Tukoganj, 29/6, Sriram Nagar, South Tukoganj',
-                    number: '7754727598'
-                },
-                {
-                    name: 'Another Area Name',
-                    address: 'Another Area, 30/3, Sriram Nagar, South Tukoganj',
-                    number: '9898785462'
-                },
-                {
-                    name: 'Area Name',
-                    address: 'An Area, 252/6, Sriram Nagar, South Tukoganj',
-                    number: '9985647512'
-                },
-                {
-                    name: 'Test Area Name',
-                    address: 'Some Area, 35/6, Colony, Area',
-                    number: '89774561556'
-                }
-              ]
+            locations:  [],
+            editedName: '',
+            editedNumber: ''
         }
     }
 
-    setModalVisible = (visible, index, save = false, type) => {
+    setModalVisible = async (visible, index, save = false, type) => {
         if(type === 'edit') {
             if(save) {
-                this.setState(prevState => {
-                    prevState.locations[index].name = prevState.editedName
-                    prevState.locations[index].number = prevState.editedNumber
-                    prevState.editModalVisible = visible
-                    prevState.activeIndex = index
-                    
-                    return prevState
-                })
+                await this.editLocation(index, visible)
             }
             else {
                 this.setState(prevState => {
                     prevState.editModalVisible = visible
                     prevState.activeIndex = index
+                    prevState.editedName = this.state.locations[index].address
+                    prevState.editedNumber = this.state.locations[index].number
                     return prevState
                 })
             }
@@ -73,12 +54,7 @@ export default class FavouriteLocations extends Component {
 
         else {
             if(save) {
-                this.setState(prevState => {
-                    prevState.locations.splice(index, 1)
-                    prevState.delModalVisible = visible
-                    prevState.activeIndex = 0
-                    return prevState
-                })
+                this.deleteLocation(index, visible)
             }
             else {
                 this.setState(prevState => {
@@ -88,8 +64,160 @@ export default class FavouriteLocations extends Component {
                 })
             }
             
-        }
-        
+        }   
+    }
+
+    editLocation = async (index, visible) => {
+        this.setState(prevState => {
+            prevState.isLoading = true
+            return prevState
+        })
+
+        const reqBody = new FormData()
+        const custId = await DataController.getItem(DataController.CUSTOMER_ID)
+        reqBody.append(Constants.FIELDS.ID, this.state.locations[index].id)
+        reqBody.append(Constants.FIELDS.CUSTOMER_ID, custId)
+        reqBody.append(Constants.FIELDS.ADDRESS, this.state.editedName)
+        reqBody.append(Constants.FIELDS.NUMBER, this.state.editedNumber)
+        reqBody.append(Constants.FIELDS.LANDMARK, this.state.locations[index].landmark)
+        reqBody.append(Constants.FIELDS.LAT, this.state.locations[index].lat)
+        reqBody.append(Constants.FIELDS.LNG, this.state.locations[index].lan)
+
+        console.log('Request: ', reqBody)
+
+        const request = await fetch(Constants.BASE_URL + Constants.EDIT_CUSTOMER_FAVORITE_LOCATION, {
+            method: 'POST',
+            body: reqBody,
+            headers: {
+                key: "21db33e221e41d37e27094153b8a8a02"
+            }
+        })
+        const response = await request.json().then(async value => {
+            console.log("Response: ", value)
+
+            if(value.success) {
+                this.setState(prevState => {
+                    prevState.locations[index].address = prevState.editedName
+                    prevState.locations[index].number = prevState.editedNumber
+                    prevState.editModalVisible = visible
+                    prevState.activeIndex = index
+                    
+                    return prevState
+                })
+                ToastAndroid.show("Favourite Location Updated", ToastAndroid.SHORT);
+            }
+            else{
+                ToastAndroid.show(value.message, ToastAndroid.SHORT);
+            }
+            
+        })
+        .catch(err => {
+            console.log(err);
+            ToastAndroid.show(Constants.ERROR_EDIT_LOC, ToastAndroid.SHORT);
+        })
+
+        this.setState(prevState => {
+            prevState.isLoading = false
+            prevState.editModalVisible = visible
+            return prevState
+        })
+    }
+
+    deleteLocation = async (index, visible) => {
+        this.setState(prevState => {
+            prevState.isLoading = true
+            return prevState
+        })
+
+        const reqBody = new FormData()
+        reqBody.append(Constants.FIELDS.ID, this.state.locations[index].id)
+
+        console.log('Request: ', reqBody)
+
+        const request = await fetch(Constants.BASE_URL + Constants.DELETE_CUSTOMER_FAVORITE_LOCATION, {
+            method: 'POST',
+            body: reqBody,
+            headers: {
+                key: "21db33e221e41d37e27094153b8a8a02"
+            }
+        })
+        const response = await request.json().then(async value => {
+            console.log("Response: ", value)
+
+            if(value.success) {
+                this.setState(prevState => {
+                    prevState.locations.splice(index, 1)
+                    prevState.delModalVisible = visible
+                    prevState.activeIndex = 0
+                    return prevState
+                })
+                ToastAndroid.show("Favourite Location Deleted", ToastAndroid.SHORT);
+            }
+            else{
+                ToastAndroid.show(value.message, ToastAndroid.SHORT);
+            }
+            
+        })
+        .catch(err => {
+            console.log(err);
+            ToastAndroid.show(Constants.ERROR_EDIT_LOC, ToastAndroid.SHORT);
+        })
+
+        this.setState(prevState => {
+            prevState.isLoading = false
+            prevState.delModalVisible = visible
+            return prevState
+        })
+    }
+
+    async componentDidMount() {
+        await this.getFavLocations()
+    }
+
+    getFavLocations = async () => {
+        this.setState(prevState => {
+            prevState.isLoading = true
+            return prevState
+        })
+
+        const id = await DataController.getItem(DataController.CUSTOMER_ID)
+
+        const reqURL = Constants.BASE_URL + Constants.VIEW_FAV_LOCATION_URL + '?' + 
+                        Constants.FIELDS.CUSTOMER_ID + '=' + id
+
+        const request = await fetch(reqURL, {
+            method: 'GET',
+            headers: {
+                key: "21db33e221e41d37e27094153b8a8a02"
+            }
+        })
+
+        const response = await request.json().then(value => {
+            console.log(value)
+
+            if(!value.success){
+                this.setState(prevState => {
+                    prevState.isLoading = false
+                    return prevState
+                })
+                ToastAndroid.show(value.message, ToastAndroid.SHORT);
+            }
+            else {
+                this.setState(prevState => {
+                    prevState.isLoading = false
+                    prevState.locations = value.data
+                    return prevState
+                })
+            }
+            
+        }).catch(err => {
+            console.log(err)
+            this.setState(prevState => {
+                prevState.isLoading = false
+                return prevState
+            })
+            ToastAndroid.show(Constants.ERROR_GET_DETAILS, ToastAndroid.SHORT);
+        }) 
     }
 
     render() {
@@ -110,10 +238,10 @@ export default class FavouriteLocations extends Component {
 
                                     <View style={{flex: 1}}>
                                         <Text style={{fontWeight: "700", fontSize:15}}>
-                                            {location.name}
+                                            {location.address}
                                         </Text>
                                         <Text style={{fontSize:10, opacity: 0.3}}>
-                                            {location.address}
+                                            {location.landmark}
                                         </Text>
                                         <Text style={{fontSize:10, opacity: 0.3, marginTop: 5}}>
                                             {location.number}
@@ -155,8 +283,10 @@ export default class FavouriteLocations extends Component {
                     opacity: 0.3, marginHorizontal: 20
                     }}>
                     <Text style={{textAlign: "center", fontSize: 16,}}>
-                        Store your frequently used locations as Favourite and save the hassel of typing
-                        long addresses.
+                        {
+                            this.state.isLoading? "Getting your favourite locations..." :
+                            Constants.FAV_LOC_EMPTY
+                        }
                     </Text>
                 </View>
                 }
@@ -183,13 +313,13 @@ export default class FavouriteLocations extends Component {
                             <TextInput editable={false} multiline={true}
                             defaultValue={
                                 this.state.locations.length > 0?
-                                this.state.locations[this.state.activeIndex].address : ''}
+                                this.state.locations[this.state.activeIndex].landmark : ''}
                             style={styles.dialogInputs}/>
 
                             <TextInput placeholder="Name your favourite place"
                             defaultValue={
                                 this.state.locations.length > 0?
-                                this.state.locations[this.state.activeIndex].name:
+                                this.state.editedName:
                                 ''
                             }
                             onChangeText={(text) => {
@@ -200,7 +330,7 @@ export default class FavouriteLocations extends Component {
                             }}
                             style={styles.dialogInputs}/>
 
-                            <TextInput placeholder="Mobile number"
+                            <TextInput keyboardType="decimal-pad" maxLength={10} placeholder="Mobile number"
                             onChangeText={(text) => {
                                 this.setState(prevState => {
                                     prevState.editedNumber = text
@@ -209,7 +339,7 @@ export default class FavouriteLocations extends Component {
                             }}
                             defaultValue={
                                 this.state.locations.length > 0?
-                                this.state.locations[this.state.activeIndex].number:
+                                this.state.editedNumber:
                                 ''
                             }
                             style={styles.dialogInputs}/>
@@ -235,9 +365,17 @@ export default class FavouriteLocations extends Component {
                                 }}
                                 style={{padding: 5, borderRadius: 5,
                                 marginTop: 10, justifyContent: "center"}}>
-                                <Text style={{color: '#004EC6', fontWeight: "700",}}> SAVE </Text>
+                                <Text style={{color: '#004EC6', fontWeight: "700",}}>
+                                    {this.state.isLoading? "SAVING..." : "SAVE"}
+                                </Text>
                                 </TouchableHighlight>
                             </View>
+                            
+                            <View style={{
+                                position: 'absolute', backgroundColor: 'white',
+                                opacity: 0.8, top: 0, left: 0, right: 0,
+                                bottom: this.state.isLoading? 0 : '100%',
+                            }}/>
                         </View>
                     </View>
                 </Modal>
@@ -259,9 +397,10 @@ export default class FavouriteLocations extends Component {
                         }}>
                             <View style={{
                             borderRadius: 5, backgroundColor: 'white', overflow: 'hidden',
-                            width: '75%'
+                            width: '75%',
                             }}>
-                                <View style={{
+                                <View
+                                style={{
                                 flexDirection: 'row', justifyContent: 'space-between', elevation: 2,
                                 backgroundColor: 'white'
                                 }}>
@@ -309,6 +448,15 @@ export default class FavouriteLocations extends Component {
                                     }}>
                                         <Text style={{color: 'white'}}>NO</Text>
                                     </TouchableHighlight>
+                                
+                                    {/* Deleting text overlay */}
+                                    <View style={{
+                                        backgroundColor: 'gray', position: 'absolute', top: 0,
+                                        bottom: this.state.isLoading? 0 : '100%', overflow: 'hidden',
+                                        left: 0, right: 0, alignItems: 'center', justifyContent: 'center'
+                                    }}>
+                                        <Text style={{color: 'white', opacity: 0.4}}>DELETING...</Text>
+                                    </View>
                                 </View>
                                 
                             </View>

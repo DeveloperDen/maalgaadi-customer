@@ -10,6 +10,7 @@ import {
 const ACCENT = '#FFCB28' // 255, 203, 40
 const ACCENT_DARK = '#F1B800' 
 
+const DataController = require('../utils/DataStorageController')
 const SMS = 'SMS Alerts'
 const APP_NOTIF = 'App Notifications'
 const POD_INV = 'Proof of Delivery & Invoices'
@@ -25,11 +26,14 @@ export default class SettingsAll extends Component {
 
     constructor(props) {
         super(props)
+
+        this.settings = ''
+
         this.state = {
             sms: [
                 {
                     title: 'On Vehicle allotment',
-                    on: true
+                    on: this.settings != ''? this.settings.msg_on_vehicle_allotment : false
                 },
                 {
                     title: 'On reaching pickup point',
@@ -101,6 +105,12 @@ export default class SettingsAll extends Component {
                 }
             ]
         }
+    }
+
+    async componentDidMount() {
+        await DataController.getItem(DataController.USER_SETTINGS).then(value => {
+            this.settings = JSON.parse(value)
+        })
     }
 
     render() {

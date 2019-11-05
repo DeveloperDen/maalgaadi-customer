@@ -62,7 +62,7 @@ export default class Settings extends Component {
     getSettings = async () => {
         const reqBody = new FormData()
         const custId = await DataController.getItem(DataController.CUSTOMER_ID)
-        reqBody.append(Constants.FIELDS.CUSTOMER_ID, parseInt(custId))
+        reqBody.append(Constants.FIELDS.CUSTOMER_ID, custId)
 
         console.log('Request: ', reqBody)
 

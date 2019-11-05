@@ -27,12 +27,12 @@ export default class Search extends Component {
                         source={{uri: 'https://cdn2.iconfinder.com/data/icons/pittogrammi/142/94-512.png'}}
                         style={{width: 15, height:15, margin: 10, opacity: 0.3}}/>
                         <View>
-                            <Text style={{fontWeight: "700", fontSize:15}}>
+                            <Text style={{fontWeight: "700", fontSize: 15, ellipsisMode: "tail"}} numberOfLines={1}>
                             {row.structured_formatting.main_text}
                         </Text>
-                        <Text style={{fontSize:10,}}>
-                            {row.structured_formatting.secondary_text}
-                        </Text>
+                            <Text style={{fontSize:10, ellipsisMode: "tail"}} numberOfLines={1}>
+                                {row.structured_formatting.secondary_text}
+                            </Text>
                         </View>
                     </View>
                 }
@@ -59,6 +59,8 @@ export default class Search extends Component {
                         
                 }}
 
+                numberOfLines={1}
+
                 renderLeftButton={() => {
                     return(
                         <Image source={{uri: 'https://cdn4.iconfinder.com/data/icons/ionicons/512/icon-search-512.png'}}
@@ -70,6 +72,8 @@ export default class Search extends Component {
                 query={{
                     key: GOOGLE_MAPS_APIKEY,
                 }}
+
+                listUnderlayColor='rgba(0, 0, 0, 0.05)'
                 
                 styles={{
                     textInputContainer: {
@@ -78,10 +82,10 @@ export default class Search extends Component {
                         borderRadius: 5
                     },
                     row: {
-                        height: 50,
-                        padding: 0,
+                        height: 60,
                         alignItems: 'center',
-                        marginVertical: 5
+                        marginVertical: 5,
+                        marginEnd: 35
                     },
                     poweredContainer: {
                         justifyContent: 'center',

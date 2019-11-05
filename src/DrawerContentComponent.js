@@ -154,7 +154,6 @@ const showAlert = (props) => {
 
     DataController.getItems(toGet)
         .then(res => {
-            console.log(res)
             setRating(res[0][1])
             setName(res[1][1])
             setNumber("+91 " + res[2][1])

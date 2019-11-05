@@ -90,6 +90,8 @@ export default class Home extends Component {
     ]
 
     this.state = {
+      editedName: '',
+      editedNumber: '',
       selectedDateTime: new Date(),
       showDateTime: false,
       dateTimePickerMode: 'date',
@@ -245,12 +247,71 @@ export default class Home extends Component {
     ]
   }
 
-  setModalVisible(visible) {
-    this.setState(prevState => {
-      prevState.modalVisible = visible
-      return prevState
-    });
+  setModalVisible = async (visible, save = false) => {
+    if(save) {
+        await this.addLocation(visible)
+    }
+    else {
+        this.setState(prevState => {
+            prevState.modalVisible = visible
+            return prevState
+        })
+    }
   }
+
+  addLocation = async (visible) => {
+    this.setState(prevState => {
+        prevState.isLoading = true
+        return prevState
+    })
+
+    const reqBody = new FormData()
+    const custId = await DataController.getItem(DataController.CUSTOMER_ID)
+    reqBody.append(Constants.FIELDS.CUSTOMER_ID, custId)
+    reqBody.append(Constants.FIELDS.ADDRESS, this.state.editedName)
+    reqBody.append(Constants.FIELDS.NUMBER, this.state.editedNumber)
+
+    const region = this.state.isActiveInput === ORIGIN? this.state.preLoc : this.state.destLoc
+    reqBody.append(Constants.FIELDS.LANDMARK, region.address)
+    reqBody.append(Constants.FIELDS.LAT, region.latitude)
+    reqBody.append(Constants.FIELDS.LNG, region.longitude)
+
+    console.log('Request: ', reqBody)
+
+    const request = await fetch(Constants.BASE_URL + Constants.ADD_CUSTOMER_FAVORITE_LOCATION, {
+        method: 'POST',
+        body: reqBody,
+        headers: {
+            key: "21db33e221e41d37e27094153b8a8a02"
+        }
+    })
+    const response = await request.json().then(async value => {
+        console.log("Response: ", value)
+
+        if(value.success) {
+            this.setState(prevState => {
+                prevState.modalVisible = visible
+                
+                return prevState
+            })
+            ToastAndroid.show("Favourite Location Added", ToastAndroid.SHORT);
+        }
+        else{
+            ToastAndroid.show(value.message, ToastAndroid.SHORT);
+        }
+        
+    })
+    .catch(err => {
+        console.log(err);
+        ToastAndroid.show(Constants.ERROR_EDIT_LOC, ToastAndroid.SHORT);
+    })
+
+    this.setState(prevState => {
+        prevState.isLoading = false
+        prevState.modalVisible = visible
+        return prevState
+    })
+}
 
   async requestLocationPermission() {
     try {
@@ -576,7 +637,7 @@ export default class Home extends Component {
 
                   <TouchableOpacity
                     onPress={() => {
-                      if(this.state.preLoc != '') this.setModalVisible(true)
+                      if((this.state.preLoc != '') && (this.state.isActiveInput === ORIGIN)) this.setModalVisible(true)
                     }}>
                     <View>
                       <Image source={{
@@ -622,41 +683,13 @@ export default class Home extends Component {
                     <Text numberOfLines={1} ellipsizeMode="tail"
                     style={[styles.inputs, 
                       this.state.isActiveInput === DESTINATION?
-                      this.state.activeInput.text : this.state.inactiveInput.text]}
-                    // onFocus={() => {
-                    //   this.props.navigation.navigate('Search', {type: DESTINATION})
-                    //   this.setState({
-                    //     preLocOp: 0.2,
-                    //     destLocOp: 1
-                    //   })
-                    // }}
-                    
-                    // onSubmitEditing={() => {
-                    //   if(this.state.destLoc != '' && this.state.placeholder[0] === YOUR_LOCATION) {
-                    //     ToastAndroid.show('Getting the route...', ToastAndroid.SHORT)
-                    //     this.getCurrentLocation(ORIGIN)
-                    //     this.setState((prevState) => {
-                    //       prevState.destination = prevState.destLoc
-
-                    //       return prevState
-                    //     })
-                    //   }
-                    //   else if(this.state.preLoc != '' && this.state.placeholder[1] === YOUR_LOCATION) {
-                    //     ToastAndroid.show('Getting the route...', ToastAndroid.SHORT)
-                    //     this.getCurrentLocation(DESTINATION)
-                    //     this.setState((prevState) => {
-                    //       prevState.origin = prevState.preLoc
-                    //       return prevState
-                    //     })
-                    //   }
-                    // }}
-                    >
+                      this.state.activeInput.text : this.state.inactiveInput.text]}>
                       {this.state.destLoc === '' ? 'Drop location' : this.state.destLoc.address}
                     </Text>
 
                     <TouchableOpacity
                       onPress={() => {
-                        if(this.state.destLoc != '') this.setModalVisible(true)
+                        if((this.state.destLoc != '') && (this.state.isActiveInput === DESTINATION)) this.setModalVisible(true)
                       }}>
                       <View>
                         <Image source={{
@@ -817,7 +850,8 @@ export default class Home extends Component {
             alignItems: "center",
             justifyContent: 'center'
             }}>
-            <View style={{backgroundColor: 'white', width: '80%',
+            <View
+            style={{backgroundColor: 'white', width: '80%',
               paddingHorizontal: 12, paddingVertical: 20, borderRadius: 3,
               elevation: 10}}>
               <TextInput editable={false} multiline={true}
@@ -827,10 +861,23 @@ export default class Home extends Component {
               style={styles.dialogInputs}/>
 
               <TextInput placeholder="Name your favourite place"
-              style={styles.dialogInputs}/>
+              style={styles.dialogInputs}
+              onChangeText={(text) => {
+                this.setState(prevState => {
+                    prevState.editedName = text
+                    return prevState
+                })
+              }}/>
 
-              <TextInput placeholder="Mobile number"
-              style={styles.dialogInputs}/>
+              <TextInput maxLength={10} keyboardType="decimal-pad"
+              placeholder="Mobile number"
+              style={styles.dialogInputs}
+              onChangeText={(text) => {
+                this.setState(prevState => {
+                    prevState.editedNumber = text
+                    return prevState
+                })
+              }}/>
 
               <View style={{flexDirection: 'row', justifyContent: "flex-end"}}>
                 <TouchableHighlight 
@@ -849,13 +896,21 @@ export default class Home extends Component {
                 <TouchableHighlight 
                 underlayColor='#E8E8E8'
                 onPress={() => {
-                  this.setModalVisible(false)
+                  this.setModalVisible(false, true)
                 }}
                 style={{padding: 5, borderRadius: 5,
                 marginTop: 10, justifyContent: "center"}}>
-                  <Text style={{color: '#004EC6', fontWeight: "700",}}> SAVE </Text>
+                  <Text style={{color: '#004EC6', fontWeight: "700",}}>
+                    {this.state.isLoading? "SAVING..." : "SAVE"}
+                  </Text>
                 </TouchableHighlight>
               </View>
+            
+              <View style={{
+                  position: 'absolute', backgroundColor: 'white',
+                  opacity: 0.8, top: 0, left: 0, right: 0,
+                  bottom: this.state.isLoading? 0 : '100%',
+              }}/>
             </View>
           </View>
         </Modal>
