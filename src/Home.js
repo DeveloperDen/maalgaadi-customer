@@ -14,7 +14,7 @@ import {
   Animated,
   Modal
 } from 'react-native';
-import MapView, {PROVIDER_GOOGLE } from 'react-native-maps';
+import MapView, {PROVIDER_GOOGLE, Marker } from 'react-native-maps';
 import MapViewDirections from 'react-native-maps-directions';
 import Geolocation from 'react-native-geolocation-service';
 import { PermissionsAndroid } from 'react-native';
@@ -28,10 +28,14 @@ const vehicleIcon = require('../assets/vehicle.png')
 const instantIcon = require('../assets/instant.png')
 const greenPin = require('../assets/pin_green.png')
 const redPin = require('../assets/pin_red.png')
+const dot_0 = require('../assets/one_dot.png')
+const dot_1 = require('../assets/two_dot.png')
+const dot_2 = require('../assets/three_dot.png')
+const driverMarker = require('../assets/driver.png')
 
 const { width, height } = Dimensions.get('window');
 const ASPECT_RATIO = width / height;
-const LATITUDE_DELTA = 0.0020;
+const LATITUDE_DELTA = 0.0030;
 const LONGITUDE_DELTA = LATITUDE_DELTA * ASPECT_RATIO;
 const GOOGLE_MAPS_APIKEY = 'AIzaSyCJYc7hsuiHCwUQWQ0NTk0TW0ne0y43NAE';
 const DRIVE = 'DRIVING'
@@ -39,6 +43,7 @@ const YOUR_LOCATION = 'Your location'
 const CHO_DEST = 'Choose destination'
 const DESTINATION = 'destination'
 const ORIGIN = 'origin'
+const LOAD_ANIM_TIME = 200
 
 const ACCENT = '#FFCB28' // 255, 203, 40
 const ACCENT_DARK = '#F1B800'
@@ -53,43 +58,11 @@ export default class Home extends Component {
     this.getCurrentLocation = this.getCurrentLocation.bind(this)
 
     this.mapView = null;
-    this.originMarker = null
-    this.destMarker = null
-    this.myLocMarker = null
-
-    this.vehiclesList = [
-      {
-        distance: 0,
-        img: vehicleIcon,
-        name: 'Loading Rickshaw'},
-      {
-        distance: 2,
-        img: vehicleIcon,
-        name: 'Tata Ace'},
-      {
-        distance: 0,
-        img: vehicleIcon,
-        name: 'Ashok Layland Dost'},
-      {
-        distance: 5,
-        img: vehicleIcon,
-        name: 'Pick up'},
-      {
-        distance: 7,
-        img: vehicleIcon,
-        name: 'Other Vehicle'},
-      {
-        distance: 0,
-        img: vehicleIcon,
-        name: 'Another Vehicle'},
-
-        {
-          distance: 0,
-          img: vehicleIcon,
-          name: 'Vehicle'}
-    ]
 
     this.state = {
+      freeDrivers: [],
+      index: 0,
+      vehiclesList: [],
       editedName: '',
       editedNumber: '',
       selectedDateTime: new Date(),
@@ -131,7 +104,7 @@ export default class Home extends Component {
       marginTopAnimOrig: new Animated.Value(0),
       marginTopAnimDest: new Animated.Value(-20),
 
-      selectedVehicle: this.vehiclesList[0].name,
+      selectedVehicle: '',
 
       coordinates:{
           latitude: 0,
@@ -164,6 +137,10 @@ export default class Home extends Component {
         CHO_DEST
       ]
     }
+
+    this.dots = [
+      dot_0, dot_1, dot_2
+    ]
 
     this.mapStyleList = [
       {elementType: 'geometry', stylers: [{color: '#242f3e'}]},
@@ -406,8 +383,6 @@ export default class Home extends Component {
     : null
 
     await this.requestLocationPermission()
-    this.keyboardDidShowListener = Keyboard.addListener('keyboardDidShow', this.keyboardDidShow);
-    this.keyboardDidHideListener = Keyboard.addListener('keyboardDidHide', this.keyboardDidHide);
     
     this.willFocusListener = this.props.navigation.
     addListener('willFocus', () => {
@@ -421,7 +396,99 @@ export default class Home extends Component {
       }
         
     })
+
+    this.getVehicleCategory()
+    // this.getFreeDrivers()
+    // this.load()
   }
+
+  load = () => {
+    setTimeout(() => {
+      this.setState(prevState => {
+        prevState.index = (prevState.index + 1) % 3
+        return prevState
+      });
+      this.load();
+    }, LOAD_ANIM_TIME)
+  }
+
+  getVehicleCategory = async () => {
+    const cityId = 1 // TODO: Remove this line, uncomment next line.
+    // const cityId = await DataController.getItem(DataController.CITY_ID)
+    const id = await DataController.getItem(DataController.CUSTOMER_ID)
+
+    const reqURL = Constants.BASE_URL + Constants.VEHICLE_CATEGORY + '?' + 
+                    Constants.FIELDS.CUSTOMER_ID + '=' + id + '&' +
+                    Constants.FIELDS.CITY_ID_USER + '=' + cityId
+
+    const request = await fetch(reqURL, {
+        method: 'GET',
+        headers: {
+            key: "21db33e221e41d37e27094153b8a8a02"
+        }
+    })
+
+    const response = await request.json().then(value => {
+        console.log(value)
+
+        if(!value.success){
+            ToastAndroid.show(value.message, ToastAndroid.SHORT);
+        }
+        else {
+            this.setState(prevState => {
+              prevState.vehiclesList = value.data
+              prevState.selectedVehicle = value.data[0].vehicle_name
+              return prevState
+            })
+        }
+        
+    }).catch(err => {
+        console.log(err)
+        ToastAndroid.show(Constants.ERROR_GET_DETAILS, ToastAndroid.SHORT);
+    })
+  }
+
+  getFreeDrivers = async () => {
+    const reqURL = Constants.BASE_URL + Constants.GET_FREE_DRIVER_LOCATION
+
+    const request = await fetch(reqURL, {
+        method: 'GET',
+        headers: {
+            key: "21db33e221e41d37e27094153b8a8a02"
+        }
+    })
+
+    const response = await request.json().then(value => {
+        console.log(value)
+
+        if(!value.success){
+          ToastAndroid.show(value.message, ToastAndroid.SHORT);
+        }
+        else {
+          this.setState(prevState => {
+            prevState.freeDrivers = value.data
+            return prevState
+          })
+        }
+        
+    }).catch(err => {
+        console.log(err)
+        ToastAndroid.show(Constants.ERROR_GET_DETAILS, ToastAndroid.SHORT);
+    })
+  }
+
+  calculateEta(distanceKm) {
+    const peakDistance = 80; // km
+    const timePerKm = 4; // min
+    const bufferTime = 240; // min
+    const returnTime = 0;
+    if (distanceKm <= 80) {
+        returnTime = ((timePerKm * distanceKm) + ((((distanceKm * 100) / peakDistance) * bufferTime) / 100));
+    } else {
+        returnTime = (timePerKm * distanceKm) + bufferTime;
+    }
+    return returnTime;
+}
 
   animStart = (inputType, reverse = false) => {
     if(!reverse) {
@@ -522,6 +589,19 @@ export default class Home extends Component {
               longitudeDelta: LONGITUDE_DELTA,
             }}
             ref={c => this.mapView = c}>
+
+              {
+                this.state.freeDrivers.map((driver, index) => {
+                  return(
+                    <Marker coordinate={{
+                      latitude: parseFloat(driver.lat),
+                      longitude: parseFloat(driver.lng),
+                    }}>
+                      <Image source={driverMarker} style={{width: 50, height: 50}} resizeMode="contain"/>
+                    </Marker>
+                  )
+                })
+              }
     
               <MapViewDirections
                 origin={this.state.origin}
@@ -537,20 +617,6 @@ export default class Home extends Component {
                 onReady={result => {
                   console.log(`Distance: ${result.distance} km`)
                   console.log(`Duration: ${result.duration} min.`)
-
-                  this.originMarker.animateMarkerToCoordinate({
-                    latitude: result.coordinates[0].latitude,
-                    longitude: result.coordinates[0].longitude,
-                    latitudeDelta: LATITUDE_DELTA,
-                    longitudeDelta: LONGITUDE_DELTA
-                  }, 2)
-    
-                  this.destMarker.animateMarkerToCoordinate({
-                    latitude: result.coordinates[result.coordinates.length - 1].latitude,
-                    longitude: result.coordinates[result.coordinates.length - 1].longitude,
-                    latitudeDelta: LATITUDE_DELTA,
-                    longitudeDelta: LONGITUDE_DELTA
-                  }, 2)
 
                   this.setState((prevState) => {
                     let totalDuration = parseInt(Math.ceil(parseFloat(result.duration)))
@@ -727,7 +793,8 @@ export default class Home extends Component {
               borderColor: this.state.isCoveredVehicle? ACCENT : 'black',
               backgroundColor: this.state.isCoveredVehicle? ACCENT : 'transparent',
               paddingVertical: 4, paddingHorizontal: 10, borderRadius: 5,
-              opacity: this.state.isCoveredVehicle? 1 : 0.2
+              opacity: this.state.isCoveredVehicle? 1 : 0.2,
+              display: this.state.vehiclesList.length > 0? 'flex' : 'none'
             }}
             onPress={() => {
               this.setState(prevState => {
@@ -752,36 +819,38 @@ export default class Home extends Component {
             </TouchableHighlight>
 
             <ScrollView 
-            style={{marginVertical: 10}}
+            style={{marginVertical: 10, display: this.state.vehiclesList.length > 0? 'flex' : 'none'}}
             horizontal={true} showsHorizontalScrollIndicator={false}
-            contentContainerStyle={{flexDirection: 'row', justifyContent: "space-between"}}>
+            contentContainerStyle={{
+              flexDirection: 'row', flexGrow: 1
+            }}>
               {
-                this.vehiclesList.map((vehicle) => {
+                this.state.vehiclesList.map((vehicle) => {
                   return(
                   <TouchableHighlight underlayColor='white'
                   onPress={() => {
                     this.setState(prevState => {
-                      prevState.selectedVehicle = vehicle.name
+                      prevState.selectedVehicle = vehicle.vehicle_name
                       return prevState
                     })
                   }}
-                  style={{alignItems: "center", paddingHorizontal: 10,}} key={vehicle.name}>
+                  style={{alignItems: "center", paddingHorizontal: 10, flex: 1}} key={vehicle.vehicle_name}>
                     <View style={{alignItems: "center"}}>
                       {vehicle.distance > 0?
                         <Text style={{fontSize: 10, height: 20}}>{vehicle.distance} min</Text>
                         :
-                        <Image source={{uri: 'https://cdn3.iconfinder.com/data/icons/virtual-notebook/128/button_switch-512.png'}}
-                      style={{width: 20, height: 20}}
+                        <Image source={this.dots[this.state.index]}
+                      style={{width: 25, height: 25}}
                       tintColor='#B0B0B0'/>}
 
-                      <View style={{backgroundColor: this.state.selectedVehicle === vehicle.name? ACCENT: 'transparent',
+                      <View style={{backgroundColor: this.state.selectedVehicle === vehicle.vehicle_name? ACCENT: 'transparent',
                                     borderRadius: 100, marginBottom: 5}}>
-                        <Image source={vehicle.img}
+                        <Image source={vehicleIcon}
                         style={styles.iconsVehicle}/>
                       </View>
 
                       <Text
-                      style={{fontSize: 10, textAlign: "center"}}>{vehicle.name.replace(' ', '\n')}</Text>
+                      style={{fontSize: 10, textAlign: "center"}}>{vehicle.vehicle_name.replace(' ', '\n')}</Text>
                     </View>
                   </TouchableHighlight>)
                 })
