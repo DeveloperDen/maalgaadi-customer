@@ -19,6 +19,7 @@ export const GOODS_NAME = "goods_name"
 export const GOODS_ID = "goods_id"
 export const TRIP_FREQ = "trip_freq"
 export const USER_SETTINGS = "settings"
+export const BOOKING_MODEL = "booking_model"
 
 export const getItem = async (key) => {
     try {

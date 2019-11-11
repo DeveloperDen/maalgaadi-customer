@@ -22,6 +22,8 @@ import Geocoder from 'react-native-geocoding';
 import { TextInput } from 'react-native-gesture-handler';
 import DateTimePicker from '@react-native-community/datetimepicker';
 
+const BookingModel = require('./models/bookings_model')
+const LandmarkModel = require('./models/landmark_model')
 const Constants = require('./utils/AppConstants')
 const DataController = require('./utils/DataStorageController')
 const vehicleIcon = require('../assets/vehicle.png')
@@ -60,9 +62,13 @@ export default class Home extends Component {
     this.mapView = null;
 
     this.state = {
+      isCoveredVehicle: false,
       freeDrivers: [],
       index: 0,
       vehiclesList: [],
+      selectedVehicleIndex: 0,
+      selectedVehicle: '',
+      selectedVehicleID: 0,
       editedName: '',
       editedNumber: '',
       selectedDateTime: new Date(),
@@ -118,19 +124,9 @@ export default class Home extends Component {
       distance: '',
 
       display: 'flex',
-      statusHidden: false,
-
-      fullscreenButtonIcon: 'https://cdn1.iconfinder.com/data/icons/material-core/14/fullscreen-512.png',
-      nightModeIcon: 'https://cdn2.iconfinder.com/data/icons/weather-74/24/weather-15-512.png',
-      mapStyle: [],
 
       origin: '',
       destination: '',
-      strokeColor: '#040B27',
-
-      keyBoardActive: false,
-
-      modeOfTrans: DRIVE,
 
       placeholder: [
         YOUR_LOCATION,
@@ -438,6 +434,8 @@ export default class Home extends Component {
             this.setState(prevState => {
               prevState.vehiclesList = value.data
               prevState.selectedVehicle = value.data[0].vehicle_name
+              prevState.selectedVehicleID = value.data[0].id
+              prevState.selectedVehicleIndex = 0
               return prevState
             })
         }
@@ -565,6 +563,71 @@ export default class Home extends Component {
       }
       else prevState.selectedDateTime = date
       return prevState
+    })
+  }
+
+  formatDate = (date = new Date()) => {
+    const dateArr = date.toUTCString().split(' ');  // Mon, 24 Dec 2018 05:03:30 GMT => Mon,,24,Dec,2018,05:03:30,GMT
+    const yyyy = dateArr[4]
+    const MMM = dateArr[3]
+    const dd = dateArr[2]
+    const hhmmss = dateArr[5]
+    return dd + ' ' + MMM + ' ' + yyyy + ' ' + hhmmss
+}
+
+  bookNow = async () => {
+    let bookingModel = BookingModel.bookingJSON
+    bookingModel.selected_vehicle_category = this.state.selectedVehicleID
+    bookingModel.selected_vehicle_category_name = this.state.selectedVehicle
+    bookingModel.vehicle = this.state.vehiclesList[this.state.selectedVehicleIndex]
+    
+    const cityId = 1 // TODO: Remove this line, uncomment next line.
+    // const cityId = await DataController.getItem(DataController.CITY_ID)
+    bookingModel.city_id = cityId
+
+    const bookingTime = this.formatDate(new Date())
+    bookingModel.booking_time = bookingTime
+    bookingModel.book_later = false
+
+    bookingModel.customer_id = await DataController.getItem(DataController.CUSTOMER_ID)
+    bookingModel.covered = this.state.isCoveredVehicle
+
+    if(DataController.getItem(DataController.CREDIT_LIM) > 0)
+      bookingModel.payment_at_pickup = true;
+    
+    let landmarkList = new Array()
+
+    let pickupModel = LandmarkModel.landmark_json
+    pickupModel.is_favorite = false  // TODO: Decide on the basis of Favourites' list
+    pickupModel.latitude = this.state.preLoc.latitude
+    pickupModel.longitude = this.state.preLoc.longitude
+    pickupModel.landmark = this.state.preLoc.address
+    pickupModel.is_pickup = true
+
+    // TODO
+    // if (pickupLocationModel != null && pickupLocationModel.isFavorite()) {
+    //   pickupModel.setMobileNumber(pickupLocationModel.getNumber());
+    // }
+
+    let dropModel = LandmarkModel.landmark_json
+    dropModel.is_favorite = false  // TODO: Decide on the basis of Favourites' list
+    dropModel.latitude = this.state.destLoc.latitude
+    dropModel.longitude = this.state.destLoc.longitude
+    dropModel.landmark = this.state.destLoc.address
+
+    landmarkList.push(pickupModel)
+    landmarkList.push(dropModel)
+    bookingModel.landmark_list = landmarkList
+    bookingModel.booking_type = BookingModel.BookingType.normal
+
+    await DataController.setItem(DataController.BOOKING_MODEL, JSON.stringify(bookingModel))
+
+    this.props.navigation.navigate('AddBooking', {
+      covered: this.state.isCoveredVehicle? 'Covered' : 'Uncovered',
+      origin: this.state.preLoc === ''? '': this.state.preLoc.address,
+      destination: this.state.destLoc === ''? '': this.state.destLoc.address,
+      vehicle: this.state.selectedVehicle,
+      dateTime: this.state.selectedDateTime
     })
   }
 
@@ -825,12 +888,14 @@ export default class Home extends Component {
               flexDirection: 'row', flexGrow: 1
             }}>
               {
-                this.state.vehiclesList.map((vehicle) => {
+                this.state.vehiclesList.map((vehicle, index) => {
                   return(
-                  <TouchableHighlight underlayColor='white'
+                  <TouchableHighlight key={index} underlayColor='white'
                   onPress={() => {
                     this.setState(prevState => {
                       prevState.selectedVehicle = vehicle.vehicle_name
+                      prevState.selectedVehicleID = vehicle.id
+                      prevState.selectedVehicleIndex = index
                       return prevState
                     })
                   }}
@@ -861,13 +926,7 @@ export default class Home extends Component {
               <TouchableHighlight
               underlayColor={ACCENT_DARK}
               onPress={() => {
-                this.props.navigation.navigate('AddBooking', {
-                  covered: this.state.isCoveredVehicle? 'Covered' : 'Uncovered',
-                  origin: this.state.preLoc === ''? '': this.state.preLoc.address,
-                  destination: this.state.destLoc === ''? '': this.state.destLoc.address,
-                  vehicle: this.state.selectedVehicle,
-                  dateTime: this.state.selectedDateTime
-                })
+                this.bookNow()
               }}
               style={{
                 backgroundColor: ACCENT, width: '68%', marginRight: '1%',

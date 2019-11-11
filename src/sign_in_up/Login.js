@@ -129,10 +129,7 @@ export default class Login extends Component {
                 return prevState
             })
             ToastAndroid.show(Constants.ERROR_LOGIN, ToastAndroid.SHORT);
-        })
-
-        
-        
+        })  
     }
 
     animTop = () => {
