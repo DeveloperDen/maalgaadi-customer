@@ -33,6 +33,7 @@ import CreateProfile from './src/sign_in_up/CreateProfile'
 import DrawerContentComponent from './src/DrawerContentComponent'
 import Splash from './src/Splash'
 import Profile from './src/Profile'
+import FareEstimation from './src/add_booking/FareEstimation'
 
 import { createAppContainer, createSwitchNavigator } from 'react-navigation'
 import { createDrawerNavigator } from 'react-navigation-drawer'
@@ -177,6 +178,8 @@ const RateCardTabs = createMaterialTopTabNavigator({
 })
 
 const DrawerStackNavigator = createStackNavigator({
+  FareEstimation: {screen: FareEstimation},
+
   Profile: {screen: Profile},
   CreateProfile: {screen: CreateProfile},
 

@@ -23,7 +23,7 @@ import { TextInput } from 'react-native-gesture-handler';
 import DateTimePicker from '@react-native-community/datetimepicker';
 
 const BookingModel = require('./models/bookings_model')
-const LandmarkModel = require('./models/landmark_model')
+import {LandmarkModel} from './models/landmark_model'
 const Constants = require('./utils/AppConstants')
 const DataController = require('./utils/DataStorageController')
 const vehicleIcon = require('../assets/vehicle.png')
@@ -567,13 +567,16 @@ export default class Home extends Component {
   }
 
   formatDate = (date = new Date()) => {
-    const dateArr = date.toUTCString().split(' ');  // Mon, 24 Dec 2018 05:03:30 GMT => Mon,,24,Dec,2018,05:03:30,GMT
+    const dateArr = date.toLocaleString().split(' ');  // Tue Nov 12 12:22:07 2019 => Tue, Nov, 12, 12:22:07, 2019 
     const yyyy = dateArr[4]
-    const MMM = dateArr[3]
+    const MMM = dateArr[1]
     const dd = dateArr[2]
-    const hhmmss = dateArr[5]
-    return dd + ' ' + MMM + ' ' + yyyy + ' ' + hhmmss
-}
+    const hhmmss = dateArr[3].split(':')
+    const hhmm = hhmmss[0] + ':' + hhmmss[1]
+    const ampm = date.getHours() >= 12? 'PM' : 'AM'
+    console.log(date.toLocaleString())
+    return(dd + ' ' + MMM + ' ' + yyyy + ' ' + hhmm + ' ' + ampm)
+  }
 
   bookNow = async () => {
     let bookingModel = BookingModel.bookingJSON
@@ -597,35 +600,38 @@ export default class Home extends Component {
     
     let landmarkList = new Array()
 
-    let pickupModel = LandmarkModel.landmark_json
-    pickupModel.is_favorite = false  // TODO: Decide on the basis of Favourites' list
-    pickupModel.latitude = this.state.preLoc.latitude
-    pickupModel.longitude = this.state.preLoc.longitude
-    pickupModel.landmark = this.state.preLoc.address
-    pickupModel.is_pickup = true
+    let pickupModel = new LandmarkModel()
+    pickupModel.setFavourite(false)  // TODO: Decide on the basis of Favourites' list
+    pickupModel.setLat(this.state.preLoc.latitude.toString())
+    pickupModel.setLng(this.state.preLoc.longitude.toString())
+    pickupModel.setLandmark(this.state.preLoc.address)
+    pickupModel.setPickup(true)
 
     // TODO
     // if (pickupLocationModel != null && pickupLocationModel.isFavorite()) {
     //   pickupModel.setMobileNumber(pickupLocationModel.getNumber());
     // }
 
-    let dropModel = LandmarkModel.landmark_json
-    dropModel.is_favorite = false  // TODO: Decide on the basis of Favourites' list
-    dropModel.latitude = this.state.destLoc.latitude
-    dropModel.longitude = this.state.destLoc.longitude
-    dropModel.landmark = this.state.destLoc.address
+    landmarkList.push(pickupModel.getModel())
+    if(this.state.destLoc !== '') {
+      let dropModel = new LandmarkModel()
+      dropModel.setFavourite(false)  // TODO: Decide on the basis of Favourites' list
+      dropModel.setLat(this.state.destLoc.latitude.toString())
+      dropModel.setLng(this.state.destLoc.longitude.toString())
+      dropModel.setLandmark(this.state.destLoc.address)
+      landmarkList.push(dropModel.getModel())
+    }
 
-    landmarkList.push(pickupModel)
-    landmarkList.push(dropModel)
     bookingModel.landmark_list = landmarkList
-    bookingModel.booking_type = BookingModel.BookingType.normal
+    bookingModel.booking_type = BookingModel.BookingType.NORMAL
 
     await DataController.setItem(DataController.BOOKING_MODEL, JSON.stringify(bookingModel))
+    console.log("Data Written: ", bookingModel)
 
     this.props.navigation.navigate('AddBooking', {
       covered: this.state.isCoveredVehicle? 'Covered' : 'Uncovered',
-      origin: this.state.preLoc === ''? '': this.state.preLoc.address,
-      destination: this.state.destLoc === ''? '': this.state.destLoc.address,
+      origin: this.state.preLoc,
+      destination: this.state.destLoc,
       vehicle: this.state.selectedVehicle,
       dateTime: this.state.selectedDateTime
     })
@@ -972,7 +978,8 @@ export default class Home extends Component {
           onRequestClose={() => {
             this.setModalVisible(false)
           }}>
-          <View style={{
+          <View
+          style={{
             backgroundColor: 'rgba(0, 0, 0, 0.7)',
             height: '100%',
             alignItems: "center",

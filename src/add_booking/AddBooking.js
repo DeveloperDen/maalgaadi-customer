@@ -9,14 +9,20 @@ import {
   Animated,
   Switch,
   TextInput,
-  TouchableOpacity
+  TouchableOpacity,
+  ToastAndroid
 } from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
+import { LandmarkModel } from '../models/landmark_model';
 
+const DataController = require('../utils/DataStorageController')
+const BookingModel = require('../models/bookings_model')
 const vehicleIcon = require('../../assets/vehicle.png')
 
 
-const ACCENT = '#FFCB28' // 255, 203, 40 
+const ACCENT = '#FFCB28' // 255, 203, 40
+const ACCENT_DARK = '#F1B800'
+const DEF_GOODS = 'Select Goods Type'
 
 export default class AddBooking extends Component {
     static navigationOptions = ({navigation}) => {
@@ -43,12 +49,13 @@ export default class AddBooking extends Component {
                                 "Sep", "Oct", "Nov", "Dec"];
 
         this.state = {
+            goodsType: DEF_GOODS,
+            goodsId: 0,
+            physicalPODCharge: 0,
+            number: '',
             scrollY: new Animated.Value(0),
-            locations: [
-                {
-                    address: this.props.navigation.getParam('destination')
-                },
-            ],
+            origin: '',
+            locations: '',
             isUnLoadingSelected: false,
             isLoadingSelected: false,
             isPhysicalSelected: false,
@@ -58,12 +65,25 @@ export default class AddBooking extends Component {
             dateTimePickerMode: 'date',
             selectedDateTime: this.props.navigation.getParam('dateTime')
         }
+
+        this.bookingModel = ''
+    }
+
+    async componentDidMount() {
+        const num = await DataController.getItem(DataController.CUSTOMER_MOBILE)
+        this.bookingModel = JSON.parse(await DataController.getItem(DataController.BOOKING_MODEL))
+        this.setState(prevState => {
+            prevState.number = num
+            prevState.physicalPODCharge = this.bookingModel.vehicle.pod_charge
+            prevState.origin = this.props.navigation.getParam('origin')
+            prevState.locations = this.props.navigation.getParam('destination') !== ''?
+                                    [this.props.navigation.getParam('destination')] : []
+            return prevState
+        })
     }
 
     showDateTimePicker = (show, mode, date = new Date()) => {
         this.setState(prevState => {
-            console.log(show, mode, date.toUTCString())
-
             prevState.showDateTime = show
             prevState.dateTimePickerMode = mode
             if(mode === 'date') {
@@ -81,18 +101,90 @@ export default class AddBooking extends Component {
     }
 
     setGoodsType = (goods) => {
-        this.props.navigation.setParams({goodsType: goods})
+        this.setState(prevState => {
+            prevState.goodsType = goods.goods_name
+            prevState.goodsId = goods.id
+            return prevState
+        })
     }
 
     setOrigin = (address) => {
-        this.props.navigation.setParams({origin: address})
+        this.setState(prevState => {
+            prevState.origin = address
+            return prevState
+        })
     }
 
     setDestination = (address, index) => {
         this.setState(prevState => {
-            prevState.locations[index] = {address: address}
+            prevState.locations[index] = address
             return prevState
         })
+    }
+
+    formatDate = (date = new Date()) => {
+        const dateArr = date.toLocaleString().split(' ');  // Tue Nov 12 12:22:07 2019 => Tue, Nov, 12, 12:22:07, 2019 
+        const yyyy = dateArr[4]
+        const MMM = dateArr[1]
+        const dd = dateArr[2]
+        const hhmmss = dateArr[3].split(':')
+        const hhmm = hhmmss[0] + ':' + hhmmss[1]
+        const ampm = date.getHours() >= 12? 'PM' : 'AM'
+        return(dd + ' ' + MMM + ' ' + yyyy + ' ' + hhmm + ' ' + ampm)
+    }
+
+    estimateFare = async () => {
+        if(this.isValidModel(this.bookingModel)) {
+            this.bookingModel.loading = this.state.isLoadingSelected
+            this.bookingModel.unloading = this.state.isUnLoadingSelected
+            this.bookingModel.physical_pod = this.state.isPhysicalSelected
+            this.bookingModel.goods_id = this.state.goodsId
+            this.bookingModel.goods_type = this.state.goodsType
+            
+            let list = this.bookingModel.landmark_list
+            list[0].landmark = this.state.origin.address
+            list[0].latitude = this.state.origin.latitude
+            list[0].longitude = this.state.origin.longitude
+
+            this.state.locations.forEach(loc => {
+                let dropModel = new LandmarkModel()
+                dropModel.setFavourite(false)  // TODO: Decide on the basis of Favourites' list
+                dropModel.setLat(loc.latitude.toString())
+                dropModel.setLng(loc.longitude.toString())
+                dropModel.setLandmark(loc.address)
+                list.push(dropModel.getModel())
+            });
+
+            await DataController.setItem(DataController.BOOKING_MODEL, JSON.stringify(this.bookingModel))
+            console.log("Data Written: ", this.bookingModel)
+            this.props.navigation.navigate("FareEstimation", {
+                covered: this.props.navigation.getParam('covered'),
+                origin: this.state.origin,
+                destination: this.state.locations,
+                vehicle: this.props.navigation.getParam('vehicle'),
+                dateTime: this.state.selectedDateTime
+              })
+        }
+        else {
+            ToastAndroid.show('Invalid!', ToastAndroid.SHORT)
+        }
+    }
+
+    isValidModel = (model) => {
+        const list = this.state.locations
+        model.number_of_drop_points = list.length - 1
+
+        if (model.booking_type == BookingModel.BookingType.NORMAL) {
+            if (list.length < 1) {
+                return false;
+            }
+        }
+
+        if(this.state.goodsType === DEF_GOODS){
+            return false
+        }
+
+        return true
     }
 
     render() {
@@ -131,7 +223,7 @@ export default class AddBooking extends Component {
                             <TouchableHighlight
                             underlayColor='white'
                             onPress={() => {
-                                this.props.navigation.navigate('Search', {setOrigin: this.setOrigin.bind(this)})
+                                this.props.navigation.navigate('Search', {type: 'origin', setOrigin: this.setOrigin.bind(this)})
                             }}>
                                 <View
                                 style={{
@@ -151,12 +243,12 @@ export default class AddBooking extends Component {
                                         }}/>
                                     <Text numberOfLines={1} ellipsizeMode='tail'
                                     style={{flex: 1, marginStart: 12, fontSize: 15}}>
-                                        {this.props.navigation.getParam('origin')}
+                                        {this.state.origin.address}
                                     </Text>
                                 </View>
                             </TouchableHighlight>
                             
-                            {this.state.locations.map((item, index) => {
+                            {this.state.locations !== '' && this.state.locations.map((item, index) => {
                                 return(
                                     <TouchableHighlight
                                     key={index}
@@ -178,13 +270,13 @@ export default class AddBooking extends Component {
                                                 paddingEnd: 20
                                             }}>
                                                 <View style={{backgroundColor: 'red', elevation: 3,
-                                                            borderWidth: 1, borderColor: 'white',
-                                                            width: 10, height: 10, borderRadius: 100,
-                                                            }}/>
+                                                    borderWidth: 1, borderColor: 'white',
+                                                    width: 10, height: 10, borderRadius: 100,
+                                                    }}/>
 
                                                     <Text numberOfLines={1} ellipsizeMode='tail'
                                                     style={{flex: 1, marginStart: 12, fontSize: 15}}>
-                                                        {item.address === ''? `Drop off location` : item.address}
+                                                        {!item.address? `Drop off location` : item.address}
                                                     </Text>
                                                     <TouchableOpacity
                                                     style={{width: 30, height: 30, opacity: 0.3, 
@@ -209,11 +301,6 @@ export default class AddBooking extends Component {
 
                             <TouchableOpacity
                             onPress={() => {
-                                this.setState(prevState => {
-                                    prevState.locations.push({address: ''})
-                                    return prevState
-                                })
-
                                 let index = this.state.locations.length
                                 this.props.navigation
                                 .navigate('Search', {type: 'destination', index: index, setDestination: this.setDestination.bind(this)})
@@ -262,6 +349,7 @@ export default class AddBooking extends Component {
                                     flex: 1, backgroundColor: 'white',
                                     paddingHorizontal: 15
                                 }}
+                                defaultValue={this.state.number}
                                 placeholder="Contact Person's mobile number"/>
                             </View>
                             <View style={{
@@ -403,7 +491,9 @@ export default class AddBooking extends Component {
                                             style={{width: 20, height: 20, margin: 5}}
                                             tintColor={this.state.isPhysicalSelected? '#00CF35' : 'rgba(0, 0, 0, 0.1)'}
                                             />
-                                            <Text style={{fontSize: 15, opacity: 0.3}}>{String.fromCharCode(8377)}15</Text>
+                                            <Text style={{fontSize: 15, opacity: 0.3}}>
+                                                {String.fromCharCode(8377) + this.state.physicalPODCharge}
+                                            </Text>
                                         </View>
                                         
                                     </View>
@@ -507,7 +597,7 @@ export default class AddBooking extends Component {
                                 fontSize: 15,
                                 opacity: 0.4
                             }}>
-                                {this.props.navigation.getParam('goodsType', 'Electrical/Electronics')}
+                                {this.state.goodsType}
                             </Text>
                         </View>
 
@@ -528,6 +618,8 @@ export default class AddBooking extends Component {
                 
                 {/* Fare Estimate button. */}
                 <TouchableHighlight
+                underlayColor={ACCENT_DARK}
+                onPress={() => this.estimateFare()}
                 style={{
                     backgroundColor: ACCENT,
                     paddingVertical: 15,
@@ -535,7 +627,7 @@ export default class AddBooking extends Component {
                     alignItems: 'center',
                     elevation: 10
                 }}>
-                    <Text style={{fontSize: 18, fontWeight: '700', color: 'white'}}>Fare Estimate</Text>
+                    <Text style={{fontSize: 18, fontWeight: '700', color: 'white'}}>Estimate Fare</Text>
                 </TouchableHighlight>
 
                 {/* Header with Vehicle type, Date and Time. */}
@@ -559,30 +651,21 @@ export default class AddBooking extends Component {
                     </Animated.View>
 
                     <TouchableHighlight
-                            underlayColor='black'
-                            onPress={() => {
-                                this.showDateTimePicker(true, 'date')
-                            }}
-                            style={{
-                                borderRadius: 100,
-                                paddingVertical: 8,
-                                width: '75%',
-                                backgroundColor: 'black',
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                                marginTop: -20, alignSelf: 'center'
-                            }}>
-                            <Text style={{color: 'white',}}>{
-                                    this.state.selectedDateTime.getDate() + ' ' 
-                                    + this.months[this.state.selectedDateTime.getMonth()] + ' ' 
-                                    + this.state.selectedDateTime.getFullYear() + ' ' + 
-                                    (this.state.selectedDateTime.getHours() > 12 ?
-                                    this.state.selectedDateTime.getHours() - 12 :
-                                    this.state.selectedDateTime.getHours())
-                                    + ':' + this.state.selectedDateTime.getMinutes() +
-                                    ((this.state.selectedDateTime.getHours() >= 12)? ' PM' : ' AM')
-                            }</Text>
-                        </TouchableHighlight>
+                        underlayColor='black'
+                        onPress={() => {
+                            this.showDateTimePicker(true, 'date')
+                        }}
+                        style={{
+                            borderRadius: 100,
+                            paddingVertical: 8,
+                            width: '75%',
+                            backgroundColor: 'black',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            marginTop: -20, alignSelf: 'center'
+                        }}>
+                        <Text style={{color: 'white',}}>{this.formatDate(this.state.selectedDateTime)}</Text>
+                    </TouchableHighlight>
                 </Animated.View>
             
                 {/* Date Time picker, shown only when, showDateTime is True. */}

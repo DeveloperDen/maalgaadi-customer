@@ -46,16 +46,26 @@ export default class Search extends Component {
                             longitude: details.geometry.location.lng,
                         })
                     
-                    else
+                    else {
                         if(this.props.navigation.state.params.type === 'origin') {
-                            this.props.navigation.state.params.setOrigin(data.description)
+                            this.props.navigation.state.params.setOrigin({
+                                address: data.description,
+                                latitude: details.geometry.location.lat,
+                                longitude: details.geometry.location.lng,
+                            })
                             this.props.navigation.goBack()
                         }
                         else {
-                            this.props.navigation.state.params.setDestination(data.description,
+                            this.props.navigation.state.params.setDestination({
+                                address: data.description,
+                                latitude: details.geometry.location.lat,
+                                longitude: details.geometry.location.lng,
+                            },
                                 this.props.navigation.state.params.index)
                             this.props.navigation.goBack()
                         }
+                    }
+                        
                         
                 }}
 
