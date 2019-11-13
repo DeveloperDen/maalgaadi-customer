@@ -41,8 +41,6 @@ import {createMaterialTopTabNavigator} from 'react-navigation-tabs'
 import React, {Component} from 'react';
 import {Easing, Animated, Image} from 'react-native'
 
-
-
 const ACCENT = '#FFCB28' // 255, 203, 40
 
 const vehicleIcon = require('./assets/vehicle.png')

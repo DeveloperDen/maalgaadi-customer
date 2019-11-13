@@ -110,8 +110,6 @@ export default class Home extends Component {
       marginTopAnimOrig: new Animated.Value(0),
       marginTopAnimDest: new Animated.Value(-20),
 
-      selectedVehicle: '',
-
       coordinates:{
           latitude: 0,
           longitude: 0,
@@ -632,7 +630,7 @@ export default class Home extends Component {
       covered: this.state.isCoveredVehicle? 'Covered' : 'Uncovered',
       origin: this.state.preLoc,
       destination: this.state.destLoc,
-      vehicle: this.state.selectedVehicle,
+      vehicle: this.state.vehiclesList[this.state.selectedVehicleIndex],
       dateTime: this.state.selectedDateTime
     })
   }

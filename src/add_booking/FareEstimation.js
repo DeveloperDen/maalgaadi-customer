@@ -26,10 +26,18 @@ export default class FareEstimation extends Component {
     constructor(props) {
         super(props)
         this.state = {
-            modalVisible: false
+            modalVisible: false,
+            tripEstimate: 0,
+            yourPrice: 0,
+            payDriver: 0,
+            mgMoney: 0,
+            inValidPrice: false
         }
         this.destinations = props.navigation.getParam('destination')
         this.bookingModel = ''
+        this.minOffered = 0
+        this.maxOffered = 0
+        this.payDriver = 0
     }
 
     setModalVisible = (visible) => {
@@ -40,8 +48,10 @@ export default class FareEstimation extends Component {
     }
 
     async componentDidMount() {
-        this.getOfferedPercentage()
         this.bookingModel = JSON.parse(await DataController.getItem(DataController.BOOKING_MODEL))
+        this.bookingModel.customer_id = parseInt(this.bookingModel.customer_id)
+        this.getOfferedPercentage()
+        this.getBookingEstimate()
     }
 
     getOfferedPercentage = async () => {
@@ -63,6 +73,41 @@ export default class FareEstimation extends Component {
             console.log(err)
             ToastAndroid.show(Constants.ERROR_GET_DETAILS, ToastAndroid.SHORT);
         })       
+    }
+
+    getBookingEstimate = async () => {
+        const reqURL = Constants.BASE_URL + Constants.GET_TRIP_ESTIMATE
+        console.log("Request: ", this.bookingModel)
+        const request = await fetch(reqURL, {
+            method: 'POST',
+            headers: {
+                key: "21db33e221e41d37e27094153b8a8a02",
+                'Content-Type': 'application/json',
+
+            },
+            body: JSON.stringify(this.bookingModel)
+        })
+    
+        const response = await request.json().then(value => {
+            console.log(value)
+            if(value.success) {
+                this.setState(prevState => {
+                    prevState.tripEstimate = value.data.upper_estimated_bill
+                    prevState.yourPrice = value.data.upper_customer_own_price
+                    prevState.payDriver = value.data.final_amount
+                    prevState.mgMoney = value.data.customer_balance
+                    return prevState
+                })
+                this.payDriver = value.data.final_amount
+            }
+            else {
+                ToastAndroid.show(value.message, ToastAndroid.SHORT)
+            }
+        }).catch(err => {
+            console.log(err)
+            ToastAndroid.show(Constants.ERROR_GET_DETAILS, ToastAndroid.SHORT);
+        })       
+    
     }
 
     render() {
@@ -105,7 +150,8 @@ export default class FareEstimation extends Component {
                                 onPress={() => this.setModalVisible(true)}
                                 style={{
                                     borderRadius: 100, paddingHorizontal: 25, paddingVertical: 3,
-                                    backgroundColor:'rgba(0, 0, 0, 0.1)'
+                                    backgroundColor:'rgba(0, 0, 0, 0.1)',
+                                    display: (this.destinations.length - 1) >= 1? 'flex' : 'none'
                                 }}>
                                     <Text style={{color: 'rgba(0, 0, 0, 0.5)', fontSize: 12}}>
                                         {this.destinations.length - 1} Way Point
@@ -151,7 +197,7 @@ export default class FareEstimation extends Component {
                             <Image source={vehicleIcon} style={{width: 50, height: 50}}/>
                             <View>
                                 <Text style={{fontSize: 20, fontWeight: '700'}}>
-                                    {this.props.navigation.getParam('vehicle')}
+                                    {this.props.navigation.getParam('vehicle').vehicle_name}
                                 </Text>
                                 <Text style={{fontSize: 15, opacity: 0.4, marginTop: 5}}>
                                     {this.props.navigation.getParam('covered')}
@@ -172,13 +218,65 @@ export default class FareEstimation extends Component {
                             <View
                             style={{
                                 flexDirection: 'row', alignItems: "center", alignSelf: 'center',
-                                marginBottom: 10
+                                marginBottom: 10, borderBottomColor: 'rgba(0, 0, 0, 0.2)', borderBottomWidth: 2,
                             }}>
                                 <Text style={{fontSize: 35}}>{String.fromCharCode(8377)}</Text>
-                                <TextInput defaultValue='0' style={{
-                                    fontSize: 40, borderBottomColor: 'rgba(0, 0, 0, 0.2)', borderBottomWidth: 2
-                                }} keyboardType="decimal-pad"/>
+                                <TextInput
+                                style={{
+                                    fontSize: 40,
+                                }} keyboardType="decimal-pad"
+                                onChangeText={(text) => {
+                                    if(text === '') {
+                                        this.setState(prevState => {
+                                            prevState.inValidPrice = false
+                                            prevState.payDriver = this.payDriver
+                                            prevState.yourPrice = text
+                                            return prevState
+                                        })
+                                    }
+                                    else {
+                                        let inValidPrice = false
+                                        const percentEstmatePrice = this.state.tripEstimate * this.minOffered / 100;
+
+                                        let newAmt = this.state.tripEstimate - percentEstmatePrice;
+
+                                        let customerWallet = this.state.mgMoney;
+                                        let finalcustomeOwnPrice = 0;
+
+                                        if (text >= newAmt) {
+                                            if(customerWallet > 0){
+                                                if(text > customerWallet){
+                                                    finalcustomeOwnPrice = text - customerWallet;
+                                                }else {
+                                                    finalcustomeOwnPrice = 0;
+                                                }
+                
+                                            }else {
+                                                finalcustomeOwnPrice = text;
+                                            }
+                                        }
+                                        else {
+                                            finalcustomeOwnPrice = this.payDriver
+                                            inValidPrice = true
+                                        }
+
+                                        this.setState(prevState => {
+                                            prevState.payDriver = finalcustomeOwnPrice
+                                            prevState.yourPrice = text
+                                            prevState.inValidPrice = inValidPrice
+                                            return prevState
+                                        })
+                                    }
+                                }}/>
                             </View>
+
+                            <Text
+                            style={{
+                                alignSelf: 'center', color: 'red', fontStyle: 'italic', fontSize: 12,
+                                marginBottom: 15, display: this.state.inValidPrice? 'flex' : 'none'
+                            }}>
+                                Price too Low. Please upgrade it.
+                            </Text>
 
                             <View style={{
                             flex: 1,
@@ -189,7 +287,7 @@ export default class FareEstimation extends Component {
                                     SUGGESTED PRICE*
                                 </Text>
                                 <Text style={{fontWeight: '700', marginEnd: 10, marginVertical:8, fontSize: 12}}>
-                                    {String.fromCharCode(8377)}377
+                                    {String.fromCharCode(8377) + this.state.tripEstimate}
                                 </Text>
                             </View>
                             <Text style={{marginHorizontal: 10, opacity: 0.3, fontSize: 10, marginBottom: 10}}>
@@ -198,7 +296,8 @@ export default class FareEstimation extends Component {
                             </Text>   
                         </View>
                         
-                        <View style={{
+                        <View
+                        style={{
                             flexDirection: 'row', alignItems:'center', justifyContent: 'space-between',
                             marginTop: 20
                         }}>
@@ -206,7 +305,7 @@ export default class FareEstimation extends Component {
                                 PAY DRIVER
                             </Text>
                             <Text style={{fontWeight: '700', marginEnd: 10, fontSize: 16}}>
-                                {String.fromCharCode(8377)}388
+                                {String.fromCharCode(8377) + this.state.payDriver}
                             </Text>
                         </View>
                         <View
@@ -218,7 +317,7 @@ export default class FareEstimation extends Component {
                                 MG WALLET BALANCE
                             </Text>
                             <Text style={{fontWeight: '700', marginEnd: 10, fontSize: 16}}>
-                                {String.fromCharCode(8377)}0
+                                {String.fromCharCode(8377) + this.state.mgMoney}
                             </Text>
                         </View>
                     </View>

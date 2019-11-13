@@ -96,8 +96,10 @@ export default class AddBooking extends Component {
         })
     }
 
-    setVehicle = (name) => {
-        this.props.navigation.setParams({vehicle: name})
+    setVehicle = (vehicle) => {
+        this.props.navigation.setParams({
+            vehicle: vehicle
+        })
     }
 
     setGoodsType = (goods) => {
@@ -140,8 +142,15 @@ export default class AddBooking extends Component {
             this.bookingModel.physical_pod = this.state.isPhysicalSelected
             this.bookingModel.goods_id = this.state.goodsId
             this.bookingModel.goods_type = this.state.goodsType
+
+            const selectedVehicle = this.props.navigation.getParam('vehicle')
+            this.bookingModel.selected_vehicle_category = selectedVehicle.id
+            this.bookingModel.selected_vehicle_category_name = selectedVehicle.vehicle_name
+            this.bookingModel.vehicle = selectedVehicle
             
+            this.bookingModel.landmark_list = this.bookingModel.landmark_list.slice(0, 1)
             let list = this.bookingModel.landmark_list
+
             list[0].landmark = this.state.origin.address
             list[0].latitude = this.state.origin.latitude
             list[0].longitude = this.state.origin.longitude
@@ -154,6 +163,8 @@ export default class AddBooking extends Component {
                 dropModel.setLandmark(loc.address)
                 list.push(dropModel.getModel())
             });
+
+            this.bookingModel.number_of_drop_points = list.length - 1
 
             await DataController.setItem(DataController.BOOKING_MODEL, JSON.stringify(this.bookingModel))
             console.log("Data Written: ", this.bookingModel)
@@ -172,7 +183,6 @@ export default class AddBooking extends Component {
 
     isValidModel = (model) => {
         const list = this.state.locations
-        model.number_of_drop_points = list.length - 1
 
         if (model.booking_type == BookingModel.BookingType.NORMAL) {
             if (list.length < 1) {
@@ -643,7 +653,7 @@ export default class AddBooking extends Component {
                             </TouchableHighlight>
                         </Animated.View>
                         <Animated.Text style={{fontSize: 22, fontWeight: '700', marginTop: 10, opacity: headerOpacity}}>
-                            {this.props.navigation.getParam('vehicle')}
+                            {this.props.navigation.getParam('vehicle').vehicle_name}
                         </Animated.Text>
                         <Animated.Text style={{fontSize: 10, opacity: 0.4, marginTop: 5, opacity: headerOpacity}}>
                             {this.props.navigation.getParam('covered')}
