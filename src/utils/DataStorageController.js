@@ -21,6 +21,7 @@ export const TRIP_FREQ = "trip_freq"
 export const USER_SETTINGS = "settings"
 export const BOOKING_MODEL = "booking_model"
 export const CREDIT_LIM = "credit_limit"
+export const RUNNING_TRIP_DATA = "runn_trip_data"
 
 export const getItem = async (key) => {
     try {

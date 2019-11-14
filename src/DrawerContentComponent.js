@@ -135,7 +135,7 @@ const logoutUser = async (props) => {
 }
 
 const showAlert = (props) => {
-    Alert.alert("Logout?", Constants.LOGOUT_MESSAGE, 
+    Alert.alert("Logout?", Constants.LOGOUT_MESSAGE,
     [
         {text: "Cancel", style: "default"},
         {text: "Logout", onPress: () => logoutUser(props), style: "destructive"}

@@ -3,7 +3,8 @@ export const CITY_JAIPUR = 2;
 export const CITY_PUNE = 3;
 
 export const BASE_URL_LIVE = "http://dashboard.maalgaadi.net";
-export const BASE_URL_DEMO = "http://dashboard.rubberducks.in";
+// export const BASE_URL_DEMO = "http://dashboard.rubberducks.in";
+export const BASE_URL_DEMO = "http://54.255.142.232/"
 
 export const BASE_URL_IP_LIVE = BASE_URL_LIVE + "/api/v1/customerMobile/";
 export const BASE_URL_IP_DEMO = BASE_URL_DEMO + "/api/v1/customerMobile/";
@@ -113,6 +114,10 @@ export const FAV_LOC_EMPTY = "Store your frequently used locations as Favourite 
 export const ERROR_EDIT_LOC = "An error occured while updating favourite location. Please try again later."
 export const WALLET_EMPTY = "Looks like you have not booked any MaalGaadi yet. Make your first booking today!"
 export const WALLET_RECORD_EMPTY = "No record found for the specified Dates"
+export const FIND_DRIVER_TITLE = "Finding nearest driver"
+export const FIND_DRIVER_DESC = "We are finding the best of our drivers to take up your booking request"
+export const NO_DRIVER_FOUND_T = "Not Found"
+export const NO_DRIVER_FOUND_D = "No drivers are availbale to accept your booking"
 
 export const IS_NEW_USER = "is_new_user"
 
@@ -149,7 +154,9 @@ export const FIELDS = {
     LANDMARK: "landmark",
     ST_DATE: "start_date",
     END_DATE: "end_date",
-    CITY_ID_USER: "city_id"
+    CITY_ID_USER: "city_id",
+    RANDOM_CODE: "random_code",
+    BOOK_EVE_TYPE: "booking_event_type"
 }
 
 

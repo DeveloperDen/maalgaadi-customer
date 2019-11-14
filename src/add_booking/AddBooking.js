@@ -125,13 +125,14 @@ export default class AddBooking extends Component {
     }
 
     formatDate = (date = new Date()) => {
-        const dateArr = date.toLocaleString().split(' ');  // Tue Nov 12 12:22:07 2019 => Tue, Nov, 12, 12:22:07, 2019 
-        const yyyy = dateArr[4]
-        const MMM = dateArr[1]
-        const dd = dateArr[2]
-        const hhmmss = dateArr[3].split(':')
+        const dateArr = date.toUTCString().split(" ");  // ["Thu,", "14", "Nov", "2019", "06:13:34", "GMT"] 
+        const yyyy = dateArr[3]
+        const MMM = dateArr[2]
+        const dd = dateArr[1]
+        const hhmmss = dateArr[4].split(":")
         const hhmm = hhmmss[0] + ':' + hhmmss[1]
         const ampm = date.getHours() >= 12? 'PM' : 'AM'
+        console.log(date.toLocaleString())
         return(dd + ' ' + MMM + ' ' + yyyy + ' ' + hhmm + ' ' + ampm)
     }
 

@@ -62,6 +62,10 @@ export default class Home extends Component {
     this.mapView = null;
 
     this.state = {
+      coordinates: {
+        latitude: 0,
+        longitude: 0
+      },
       isCoveredVehicle: false,
       freeDrivers: [],
       index: 0,
@@ -109,11 +113,6 @@ export default class Home extends Component {
       marginAnimSideDest: new Animated.Value(10),
       marginTopAnimOrig: new Animated.Value(0),
       marginTopAnimDest: new Animated.Value(-20),
-
-      coordinates:{
-          latitude: 0,
-          longitude: 0,
-        },
 
       preLoc: '',
       destLoc: '',
@@ -302,23 +301,15 @@ export default class Home extends Component {
         Geolocation.getCurrentPosition(
           (position) => {
               console.log(position);
-              this.setState((prevState) => {
-                prevState.coordinates.latitude = position.coords.latitude
-                prevState.coordinates.longitude = position.coords.longitude
-
-                return prevState
-              })
-
               this.mapView.animateToRegion({
-                latitude: this.state.coordinates.latitude,
-                longitude: this.state.coordinates.longitude,
+                latitude: position.coords.latitude,
+                longitude: position.coords.longitude,
                 latitudeDelta: LATITUDE_DELTA,
                 longitudeDelta: LONGITUDE_DELTA
               }, 500)
           },
           (error) => {
-              // See error code charts below.
-              console.log(error.code, error.message);
+            console.log(error.code, error.message);
           },
           { enableHighAccuracy: true, timeout: 15000, maximumAge: 10000 }
         );
@@ -326,10 +317,10 @@ export default class Home extends Component {
       } else {
         console.log('Location permission denied');
         alert('Allow location access for better working of the application.');
-        await requestLocationPermission()
+        requestLocationPermission()
       }
     } catch (err) {
-      console.warn(err);
+      console.log(err);
     }
   }
 
@@ -355,7 +346,7 @@ export default class Home extends Component {
               return prevState
             })
           })
-          .catch(error => console.warn(error));
+          .catch(error => console.log(error));
           this.setState((prevState)=> {
             if(input === ORIGIN) 
               prevState.origin = position.coo
@@ -376,7 +367,7 @@ export default class Home extends Component {
     }) 
     : null
 
-    await this.requestLocationPermission()
+    this.requestLocationPermission()
     
     this.willFocusListener = this.props.navigation.
     addListener('willFocus', () => {
@@ -548,7 +539,7 @@ export default class Home extends Component {
           return prevState
         })
       })
-      .catch(error => console.warn(error));
+      .catch(error => console.log(error));
   }
 
   showDateTimePicker = (show, mode, date = new Date()) => {
@@ -565,11 +556,12 @@ export default class Home extends Component {
   }
 
   formatDate = (date = new Date()) => {
-    const dateArr = date.toLocaleString().split(' ');  // Tue Nov 12 12:22:07 2019 => Tue, Nov, 12, 12:22:07, 2019 
-    const yyyy = dateArr[4]
-    const MMM = dateArr[1]
-    const dd = dateArr[2]
-    const hhmmss = dateArr[3].split(':')
+    console.log(date.toUTCString().split(" "))
+    const dateArr = date.toUTCString().split(" ");  // ["Thu,", "14", "Nov", "2019", "06:13:34", "GMT"] 
+    const yyyy = dateArr[3]
+    const MMM = dateArr[2]
+    const dd = dateArr[1]
+    const hhmmss = dateArr[4].split(":")
     const hhmm = hhmmss[0] + ':' + hhmmss[1]
     const ampm = date.getHours() >= 12? 'PM' : 'AM'
     console.log(date.toLocaleString())

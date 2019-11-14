@@ -6,12 +6,16 @@ import {
   Image,
   Modal,
   TouchableHighlight,
-  ToastAndroid
+  ToastAndroid,
+  ActivityIndicator
 } from 'react-native';
 import { TextInput, ScrollView } from 'react-native-gesture-handler';
+import uuid from 'uuid-random'
+import { TripEstimateDataModel } from '../models/trip_estimate_model';
 
 const DataController = require('../utils/DataStorageController')
 const Constants = require('../utils/AppConstants')
+const BookingModel = require('../models/bookings_model')
 const ACCENT = '#FFCB28' // 255, 203, 40
 const ACCENT_DARK = '#F1B800'
 const vehicleIcon = require('../../assets/vehicle.png')
@@ -27,6 +31,8 @@ export default class FareEstimation extends Component {
         super(props)
         this.state = {
             modalVisible: false,
+            noDrivAvailModalVisible: false,
+            findDrivModalVisible: false,
             tripEstimate: 0,
             yourPrice: 0,
             payDriver: 0,
@@ -40,9 +46,19 @@ export default class FareEstimation extends Component {
         this.payDriver = 0
     }
 
-    setModalVisible = (visible) => {
+    setModalVisible = (visible, findDriv = false) => {
         this.setState(prevState => {
-            prevState.modalVisible = visible
+            if(findDriv)
+                prevState.findDrivModalVisible = visible
+            else
+                prevState.modalVisible = visible
+            return prevState
+        })
+    }
+
+    showNoDriverAvailableDialog = (visible) => {
+        this.setState(prevState => {
+            prevState.noDrivAvailModalVisible = visible
             return prevState
         })
     }
@@ -91,6 +107,14 @@ export default class FareEstimation extends Component {
         const response = await request.json().then(value => {
             console.log(value)
             if(value.success) {
+                const UUID = uuid()
+                console.log("UUID: ", UUID)
+                this.bookingModel.random_code = UUID
+
+                const detailModel = value.data
+                let estimateModel = new TripEstimateDataModel()
+                estimateModel.setData(detailModel)
+                this.bookingModel.booking_estimate = estimateModel.getModel()
                 this.setState(prevState => {
                     prevState.tripEstimate = value.data.upper_estimated_bill
                     prevState.yourPrice = value.data.upper_customer_own_price
@@ -106,13 +130,121 @@ export default class FareEstimation extends Component {
         }).catch(err => {
             console.log(err)
             ToastAndroid.show(Constants.ERROR_GET_DETAILS, ToastAndroid.SHORT);
-        })       
+        })
+    }
+
+    confirmBooking = async () => {
+        this.bookingModel.booking_estimate.data.upper_customer_own_price = this.state.yourPrice
+
+        // TODO: Remove it. Presently, it is unnecessary but still required in request.
+        this.bookingModel.booking_estimate.data.cashback_amount = 0
+
+        const reqURL = Constants.BASE_URL + Constants.ADD_CUSTOMER_BOOKING
+        console.log("Req URL: ", reqURL)
+        console.log("Request: ", this.bookingModel)
+        const request = await fetch(reqURL, {
+            method: 'POST',
+            headers: {
+                key: "21db33e221e41d37e27094153b8a8a02",
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(this.bookingModel)
+        })
     
+        const response = await request.json().then(value => {
+            console.log(value)
+            if(value.success) {
+                // TODO: Save bookingID to Storage
+                // const bookingID = value.data.booking_id
+
+                const dataObj = value.data
+                const tripObj = value.trip_data
+                const responseCode = dataObj.responseCode
+                const responseMsg = value.message
+
+                this.checkResponseCode(responseCode, responseMsg, tripObj)
+            }
+            else {
+                this.setModalVisible(false, true)
+                ToastAndroid.show(value.message, ToastAndroid.SHORT)
+            }
+        }).catch(err => {
+            console.log(err)
+            ToastAndroid.show(err, ToastAndroid.SHORT);
+            this.setModalVisible(false, true)
+        })  
+    }
+
+    checkResponseCode = async (code, message, tripObj) => {
+        console.log("Code: ", code)
+        switch(code){
+            case 0:
+                this.showNoDriverAvailableDialog()
+                break;
+            case 1:
+                // TODO
+                // DataController.setItem(DataController.RUNNING_TRIP_DATA, JSON.stringify(tripObj))
+                // this.props.navigation.replace("TripDetails", {/* Add Some Params */})
+                break;
+            case 2:
+                // this.showNoFavDriverAvailableDialog()
+                break;
+            case 3:
+                // Same as case 1
+                break;
+            case 4:
+                // TODO
+                // this.props.navigation.replace("MyBookings")
+                break;
+        }
+
+        this.setModalVisible(false, true)
+    }
+
+    cancelBooking = async () => {
+        const reqBody = new FormData()
+        reqBody.append(Constants.FIELDS.RANDOM_CODE, this.bookingModel.random_code)
+        reqBody.append(Constants.FIELDS.BOOK_EVE_TYPE, this.bookingModel.booking_event_type)
+
+        console.log('Request Body: ', reqBody)
+
+        const request = await fetch(Constants.BASE_URL + Constants.DELETE_BOOKING, {
+            method: 'POST',
+            body: reqBody,
+            headers: {
+                key: "21db33e221e41d37e27094153b8a8a02"
+            }
+        })
+
+        const response = await request.json().then(async value => {
+            console.log("Response: ", value);
+            this.setModalVisible(false, true)
+            this.showNoDriverAvailableDialog(false)
+            if(value.success) {
+                ToastAndroid.show("Booking Cancelled!", ToastAndroid.SHORT)
+                this.props.navigation.popToTop()
+            }
+            else if(value.data.responseCode === 1) {
+                console.log("Case 1: ", value.message)
+                ToastAndroid.show(value.message, ToastAndroid.SHORT);
+                // TODO
+                // DataController.setItem(DataController.RUNNING_TRIP_DATA, JSON.stringify(tripObj))
+                // this.props.navigation.replace("TripDetails", {/* Add Some Params */})
+            }
+            else {
+                console.log(value.message);
+                ToastAndroid.show(value.message, ToastAndroid.SHORT);
+            }
+        }).catch(err => {
+            console.log(err)
+            ToastAndroid.show(err, ToastAndroid.SHORT);
+        })
     }
 
     render() {
         return(
             <View style={{flex: 1}}>
+
                 <ScrollView>
                     <View style={{marginHorizontal: 15, marginTop: 10, marginBottom: 20}}>
                         <View style={{borderRadius: 5, borderColor:'rgba(0, 0, 0, 0.1)',
@@ -221,7 +353,7 @@ export default class FareEstimation extends Component {
                                 marginBottom: 10, borderBottomColor: 'rgba(0, 0, 0, 0.2)', borderBottomWidth: 2,
                             }}>
                                 <Text style={{fontSize: 35}}>{String.fromCharCode(8377)}</Text>
-                                <TextInput
+                                <TextInput value={this.state.yourPrice}
                                 style={{
                                     fontSize: 40,
                                 }} keyboardType="decimal-pad"
@@ -326,7 +458,45 @@ export default class FareEstimation extends Component {
                 {/* Confirm Booking button. */}
                 <TouchableHighlight
                 underlayColor={ACCENT_DARK}
-                onPress={() => {return}}
+                onPress={() => {
+                    if(this.state.inValidPrice || this.state.yourPrice === ''){
+                        ToastAndroid.show("Please Upgrade your price", ToastAndroid.SHORT)
+                    }
+                    else {
+                        let isBookingAllow = false;
+
+                        const customeOwnPrice = this.state.yourPrice;
+
+                        const percentEstmatePrice = this.state.tripEstimate * this.minOffered / 100;
+
+                        const newAmt = this.state.tripEstimate - percentEstmatePrice;
+                        
+                        if (customeOwnPrice >= newAmt) {
+                            isBookingAllow = true;
+                        } else {
+                            ToastAndroid.show("Please Upgrade your price", ToastAndroid.SHORT)
+                            isBookingAllow = false;
+                        }
+
+                        if(isBookingAllow){
+                            if (!this.bookingModel.book_later) {
+                                if (this.bookingModel.booking_event_type == BookingModel.BookingEventType.EDIT) {
+                                    // TODO
+                                    // this.editBooking();
+                                    ToastAndroid.show('Will edit Booking.', ToastAndroid.SHORT)
+                                } else {
+                                    this.setModalVisible(true, true)
+                                    this.confirmBooking();
+                                }
+                            } else {
+                                // TODO
+                                // this.confirmBooking();
+                                ToastAndroid.show("Will book later.", ToastAndroid.SHORT)
+                            }
+                        }
+                            
+                    }
+                }}
                 style={{
                     backgroundColor: ACCENT,
                     paddingVertical: 15,
@@ -394,13 +564,104 @@ export default class FareEstimation extends Component {
                         </View>
                     </View>
                 </Modal>
-                    
+
+                {/* Dialog to Find Driver */}
+                <Modal
+                animationType="fade"
+                transparent={true}
+                visible={this.state.findDrivModalVisible}
+                onRequestClose={() => {
+                    return;
+                }}>
+                    <View style={{
+                    backgroundColor: 'rgba(0, 0, 0, 0.7)',
+                    height: '100%',
+                    alignItems: "center",
+                    justifyContent: 'center'
+                    }}>
+                        <View
+                        style={{backgroundColor: 'white', width: '80%',
+                        paddingTop: 20, borderRadius: 3,
+                        elevation: 10, overflow: 'hidden'}}>
+                            <Text style={{
+                                fontWeight: '700', fontSize: 18, textAlign: 'center',
+                                alignSelf: 'center', marginHorizontal: 15
+                            }}>
+                                {Constants.FIND_DRIVER_TITLE}
+                            </Text>
+                            <ActivityIndicator size="large" color={ACCENT} style={{alignSelf: 'center', marginTop: 15}}/>
+                            <Text style={{
+                                textAlign: 'center', alignSelf: 'center', marginTop: 15,
+                                opacity: 0.3, marginHorizontal: 15
+                            }}>
+                                {Constants.FIND_DRIVER_DESC}
+                            </Text>
+
+                            <TouchableHighlight
+                                underlayColor={ACCENT_DARK}
+                                onPress={() => {
+                                    this.cancelBooking()
+                                }}
+                                style={{
+                                    paddingVertical: 15, alignItems: 'center', justifyContent: 'center',
+                                    backgroundColor: ACCENT, marginTop: 15
+                                }}>
+                                    <Text style={{color: 'white'}}>CANCEL</Text>
+                            </TouchableHighlight>
+                        </View>
+                    </View>
+                </Modal>
+
+                {/* No Driver Found Dialog  */}
+                <Modal
+                animationType="fade"
+                transparent={true}
+                visible={this.state.noDrivAvailModalVisible}
+                onRequestClose={() => {
+                    return;
+                }}>
+                    <View style={{
+                    backgroundColor: 'rgba(0, 0, 0, 0.7)',
+                    height: '100%',
+                    alignItems: "center",
+                    justifyContent: 'center'
+                    }}>
+                        <View
+                        style={{backgroundColor: 'white', width: '80%',
+                        paddingTop: 20, borderRadius: 3,
+                        elevation: 10, overflow: 'hidden'}}>
+                            <Text style={{
+                                fontWeight: '700', fontSize: 18, textAlign: 'center',
+                                alignSelf: 'center', marginHorizontal: 15
+                            }}>
+                                {Constants.NO_DRIVER_FOUND_T}
+                            </Text>
+                            <Text style={{
+                                textAlign: 'center', alignSelf: 'center', marginTop: 15,
+                                opacity: 0.3, marginHorizontal: 15
+                            }}>
+                                {Constants.NO_DRIVER_FOUND_D}
+                            </Text>
+
+                            <TouchableHighlight
+                                underlayColor={ACCENT_DARK}
+                                onPress={() => {
+                                    this.cancelBooking()
+                                }}
+                                style={{
+                                    paddingVertical: 15, alignItems: 'center', justifyContent: 'center',
+                                    backgroundColor: ACCENT, marginTop: 15
+                                }}>
+                                    <Text style={{color: 'white'}}>CANCEL</Text>
+                            </TouchableHighlight>
+                        </View>
+                    </View>
+                </Modal>  
             </View>
         )
     }
 }
 
 const styles = StyleSheet.create({
-
 });
 
