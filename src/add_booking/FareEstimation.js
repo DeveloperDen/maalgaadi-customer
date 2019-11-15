@@ -12,6 +12,7 @@ import {
 import { TextInput, ScrollView } from 'react-native-gesture-handler';
 import uuid from 'uuid-random'
 import { TripEstimateDataModel } from '../models/trip_estimate_model';
+import { NavigationActions } from 'react-navigation';
 
 const DataController = require('../utils/DataStorageController')
 const Constants = require('../utils/AppConstants')
@@ -182,9 +183,9 @@ export default class FareEstimation extends Component {
                 this.showNoDriverAvailableDialog()
                 break;
             case 1:
-                // TODO
-                // DataController.setItem(DataController.RUNNING_TRIP_DATA, JSON.stringify(tripObj))
-                // this.props.navigation.replace("TripDetails", {/* Add Some Params */})
+                ToastAndroid.show(message, ToastAndroid.SHORT);
+                await DataController.setItem(DataController.RUNNING_TRIP_DATA, JSON.stringify(tripObj))
+                this.props.navigation.reset([NavigationActions.navigate({routeName: "Trip Details"})])
                 break;
             case 2:
                 // this.showNoFavDriverAvailableDialog()
