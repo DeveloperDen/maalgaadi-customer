@@ -1,10 +1,9 @@
 import React, { Component } from 'react';
-import {Text, View, Image} from 'react-native';
+import {Text, View, Image, ActivityIndicator} from 'react-native';
 import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete';
 
 const GOOGLE_MAPS_APIKEY = 'AIzaSyCJYc7hsuiHCwUQWQ0NTk0TW0ne0y43NAE';
-const DESTINATION = 'destination'
-const ORIGIN = 'origin'
+const ACCENT = '#FFCB28' // 255, 203, 40
  
 export default class Search extends Component {
     constructor(props) {
@@ -22,7 +21,7 @@ export default class Search extends Component {
                 returnKeyType={'search'}
                 fetchDetails={true}
                 renderDescription={row => 
-                    <View style={{flexDirection: 'row',alignItems: 'center'}}>
+                    <View style={{flexDirection: 'row',alignItems: 'center', marginEnd: 10}}>
                         <Image
                         source={{uri: 'https://cdn2.iconfinder.com/data/icons/pittogrammi/142/94-512.png'}}
                         style={{width: 15, height:15, margin: 10, opacity: 0.3}}/>

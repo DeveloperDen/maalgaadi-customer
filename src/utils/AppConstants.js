@@ -109,6 +109,7 @@ export const ERROR_GET_GOODS = "An error occured while getting Goods List"
 export const ERROR_GET_DETAILS = "An error occured while getting User Details"
 export const ERROR_GET_SETTINGS = "An error occured while getting User Settings"
 export const PAST_BOOK_EMPTY = "Looks like you have not booked any MaalGaadi yet. Make your first booking today!"
+export const RUNNING_BOOK_EMPTY = "Details for all your ongoing trips will be shown here. Book a MaalGaadi now!"
 export const ERROR_GET_BOOKINGS = "An error occured while getting User Bookings"
 export const FAV_LOC_EMPTY = "Store your frequently used locations as Favourite and save the hassel of typing long addresses."
 export const ERROR_EDIT_LOC = "An error occured while updating favourite location. Please try again later."
@@ -118,6 +119,7 @@ export const FIND_DRIVER_TITLE = "Finding nearest driver"
 export const FIND_DRIVER_DESC = "We are finding the best of our drivers to take up your booking request"
 export const NO_DRIVER_FOUND_T = "Not Found"
 export const NO_DRIVER_FOUND_D = "No drivers are availbale to accept your booking"
+export const CANCEL_EDIT_CONFIRM = "Cancellation charges may apply. Do you want to cancel or edit the trip?"
 
 export const IS_NEW_USER = "is_new_user"
 
@@ -156,7 +158,11 @@ export const FIELDS = {
     END_DATE: "end_date",
     CITY_ID_USER: "city_id",
     RANDOM_CODE: "random_code",
-    BOOK_EVE_TYPE: "booking_event_type"
+    BOOK_EVE_TYPE: "booking_event_type",
+    BOOKING_ID: "booking_id",
+    REASON: "reason",
+    ISSUE_TYPE: "issues_type",
+    ACTION: "action"
 }
 
 

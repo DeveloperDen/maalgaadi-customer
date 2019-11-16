@@ -34,6 +34,7 @@ import DrawerContentComponent from './src/DrawerContentComponent'
 import Splash from './src/Splash'
 import Profile from './src/Profile'
 import FareEstimation from './src/add_booking/FareEstimation'
+import TripDetails from './src/my_bookings/TripDetails'
 
 import { createAppContainer, createSwitchNavigator } from 'react-navigation'
 import { createDrawerNavigator } from 'react-navigation-drawer'
@@ -176,6 +177,8 @@ const RateCardTabs = createMaterialTopTabNavigator({
 })
 
 const DrawerStackNavigator = createStackNavigator({
+  TripDetails: {screen: TripDetails},
+  
   FareEstimation: {screen: FareEstimation},
 
   Profile: {screen: Profile},

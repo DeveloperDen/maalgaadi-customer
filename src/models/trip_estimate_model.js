@@ -1,6 +1,6 @@
 export class TripEstimateDataModel {
     constructor() {
-        console.log("Estimate Model created: ", this.landmark_json)
+        console.log("Estimate Model created")
     }
 
     estimate_json = {
