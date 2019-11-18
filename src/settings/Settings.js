@@ -53,10 +53,12 @@ export default class Settings extends Component {
         this.state = {
             isLoading: true
         }
+
+        this.settings = null
     }
 
-    async componentDidMount() {
-        await this.getSettings();
+    componentDidMount() {
+        this.getSettings();
     }
 
     getSettings = async () => {
@@ -74,16 +76,46 @@ export default class Settings extends Component {
             }
         })
         const response = await request.json().then(async value => {
-            const settings = JSON.stringify(value.data, (key, val) => {
-                if ((typeof val === "boolean") || (typeof val === "number")) {
-                    return String(val);
-                }
-                return val
-            }, null)
+            const settings = JSON.stringify(value.data)
 
             const dataToWrite = settings
 
             await DataController.setItem(DataController.USER_SETTINGS, dataToWrite)
+            this.settings = value.data
+
+            console.log("Response: ", value)
+            console.log("Data written: ", dataToWrite)
+        })
+        .catch(err => {
+            console.log(err);
+            ToastAndroid.show(Constants.ERROR_GET_SETTINGS, ToastAndroid.SHORT);
+        })
+
+        this.setState(prevState => {
+            prevState.isLoading = false
+            return prevState
+        })
+    }
+
+    updateSettings = async (settings) => {
+        this.setState(prevState => {
+            prevState.isLoading = true
+            return prevState
+        })
+        const request = await fetch(Constants.BASE_URL + Constants.UPDATE_APP_SETTING, {
+            method: 'POST',
+            body: JSON.stringify(settings),
+            headers: {
+                key: "21db33e221e41d37e27094153b8a8a02"
+            }
+        })
+        const response = await request.json().then(async value => {
+            const settings = JSON.stringify(value.data)
+
+            const dataToWrite = settings
+
+            await DataController.setItem(DataController.USER_SETTINGS, dataToWrite)
+            this.settings = value.data
 
             console.log("Response: ", value)
             console.log("Data written: ", dataToWrite)
@@ -109,7 +141,8 @@ export default class Settings extends Component {
                             underlayColor='rgba(0, 0, 0, 0.04)'
                             key={index}
                             onPress={() => {
-                                this.props.navigation.navigate('SettingsAll', {title: value.title})
+                                this.props.navigation.navigate('SettingsAll', 
+                                {title: value.title, settings: this.settings, onGoBack: this.updateSettings.bind(this)})
                             }}>
                                 <View>
                                     <View style={{

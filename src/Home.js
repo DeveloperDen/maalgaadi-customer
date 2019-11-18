@@ -21,18 +21,16 @@ import { PermissionsAndroid } from 'react-native';
 import Geocoder from 'react-native-geocoding';
 import { TextInput } from 'react-native-gesture-handler';
 import DateTimePicker from '@react-native-community/datetimepicker';
+import {LandmarkModel} from './models/landmark_model'
+import DotLoader from './home/components/DotLoader';
 
 const BookingModel = require('./models/bookings_model')
-import {LandmarkModel} from './models/landmark_model'
 const Constants = require('./utils/AppConstants')
 const DataController = require('./utils/DataStorageController')
 const vehicleIcon = require('../assets/vehicle.png')
 const instantIcon = require('../assets/instant.png')
 const greenPin = require('../assets/pin_green.png')
 const redPin = require('../assets/pin_red.png')
-const dot_0 = require('../assets/one_dot.png')
-const dot_1 = require('../assets/two_dot.png')
-const dot_2 = require('../assets/three_dot.png')
 const driverMarker = require('../assets/driver.png')
 
 const { width, height } = Dimensions.get('window');
@@ -45,7 +43,6 @@ const YOUR_LOCATION = 'Your location'
 const CHO_DEST = 'Choose destination'
 const DESTINATION = 'destination'
 const ORIGIN = 'origin'
-const LOAD_ANIM_TIME = 200
 
 const ACCENT = '#FFCB28' // 255, 203, 40
 const ACCENT_DARK = '#F1B800'
@@ -68,7 +65,6 @@ export default class Home extends Component {
       },
       isCoveredVehicle: false,
       freeDrivers: [],
-      index: 0,
       vehiclesList: [],
       selectedVehicleIndex: 0,
       selectedVehicle: '',
@@ -130,10 +126,6 @@ export default class Home extends Component {
         CHO_DEST
       ]
     }
-
-    this.dots = [
-      dot_0, dot_1, dot_2
-    ]
 
     this.mapStyleList = [
       {elementType: 'geometry', stylers: [{color: '#242f3e'}]},
@@ -281,7 +273,7 @@ export default class Home extends Component {
         prevState.modalVisible = visible
         return prevState
     })
-}
+  }
 
   async requestLocationPermission() {
     try {
@@ -384,17 +376,6 @@ export default class Home extends Component {
 
     this.getVehicleCategory()
     // this.getFreeDrivers()
-    // this.load()
-  }
-
-  load = () => {
-    setTimeout(() => {
-      this.setState(prevState => {
-        prevState.index = (prevState.index + 1) % 3
-        return prevState
-      });
-      this.load();
-    }, LOAD_ANIM_TIME)
   }
 
   getVehicleCategory = async () => {
@@ -733,18 +714,20 @@ export default class Home extends Component {
                 this.state.activeInput.container : this.state.inactiveInput.container,
                 this.state.isActiveInput === ORIGIN? null : {paddingTop: 0}]}
                 onPress={() => {
-                  if(this.state.isActiveInput !== ORIGIN) {
-                    this.animStart(ORIGIN)
+                  requestAnimationFrame(() => {
+                    if(this.state.isActiveInput !== ORIGIN) {
+                      this.animStart(ORIGIN)
 
-                    if (this.state.preLoc !== '')
-                      this.mapView.animateToRegion({
-                        latitude: this.state.preLoc.latitude,
-                        longitude: this.state.preLoc.longitude,
-                        latitudeDelta: LATITUDE_DELTA,
-                        longitudeDelta: LONGITUDE_DELTA
-                      }, 500)
-                  }
-                  else this.props.navigation.navigate('Search', {screen: 'Home'})
+                      if (this.state.preLoc !== '')
+                        this.mapView.animateToRegion({
+                          latitude: this.state.preLoc.latitude,
+                          longitude: this.state.preLoc.longitude,
+                          latitudeDelta: LATITUDE_DELTA,
+                          longitudeDelta: LONGITUDE_DELTA
+                        }, 500)
+                    }
+                    else this.props.navigation.navigate('Search', {screen: 'Home'})
+                  })
                 }}>
               <View style={styles.locationInputs}>
                   <View style={[styles.destOrigLocationDots, { backgroundColor: 'green'},
@@ -787,18 +770,20 @@ export default class Home extends Component {
                         this.state.activeInput.container : this.state.inactiveInput.container,
                         this.state.isActiveInput === DESTINATION? null : {justifyContent: "flex-end", paddingVertical: 0}]}
                 onPress={() => {
-                  if(this.state.isActiveInput !== DESTINATION) {
-                    this.animStart(DESTINATION)
+                  requestAnimationFrame(() => {
+                    if(this.state.isActiveInput !== DESTINATION) {
+                      this.animStart(DESTINATION)
 
-                    if (this.state.destLoc !== '')
-                      this.mapView.animateToRegion({
-                        latitude: this.state.destLoc.latitude,
-                        longitude: this.state.destLoc.longitude,
-                        latitudeDelta: LATITUDE_DELTA,
-                        longitudeDelta: LONGITUDE_DELTA
-                      }, 500)
-                  }
-                  else this.props.navigation.navigate('Search', {screen: 'Home'})
+                      if (this.state.destLoc !== '')
+                        this.mapView.animateToRegion({
+                          latitude: this.state.destLoc.latitude,
+                          longitude: this.state.destLoc.longitude,
+                          latitudeDelta: LATITUDE_DELTA,
+                          longitudeDelta: LONGITUDE_DELTA
+                        }, 500)
+                    }
+                    else this.props.navigation.navigate('Search', {screen: 'Home'})
+                  })
                 }}>
                 <View style={styles.locationInputs}>
                     <View style={[styles.destOrigLocationDots, { backgroundColor: 'red'} ,
@@ -900,9 +885,7 @@ export default class Home extends Component {
                       {vehicle.distance > 0?
                         <Text style={{fontSize: 10, height: 20}}>{vehicle.distance} min</Text>
                         :
-                        <Image source={this.dots[this.state.index]}
-                      style={{width: 25, height: 25}}
-                      tintColor='#B0B0B0'/>}
+                        <DotLoader/>}
 
                       <View style={{backgroundColor: this.state.selectedVehicle === vehicle.vehicle_name? ACCENT: 'transparent',
                                     borderRadius: 100, marginBottom: 5}}>

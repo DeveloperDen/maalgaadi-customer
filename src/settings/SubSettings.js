@@ -6,12 +6,17 @@ import {
   TouchableHighlight,
   Text
 } from 'react-native';
+import SMS from './settings_components/SMS'
+import AppNotif from './settings_components/AppNotif'
+import PODInv from './settings_components/PODInvoice'
+import PODMail from './settings_components/PODMail';
+import Others from './settings_components/Others';
 
 const ACCENT = '#FFCB28' // 255, 203, 40
 const ACCENT_DARK = '#F1B800' 
 
 const DataController = require('../utils/DataStorageController')
-const SMS = 'SMS Alerts'
+const _SMS = 'SMS Alerts'
 const APP_NOTIF = 'App Notifications'
 const POD_INV = 'Proof of Delivery & Invoices'
 const POD_MAIL = 'Invoice and POD mail Subjects'
@@ -27,274 +32,39 @@ export default class SettingsAll extends Component {
     constructor(props) {
         super(props)
 
-        this.settings = ''
-
         this.state = {
-            sms: [
-                {
-                    title: 'On Vehicle allotment',
-                    on: this.settings != ''? this.settings.msg_on_vehicle_allotment : false
-                },
-                {
-                    title: 'On reaching pickup point',
-                    on: true
-                },
-                {
-                    title: 'On reaching destination',
-                    on: true
-                },
-                {
-                    title: 'On Billing',
-                    on: true
-                }
-            ],
-
-            notification: [
-                {
-                    title: 'On Vehicle allotment',
-                    on: true
-                },
-                {
-                    title: 'On reaching pickup point',
-                    on: true
-                },
-                {
-                    title: 'On reaching destination',
-                    on: true
-                },
-                {
-                    title: 'On Billing',
-                    on: true
-                }
-            ],
-
-            podInv: [
-                {
-                    title: 'Invoice on Email',
-                    on: true
-                },
-                {
-                    title: 'POD on Email',
-                    on: true
-                }
-            ],
-
-            podSub: [
-                {
-                    title: 'Reference Text',
-                    on: true
-                },
-                {
-                    title: 'Trip Id',
-                    on: true
-                },
-                {
-                    title: 'Vehicle Reg. No.',
-                    on: true
-                },
-                {
-                    title: 'Reference Scheduled date',
-                    on: true
-                },
-            ],
-
-            others: [
-                {
-                    title: 'Reference Text',
-                    on: false
-                }
-            ]
+            settings: this.props.navigation.getParam('settings'),
         }
     }
 
-    async componentDidMount() {
-        await DataController.getItem(DataController.USER_SETTINGS).then(value => {
-            this.settings = JSON.parse(value)
+    onSwitchChange = (field) => {
+        this.setState(prevState => {
+            prevState.settings[field] = !prevState.settings[field]
+            return prevState
         })
+    }
+
+    async componentWillUnmount() {
+        this.props.navigation.state.params.onGoBack(this.state.settings)
     }
 
     render() {
         return(
             <View style={{flex: 1}}>
-                {this.props.navigation.getParam('title') === SMS && this.state.sms.map((value, index) => {
-                        return(
-                            <View key={index}>
-                                <TouchableHighlight
-                                underlayColor='rgba(0, 0, 0, 0.03)'
-                                onPress={() => {
-                                    this.setState(prevState => {
-                                        prevState.sms[index].on = !prevState.sms[index].on
-                                        return prevState
-                                    })
-                                }}>
-                                    <View
-                                    style={{
-                                        flexDirection: 'row', alignItems: 'center', paddingVertical: 10,
-                                        justifyContent: 'space-between'
-                                    }}>
-                                        <Text style={{marginStart: 20, marginVertical: 10, fontSize: 15}}>
-                                            {value.title}
-                                        </Text>
-                                        <Switch value={this.state.sms[index].on}
-                                        onValueChange={(value) => {
-                                            this.setState(prevState => {
-                                                prevState.sms[index].on = value
-                                                return prevState
-                                            })
-                                        }}/>
-                                    </View>
-                                </TouchableHighlight>
-                                <View 
-                                    style={{
-                                    borderTopColor:'rgba(0, 0, 0, 0.1)',
-                                    borderTopWidth: 1}}/>
-                            </View> 
-                        )
-                    })}
+                {this.props.navigation.getParam('title') === _SMS && 
+                <SMS settings={this.state.settings} onSwitchChange={this.onSwitchChange}/>}
                 
-                {this.props.navigation.getParam('title') === APP_NOTIF && this.state.notification.map((value, index) => {
-                        return(
-                            <View key={index}>
-                                <TouchableHighlight
-                                underlayColor='rgba(0, 0, 0, 0.03)'
-                                onPress={() => {
-                                    this.setState(prevState => {
-                                        prevState.notification[index].on = !prevState.notification[index].on
-                                        return prevState
-                                    })
-                                }}>
-                                    <View
-                                    style={{
-                                        flexDirection: 'row', alignItems: 'center', paddingVertical: 10,
-                                        justifyContent: 'space-between'
-                                    }}>
-                                        <Text style={{marginStart: 20, marginVertical: 10, fontSize: 15}}>
-                                            {value.title}
-                                        </Text>
-                                        <Switch value={this.state.notification[index].on}
-                                        onValueChange={(value) => {
-                                            this.setState(prevState => {
-                                                prevState.notification[index].on = value
-                                                return prevState
-                                            })
-                                        }}/>
-                                    </View>
-                                </TouchableHighlight>
-                                <View 
-                                    style={{
-                                    borderTopColor:'rgba(0, 0, 0, 0.1)',
-                                    borderTopWidth: 1}}/>
-                            </View> 
-                        )
-                    })}
+                {this.props.navigation.getParam('title') === APP_NOTIF && 
+                <AppNotif settings={this.state.settings} onSwitchChange={this.onSwitchChange}/>}
 
-                {this.props.navigation.getParam('title') === POD_INV && this.state.podInv.map((value, index) => {
-                        return(
-                            <View key={index}>
-                                <TouchableHighlight
-                                underlayColor='rgba(0, 0, 0, 0.03)'
-                                onPress={() => {
-                                    this.setState(prevState => {
-                                        prevState.podInv[index].on = !prevState.podInv[index].on
-                                        return prevState
-                                    })
-                                }}>
-                                    <View
-                                    style={{
-                                        flexDirection: 'row', alignItems: 'center', paddingVertical: 10,
-                                        justifyContent: 'space-between'
-                                    }}>
-                                        <Text style={{marginStart: 20, marginVertical: 10, fontSize: 15}}>
-                                            {value.title}
-                                        </Text>
-                                        <Switch value={this.state.podInv[index].on}
-                                        onValueChange={(value) => {
-                                            this.setState(prevState => {
-                                                prevState.podInv[index].on = value
-                                                return prevState
-                                            })
-                                        }}/>
-                                    </View>
-                                </TouchableHighlight>
-                                <View 
-                                    style={{
-                                    borderTopColor:'rgba(0, 0, 0, 0.1)',
-                                    borderTopWidth: 1}}/>
-                            </View> 
-                        )
-                    })}
+                {this.props.navigation.getParam('title') === POD_INV &&
+                <PODInv settings={this.state.settings} onSwitchChange={this.onSwitchChange}/>}
                 
-                {this.props.navigation.getParam('title') === POD_MAIL && this.state.podSub.map((value, index) => {
-                        return(
-                            <View key={index}>
-                                <TouchableHighlight
-                                underlayColor='rgba(0, 0, 0, 0.03)'
-                                onPress={() => {
-                                    this.setState(prevState => {
-                                        prevState.podSub[index].on = !prevState.podSub[index].on
-                                        return prevState
-                                    })
-                                }}>
-                                    <View
-                                    style={{
-                                        flexDirection: 'row', alignItems: 'center', paddingVertical: 10,
-                                        justifyContent: 'space-between'
-                                    }}>
-                                        <Text style={{marginStart: 20, marginVertical: 10, fontSize: 15}}>
-                                            {value.title}
-                                        </Text>
-                                        <Switch value={this.state.podSub[index].on}
-                                        onValueChange={(value) => {
-                                            this.setState(prevState => {
-                                                prevState.podSub[index].on = value
-                                                return prevState
-                                            })
-                                        }}/>
-                                    </View>
-                                </TouchableHighlight>
-                                <View 
-                                    style={{
-                                    borderTopColor:'rgba(0, 0, 0, 0.1)',
-                                    borderTopWidth: 1}}/>
-                            </View> 
-                        )
-                    })}
+                {this.props.navigation.getParam('title') === POD_MAIL && 
+                <PODMail settings={this.state.settings} onSwitchChange={this.onSwitchChange}/>}
 
-                {this.props.navigation.getParam('title') === OTHERS && this.state.others.map((value, index) => {
-                        return(
-                            <View key={index}>
-                                <TouchableHighlight
-                                underlayColor='rgba(0, 0, 0, 0.03)'
-                                onPress={() => {
-                                    this.setState(prevState => {
-                                        prevState.others[index].on = !prevState.others[index].on
-                                        return prevState
-                                    })
-                                }}>
-                                    <View
-                                    style={{
-                                        flexDirection: 'row', alignItems: 'center', paddingVertical: 10,
-                                        justifyContent: 'space-between'
-                                    }}>
-                                        <Text style={{marginStart: 20, marginVertical: 10, fontSize: 15}}>
-                                            {value.title}
-                                        </Text>
-                                        <Switch value={this.state.others[index].on}
-                                        onValueChange={(value) => {
-                                            this.setState(prevState => {
-                                                prevState.others[index].on = value
-                                                return prevState
-                                            })
-                                        }}/>
-                                    </View>
-                                </TouchableHighlight>
-                                <View 
-                                    style={{
-                                    borderTopColor:'rgba(0, 0, 0, 0.1)',
-                                    borderTopWidth: 1}}/>
-                            </View> 
-                        )
-                    })}
+                {this.props.navigation.getParam('title') === OTHERS && 
+                <Others settings={this.state.settings} onSwitchChange={this.onSwitchChange}/>}
             </View>
         )
     }
