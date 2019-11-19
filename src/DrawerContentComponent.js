@@ -68,7 +68,7 @@ const screens = [
     {
         name: "Rate Card",
         icon: rupee,
-        screen: "RateCardScreen"
+        screen: "RateScreen"
     },
 
     {

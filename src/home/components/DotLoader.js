@@ -1,47 +1,76 @@
 import React, { Component } from 'react';
 import {
-  Image
+  Animated,
+  View,
+  StyleSheet
 } from 'react-native';
 
-const dot_0 = require('../../../assets/one_dot.png')
-const dot_1 = require('../../../assets/two_dot.png')
-const dot_2 = require('../../../assets/three_dot.png')
-const LOAD_ANIM_TIME = 200
-const ACCENT = '#FFCB28' // 255, 203, 40
-const ACCENT_DARK = '#F1B800' 
+const ANIM_DURATION = 200
+const ANIM_DELAY_FACTOR = 200
 
 export default class DotLoader extends Component {
     constructor(props) {
         super(props)
         this.state = {
-            index: 0,
+            scaleL: new Animated.Value(1),
+            scaleC: new Animated.Value(0.9),
+            scaleR: new Animated.Value(0.9),
         }
-
-        this.dots = [
-            dot_0, dot_1, dot_2
-        ]
     }
 
     componentDidMount() {
-        this.load()
+        // this.startAnim()
     }
 
-    load = () => {
-        setTimeout(() => {
-          this.setState(prevState => {
-            prevState.index = (prevState.index + 1) % 3
-            return prevState
-          });
-          this.load();
-        }, LOAD_ANIM_TIME)
+    startAnim(secIter = false) {
+        Animated.parallel([
+            Animated.timing(this.state.scaleL, {
+              toValue: secIter? 1 : 0.9,
+              duration: ANIM_DURATION,
+              useNativeDriver: true,
+              delay: (ANIM_DELAY_FACTOR * 0)
+            }),
+            Animated.timing(this.state.scaleC, {
+                toValue: secIter? 1 : 0.9,
+              duration: ANIM_DURATION,
+              useNativeDriver: true,
+              delay: (ANIM_DELAY_FACTOR * 1)
+            }),
+            Animated.timing(this.state.scaleR, {
+                toValue: secIter? 1 : 0.9,
+                duration: ANIM_DURATION,
+                useNativeDriver: true,
+                delay: (ANIM_DELAY_FACTOR * 2)
+            })
+          ]).start(
+              this.startAnim(!secIter)
+          );
     }
 
     render() {
         return(
-            <Image source={this.dots[this.state.index]}
-                style={{width: 25, height: 25}}
-                tintColor='#B0B0B0'/>
+            <View style={{flexDirection: 'row', justifyContent: 'space-evenly', alignItems: 'center'}}>
+                <Animated.View style={[styles.dot, {transform: [
+                    {scaleX: this.state.scaleL}, {scaleY: this.state.scaleL}
+                ]}]}/>
+                <Animated.View style={[styles.dot, {transform: [
+                    {scaleX: this.state.scaleC}, {scaleY: this.state.scaleC}
+                ]}]}/>
+                <Animated.View style={[styles.dot, {transform: [
+                    {scaleX: this.state.scaleR}, {scaleY: this.state.scaleR}
+                ]}]}/>
+            </View>
         )
     }
 }
+
+const styles = StyleSheet.create({
+    dot: {
+        width: 5,
+        height: 5,
+        borderRadius: 100,
+        backgroundColor: 'rgba(0, 0, 0, 0.1)',
+        marginVertical: 10
+    }
+})
 

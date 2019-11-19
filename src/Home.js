@@ -43,6 +43,8 @@ const YOUR_LOCATION = 'Your location'
 const CHO_DEST = 'Choose destination'
 const DESTINATION = 'destination'
 const ORIGIN = 'origin'
+const SCALE_ANIM_DELAY = 100
+const TRANS_ANIM_DELAY = 50
 
 const ACCENT = '#FFCB28' // 255, 203, 40
 const ACCENT_DARK = '#F1B800'
@@ -105,10 +107,10 @@ export default class Home extends Component {
 
       isActiveInput: ORIGIN,
 
-      marginAnimSideOrig: new Animated.Value(0),
-      marginAnimSideDest: new Animated.Value(10),
-      marginTopAnimOrig: new Animated.Value(0),
-      marginTopAnimDest: new Animated.Value(-20),
+      scaleXAnimOrig: new Animated.Value(1),
+      scaleXAnimDest: new Animated.Value(0.95),
+      translateYAnimOrig: new Animated.Value(0),
+      translateYAnimDest: new Animated.Value(-20),
 
       preLoc: '',
       destLoc: '',
@@ -462,24 +464,28 @@ export default class Home extends Component {
     if(!reverse) {
       if(inputType !== this.state.isActiveInput) {
         Animated.parallel([
-          Animated.timing(this.state.marginTopAnimDest, {
+          Animated.timing(this.state.translateYAnimDest, {
             toValue: 0,
-            duration: 200
+            duration: TRANS_ANIM_DELAY,
+            useNativeDriver: true
           }),
   
-          Animated.timing(this.state.marginTopAnimOrig, {
+          Animated.timing(this.state.translateYAnimOrig, {
             toValue: -10,
-            duration: 200
+            duration: TRANS_ANIM_DELAY,
+            useNativeDriver: true
           }),
 
-          Animated.timing(this.state.marginAnimSideDest, {
-            toValue: inputType === DESTINATION? 0 : 10,
-            duration: 200
+          Animated.timing(this.state.scaleXAnimDest, {
+            toValue: inputType === DESTINATION? 1 : 0.95,
+            duration: SCALE_ANIM_DELAY,
+            useNativeDriver: true
           }),
 
-          Animated.timing(this.state.marginAnimSideOrig, {
-            toValue: inputType === ORIGIN? 0 : 10,
-            duration: 200
+          Animated.timing(this.state.scaleXAnimOrig, {
+            toValue: inputType === ORIGIN? 1 : 0.95,
+            duration: SCALE_ANIM_DELAY,
+            useNativeDriver: true
           })
         ]).start(() => {
           this.setState(prevState => {
@@ -490,16 +496,17 @@ export default class Home extends Component {
         })
       }
     }
-
     else {
       Animated.parallel([
-        Animated.timing(this.state.marginTopAnimOrig, {
+        Animated.timing(this.state.translateYAnimOrig, {
           toValue: 0,
-          duration: 200,
+          duration: TRANS_ANIM_DELAY,
+          useNativeDriver: true
         }),
-        Animated.timing(this.state.marginTopAnimDest, {
+        Animated.timing(this.state.translateYAnimDest, {
           toValue: -20,
-          duration: 200
+          duration: TRANS_ANIM_DELAY,
+          useNativeDriver: true
         })
       ]).start();
     }
@@ -705,14 +712,17 @@ export default class Home extends Component {
               </View>
             </TouchableHighlight>
             
-            <Animated.View style={{marginTop: this.state.marginTopAnimOrig, 
-                                  marginHorizontal: this.state.marginAnimSideOrig}}>
+            <Animated.View 
+            style={{
+              transform: [
+                {translateY: this.state.translateYAnimOrig},
+                {scaleX: this.state.scaleXAnimOrig}
+              ], zIndex: this.state.isActiveInput === ORIGIN? 99 : 1}}>
               <TouchableHighlight 
               underlayColor='white'
               style={[styles.locationInputsContainer, 
                 this.state.isActiveInput === ORIGIN? 
-                this.state.activeInput.container : this.state.inactiveInput.container,
-                this.state.isActiveInput === ORIGIN? null : {paddingTop: 0}]}
+                this.state.activeInput.container : this.state.inactiveInput.container,]}
                 onPress={() => {
                   requestAnimationFrame(() => {
                     if(this.state.isActiveInput !== ORIGIN) {
@@ -743,7 +753,7 @@ export default class Home extends Component {
                     {this.state.preLoc === '' ? 'Pickup location' : this.state.preLoc.address}
                   </Text>
 
-                  <TouchableOpacity
+                  <TouchableOpacity style={{display: this.state.isActiveInput !== ORIGIN? "none" : "flex"}}
                     onPress={() => {
                       if((this.state.preLoc != '') && (this.state.isActiveInput === ORIGIN)) this.setModalVisible(true)
                     }}>
@@ -761,14 +771,18 @@ export default class Home extends Component {
             </TouchableHighlight>
             </Animated.View>
             
-            <Animated.View style={{marginTop: this.state.marginTopAnimDest, 
-                                  marginHorizontal: this.state.marginAnimSideDest}}>
+            <Animated.View 
+            style={{
+              transform: [
+                {translateY: this.state.translateYAnimDest},
+                {scaleX: this.state.scaleXAnimDest}
+              ], zIndex: this.state.isActiveInput === DESTINATION? 99 : 1}}>
               <TouchableHighlight 
                 underlayColor='white'
                 style={[styles.locationInputsContainer,
                         this.state.isActiveInput === DESTINATION? 
                         this.state.activeInput.container : this.state.inactiveInput.container,
-                        this.state.isActiveInput === DESTINATION? null : {justifyContent: "flex-end", paddingVertical: 0}]}
+                        this.state.isActiveInput === DESTINATION? null : {justifyContent: "flex-end", paddingTop: 0}]}
                 onPress={() => {
                   requestAnimationFrame(() => {
                     if(this.state.isActiveInput !== DESTINATION) {
@@ -797,7 +811,7 @@ export default class Home extends Component {
                       {this.state.destLoc === '' ? 'Drop location' : this.state.destLoc.address}
                     </Text>
 
-                    <TouchableOpacity
+                    <TouchableOpacity style={{display: this.state.isActiveInput !== DESTINATION? "none" : "flex"}}
                       onPress={() => {
                         if((this.state.destLoc != '') && (this.state.isActiveInput === DESTINATION)) this.setModalVisible(true)
                       }}>

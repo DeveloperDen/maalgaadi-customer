@@ -17,10 +17,6 @@ import AddMoney from './src/wallet/AddMoney'
 import Notifications from './src/Notifications'
 import PendingPOD from './src/pod/PendingPOD'
 import TransactionHistory from './src/wallet/TransactionHistory'
-import RateCard_LR from './src/rate_card/RateCard_LR'
-import RateCard_AL from './src/rate_card/RateCard_AL'
-import RateCard_PU from './src/rate_card/RateCard_PU'
-import RateCard_TA from './src/rate_card/RateCard_TA'
 import Settings from './src/settings/Settings'
 import SettingsAll from './src/settings/SubSettings'
 import TermsConditions from './src/TermsConditions'
@@ -35,6 +31,7 @@ import Splash from './src/Splash'
 import Profile from './src/Profile'
 import FareEstimation from './src/add_booking/FareEstimation'
 import TripDetails from './src/my_bookings/TripDetails'
+import RateScreen from './src/rate_card/RateScreen'
 
 import { createAppContainer, createSwitchNavigator } from 'react-navigation'
 import { createDrawerNavigator } from 'react-navigation-drawer'
@@ -125,58 +122,9 @@ const PendingPODTabs = createMaterialTopTabNavigator({
   }
 })
 
-const RateCardTabs = createMaterialTopTabNavigator({
-  LR: {screen: RateCard_LR,
-    navigationOptions: {
-      tabBarLabel: LOAD_RICK,
-      tabBarIcon: <Image source={vehicleIcon} style={{width: 22, height: 22}}/>
-    }
-  },
-  TA: {screen: RateCard_TA,
-    navigationOptions: {
-      tabBarLabel: TATA_ACE,
-      tabBarIcon: <Image source={vehicleIcon} style={{width: 22, height: 22}}/>
-    }
-  },
-  AL: {screen: RateCard_AL,
-    navigationOptions: {
-      tabBarLabel: ASHOK_LL,
-      tabBarIcon: <Image source={vehicleIcon} style={{width: 22, height: 22}}/>
-    }
-  },
-  PU: {screen: RateCard_PU,
-    navigationOptions: {
-      tabBarLabel: PICKUP,
-      tabBarIcon: <Image source={vehicleIcon} style={{width: 22, height: 22}}/>
-    }
-  }
-},
-{
-  initialRouteName: "LR",
-  tabBarOptions: {
-    showIcon: true,
-    scrollEnabled: true,
-    pressColor: 'rgba(0, 0, 0, 0.1)',
-    labelStyle: {
-      fontWeight: "700",
-      fontSize: 10,
-    },
-    activeTintColor: 'black',
-    inactiveTintColor: 'rgba(0, 0, 0, 0.3)',
-    style: {
-      backgroundColor: 'white',
-    },
-    indicatorStyle: {
-      borderBottomWidth: 2,
-      borderBottomColor: ACCENT
-    },
-    tabStyle: {
-      width: 'auto'
-    }
-  }
-})
-
 const DrawerStackNavigator = createStackNavigator({
+  RateScreen: {screen: RateScreen},
+
   TripDetails: {screen: TripDetails},
   
   FareEstimation: {screen: FareEstimation},
@@ -188,12 +136,6 @@ const DrawerStackNavigator = createStackNavigator({
 
   SettingsAll : {screen: SettingsAll},
   Settings: {screen: Settings},
-
-  RateCardScreen: {screen: RateCardTabs,
-    navigationOptions: {
-      headerTitle: 'Rate Card',
-      headerStyle: {elevation: 0}
-    }},
 
   TransactionHistory: {screen: TransactionHistory},
 
