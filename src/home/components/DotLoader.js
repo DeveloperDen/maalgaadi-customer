@@ -6,7 +6,7 @@ import {
 } from 'react-native';
 
 const ANIM_DURATION = 200
-const ANIM_DELAY_FACTOR = 200
+const SCALE_TO = 0.6
 
 export default class DotLoader extends Component {
     constructor(props) {
@@ -19,32 +19,52 @@ export default class DotLoader extends Component {
     }
 
     componentDidMount() {
-        // this.startAnim()
+        this.startAnim()
     }
 
-    startAnim(secIter = false) {
+    startAnim() {
         Animated.parallel([
-            Animated.timing(this.state.scaleL, {
-              toValue: secIter? 1 : 0.9,
-              duration: ANIM_DURATION,
-              useNativeDriver: true,
-              delay: (ANIM_DELAY_FACTOR * 0)
-            }),
-            Animated.timing(this.state.scaleC, {
-                toValue: secIter? 1 : 0.9,
-              duration: ANIM_DURATION,
-              useNativeDriver: true,
-              delay: (ANIM_DELAY_FACTOR * 1)
-            }),
-            Animated.timing(this.state.scaleR, {
-                toValue: secIter? 1 : 0.9,
-                duration: ANIM_DURATION,
-                useNativeDriver: true,
-                delay: (ANIM_DELAY_FACTOR * 2)
-            })
-          ]).start(
-              this.startAnim(!secIter)
-          );
+            Animated.sequence([
+                Animated.timing(this.state.scaleL, {
+                    toValue: 1,
+                    duration: ANIM_DURATION,
+                    useNativeDriver: true,
+                }),
+                Animated.timing(this.state.scaleL, {
+                    toValue: SCALE_TO,
+                    duration: ANIM_DURATION,
+                    useNativeDriver: true,
+                }),
+            ]),
+
+            Animated.sequence([
+                Animated.timing(this.state.scaleC, {
+                    toValue: 1,
+                    duration: ANIM_DURATION,
+                    useNativeDriver: true,
+                }),
+                Animated.timing(this.state.scaleC, {
+                    toValue: SCALE_TO,
+                    duration: ANIM_DURATION,
+                    useNativeDriver: true,
+                }),
+            ]),
+
+            Animated.sequence([
+                Animated.timing(this.state.scaleR, {
+                    toValue: 1,
+                    duration: ANIM_DURATION,
+                    useNativeDriver: true,
+                }),
+                Animated.timing(this.state.scaleR, {
+                    toValue: SCALE_TO,
+                    duration: ANIM_DURATION,
+                    useNativeDriver: true,
+                })
+            ])
+          ], {stopTogether: false}).start(() => {
+            this.startAnim()
+          });
     }
 
     render() {
@@ -70,7 +90,8 @@ const styles = StyleSheet.create({
         height: 5,
         borderRadius: 100,
         backgroundColor: 'rgba(0, 0, 0, 0.1)',
-        marginVertical: 10
+        marginVertical: 10,
+        marginHorizontal: 1
     }
 })
 

@@ -142,7 +142,7 @@ export default class RateCard extends Component {
                             this.state.vehicles !== ''?
                             this.state.vehicles.map((value, index) => {
                                 return(
-                                    <Picker.Item label={value.vehicle_name} value={index} />
+                                    <Picker.Item label={value.vehicle_name} value={index} key={value.vehicle_name}/>
                                 )
                             }) :
                             <Picker.Item label="Getting Vehicles..." value='none' />
@@ -197,7 +197,5 @@ export default class RateCard extends Component {
     }
 }
 
-const styles = StyleSheet.create({
-
-});
+const styles = StyleSheet.create({});
 

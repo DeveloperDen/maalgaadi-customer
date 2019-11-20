@@ -32,6 +32,7 @@ import Profile from './src/Profile'
 import FareEstimation from './src/add_booking/FareEstimation'
 import TripDetails from './src/my_bookings/TripDetails'
 import RateScreen from './src/rate_card/RateScreen'
+import NoNetworkModal from './src/NoNetworkModal'
 
 import { createAppContainer, createSwitchNavigator } from 'react-navigation'
 import { createDrawerNavigator } from 'react-navigation-drawer'
@@ -208,9 +209,14 @@ const HomeStackNavigator = createStackNavigator({
         headerStyle: {display: 'none'},
       })},
     RateCard: { screen: RateCard },
+    NoNetworkModal: {screen: NoNetworkModal,
+      navigationOptions: () => ({
+        headerStyle: {display: 'none'},
+      })}
   }, {
     initialRouteName: "AppStack",
-    mode: 'modal',
+    mode: 'card',
+    transparentCard: true,
     defaultNavigationOptions: {
       gesturesEnabled: false,
     },

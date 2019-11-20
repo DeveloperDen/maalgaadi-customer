@@ -79,7 +79,7 @@ export default class RateCard extends Component {
 
     render() {
         return(
-            <View style={{flex: 1}}>
+            <View style={{flex: 1, backgroundColor: 'white'}}>
                 <ScrollView>
                     {this.rates.map((value, index) => {
                         return(

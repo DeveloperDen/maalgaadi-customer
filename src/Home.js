@@ -21,6 +21,7 @@ import { PermissionsAndroid } from 'react-native';
 import Geocoder from 'react-native-geocoding';
 import { TextInput } from 'react-native-gesture-handler';
 import DateTimePicker from '@react-native-community/datetimepicker';
+import NetInfo from "@react-native-community/netinfo";
 import {LandmarkModel} from './models/landmark_model'
 import DotLoader from './home/components/DotLoader';
 
@@ -46,6 +47,11 @@ const ORIGIN = 'origin'
 const SCALE_ANIM_DELAY = 100
 const TRANS_ANIM_DELAY = 50
 
+const I_TRANS_ORIG = 0
+const I_TRANS_DEST = -20
+const F_TRANS_ORIG = -5
+const F_TRANS_DEST = -5
+
 const ACCENT = '#FFCB28' // 255, 203, 40
 const ACCENT_DARK = '#F1B800'
 
@@ -59,6 +65,15 @@ export default class Home extends Component {
     this.getCurrentLocation = this.getCurrentLocation.bind(this)
 
     this.mapView = null;
+    this.freeDrivers = [];
+
+    this.netInfoSub = NetInfo.addEventListener((state) => {
+      ToastAndroid.show(`CONNECTED: ${state.isConnected} \nTYPE: ${state.type}`,
+      ToastAndroid.SHORT)
+
+      if(!state.isConnected)
+        props.navigation.navigate("NoNetworkModal");
+    })
 
     this.state = {
       coordinates: {
@@ -109,8 +124,8 @@ export default class Home extends Component {
 
       scaleXAnimOrig: new Animated.Value(1),
       scaleXAnimDest: new Animated.Value(0.95),
-      translateYAnimOrig: new Animated.Value(0),
-      translateYAnimDest: new Animated.Value(-20),
+      translateYAnimOrig: new Animated.Value(I_TRANS_ORIG),
+      translateYAnimDest: new Animated.Value(I_TRANS_DEST),
 
       preLoc: '',
       destLoc: '',
@@ -380,6 +395,10 @@ export default class Home extends Component {
     // this.getFreeDrivers()
   }
 
+  componentWillUnmount() {
+    this.netInfoSub();
+  }
+
   getVehicleCategory = async () => {
     const cityId = 1 // TODO: Remove this line, uncomment next line.
     // const cityId = await DataController.getItem(DataController.CITY_ID)
@@ -435,15 +454,28 @@ export default class Home extends Component {
           ToastAndroid.show(value.message, ToastAndroid.SHORT);
         }
         else {
+          this.freeDrivers = value.data
           this.setState(prevState => {
-            prevState.freeDrivers = value.data
+            prevState.selectedVehicleID = value.data[0].vehicle_category_id
             return prevState
           })
+          this.showFreeDrivOnMap()
         }
         
     }).catch(err => {
         console.log(err)
         ToastAndroid.show(Constants.ERROR_GET_DETAILS, ToastAndroid.SHORT);
+    })
+  }
+
+  showFreeDrivOnMap() {
+    this.setState(prevState => {
+      prevState.freeDrivers = []
+      this.freeDrivers.forEach((value) => {
+        if(value.vehicle_category_id === prevState.selectedVehicleID)
+          prevState.freeDrivers.push(value)
+      })
+      return prevState
     })
   }
 
@@ -465,13 +497,13 @@ export default class Home extends Component {
       if(inputType !== this.state.isActiveInput) {
         Animated.parallel([
           Animated.timing(this.state.translateYAnimDest, {
-            toValue: 0,
+            toValue: F_TRANS_DEST,
             duration: TRANS_ANIM_DELAY,
             useNativeDriver: true
           }),
   
           Animated.timing(this.state.translateYAnimOrig, {
-            toValue: -10,
+            toValue: F_TRANS_ORIG,
             duration: TRANS_ANIM_DELAY,
             useNativeDriver: true
           }),
@@ -499,12 +531,12 @@ export default class Home extends Component {
     else {
       Animated.parallel([
         Animated.timing(this.state.translateYAnimOrig, {
-          toValue: 0,
+          toValue: I_TRANS_ORIG,
           duration: TRANS_ANIM_DELAY,
           useNativeDriver: true
         }),
         Animated.timing(this.state.translateYAnimDest, {
-          toValue: -20,
+          toValue: I_TRANS_DEST,
           duration: TRANS_ANIM_DELAY,
           useNativeDriver: true
         })
@@ -893,6 +925,7 @@ export default class Home extends Component {
                       prevState.selectedVehicleIndex = index
                       return prevState
                     })
+                    this.showFreeDrivOnMap()
                   }}
                   style={{alignItems: "center", paddingHorizontal: 10, flex: 1}} key={vehicle.vehicle_name}>
                     <View style={{alignItems: "center"}}>
