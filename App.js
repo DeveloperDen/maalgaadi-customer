@@ -202,19 +202,33 @@ transitionConfig: () => ({
   }),
 })
 
+const DrawerNavigator = createDrawerNavigator({
+  AppStack: { screen: DrawerStackNavigator,
+    navigationOptions: () => ({
+      headerStyle: {display: 'none'},
+  })},
+}, 
+{
+  initialRouteName: 'AppStack',
+  drawerBackgroundColor: 'white',
+  drawerType: "front",
+  drawerWidth: '80%',
+  drawerPosition: "left",
+  contentComponent: DrawerContentComponent,
+})
 
 const HomeStackNavigator = createStackNavigator({
-    AppStack: { screen: DrawerStackNavigator,
+    Home: { screen: DrawerNavigator,
       navigationOptions: () => ({
         headerStyle: {display: 'none'},
-      })},
+    })},
     RateCard: { screen: RateCard },
     NoNetworkModal: {screen: NoNetworkModal,
       navigationOptions: () => ({
         headerStyle: {display: 'none'},
       })}
   }, {
-    initialRouteName: "AppStack",
+    initialRouteName: "Home",
     mode: 'card',
     transparentCard: true,
     defaultNavigationOptions: {
@@ -246,18 +260,6 @@ const HomeStackNavigator = createStackNavigator({
     }),
   }
 );
-
-const DrawerNavigator = createDrawerNavigator({
-  Home: {screen: HomeStackNavigator},
-}, 
-{
-  initialRouteName: 'Home',
-  drawerBackgroundColor: 'white',
-  drawerType: "front",
-  drawerWidth: '80%',
-  drawerPosition: "left",
-  contentComponent: DrawerContentComponent,
-})
 
 const RegistrationNavigator = createStackNavigator({
   ChangePassword: {screen: ChangePassword},
@@ -297,7 +299,7 @@ const RegistrationNavigator = createStackNavigator({
 })
 
 const MainSwitchNavigator = createSwitchNavigator({
-  HomeDrawerNavigator: {screen: DrawerNavigator,
+  HomeDrawerNavigator: {screen: HomeStackNavigator,
   navigationOptions: {
     headerStyle: {display: 'none'}
   }},

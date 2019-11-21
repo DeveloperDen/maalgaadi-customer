@@ -63,6 +63,7 @@ export default class Home extends Component {
 
     this.requestLocationPermission = this.requestLocationPermission.bind(this)
     this.getCurrentLocation = this.getCurrentLocation.bind(this)
+    this.stopTrackingViewChanges = this.stopTrackingViewChanges.bind(this)
 
     this.mapView = null;
     this.freeDrivers = [];
@@ -76,6 +77,7 @@ export default class Home extends Component {
     })
 
     this.state = {
+      trackViewChanges: true,
       coordinates: {
         latitude: 0,
         longitude: 0
@@ -392,7 +394,7 @@ export default class Home extends Component {
     })
 
     this.getVehicleCategory()
-    // this.getFreeDrivers()
+    this.getFreeDrivers()
   }
 
   componentWillUnmount() {
@@ -470,6 +472,7 @@ export default class Home extends Component {
 
   showFreeDrivOnMap() {
     this.setState(prevState => {
+      prevState.trackViewChanges = true;
       prevState.freeDrivers = []
       this.freeDrivers.forEach((value) => {
         if(value.vehicle_category_id === prevState.selectedVehicleID)
@@ -647,6 +650,13 @@ export default class Home extends Component {
     })
   }
 
+  stopTrackingViewChanges() {
+    this.setState(prevState => {
+      prevState.trackViewChanges = false
+      return prevState
+    })
+  }
+
   render() {
     return(
       <View style={{flex: 1,}}>
@@ -658,7 +668,7 @@ export default class Home extends Component {
             showsMyLocationButton={false}
             onRegionChangeComplete={this.mapRegionChangeCompleteListener}
             showsUserLocation={true} 
-            customMapStyle={this.state.mapStyle}
+            // customMapStyle={this.state.mapStyle}
             provider={PROVIDER_GOOGLE}
             style={styles.mapReg}
             initialRegion={{
@@ -672,11 +682,12 @@ export default class Home extends Component {
               {
                 this.state.freeDrivers.map((driver, index) => {
                   return(
-                    <Marker coordinate={{
+                    <Marker key={index} coordinate={{
                       latitude: parseFloat(driver.lat),
                       longitude: parseFloat(driver.lng),
-                    }}>
-                      <Image source={driverMarker} style={{width: 50, height: 50}} resizeMode="contain"/>
+                    }} tracksViewChanges={this.state.trackViewChanges}>
+                      <Image source={driverMarker} style={{width: 50, height: 50}} resizeMode="contain"
+                      onLoad={this.stopTrackingViewChanges}/>
                     </Marker>
                   )
                 })

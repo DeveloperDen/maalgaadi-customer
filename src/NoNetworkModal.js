@@ -3,7 +3,8 @@ import {
     View,
     Text,
     BackHandler,
-    ToastAndroid
+    ToastAndroid,
+    StatusBar
 } from 'react-native'
 import { NO_NETWORK } from './utils/AppConstants';
 import { TouchableHighlight } from 'react-native-gesture-handler';
@@ -23,7 +24,7 @@ export default class NoNetworkModal extends React.Component {
             ToastAndroid.SHORT)
       
             if(state.isConnected)
-              props.navigation.goBack();
+              props.navigation.navigate("Splash")
         })
     }
 
@@ -38,6 +39,8 @@ export default class NoNetworkModal extends React.Component {
         style={{
             flex: 1
         }}>
+            <StatusBar backgroundColor='rgba(0, 0, 0, 0.6)' barStyle="light-content"/>
+
             <View 
             style={{
                 backgroundColor: 'rgba(0, 0, 0, 0.6)', width: '100%', height: '100%',

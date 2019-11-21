@@ -8,52 +8,77 @@ import {
   Text,
   TextInput,
   Modal,
-  Switch
+  Switch,
+  ToastAndroid
 } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
+import { NO_ACIVE_FLEET, GET_ACTIVE_DRIVER_LIST, ERROR_GET_DETAILS, BASE_URL, FIELDS } from '../utils/AppConstants';
+import * as DataController from '../utils/DataStorageController'
 
 const ACCENT = '#FFCB28' // 255, 203, 40 
 
 export default class RunningMyBookings extends Component {
-  constructor(props) {
+    constructor(props) {
     super(props)
     this.state = {
         modalVisible: false,
         excDriverSelected: false,
-
-        activeFleet: [
-            {
-                name: 'Some Name',
-                vehicle: 'Loading Rickshaw',
-                vehicleNumber: 'MP094520'
-            },
-            {
-                name: 'Another Name',
-                vehicle: 'Tata Ace',
-                vehicleNumber: 'MP094646'
-            },
-            {
-                name: 'Test Name',
-                vehicle: 'Ashok Layland',
-                vehicleNumber: 'MP092252'
-            },
-            {
-                name: 'Name LastName',
-                vehicle: 'Pickup',
-                vehicleNumber: 'MP095518'
-            }
-        ]
+        isLoading: true,
+        activeFleet: []
     }
-  }
+    }
 
-  setModalVisible = (visible) => {
-    this.setState(prevState => {
-        prevState.modalVisible = visible
-        return prevState
-    })
-}
+    setModalVisible = (visible) => {
+        this.setState(prevState => {
+            prevState.modalVisible = visible
+            return prevState
+        })
+    }
 
-  render() {
+    componentDidMount() {
+        this.getFavDrivers()
+    }
+
+    getFavDrivers = async () => {
+        const customerId = await DataController.getItem(DataController.CUSTOMER_ID);
+
+        const reqURL = BASE_URL + GET_ACTIVE_DRIVER_LIST + '?' + 
+                        FIELDS.CUSTOMER_ID + '=' + customerId
+        
+        console.log("Request: ", reqURL)
+
+        const request = await fetch(reqURL, {
+            method: 'GET',
+            headers: {
+                key: "21db33e221e41d37e27094153b8a8a02"
+            }
+        })
+
+        const response = await request.json().then(value => {
+            console.log(value)
+
+            if(!value.success){
+                ToastAndroid.show(value.message, ToastAndroid.SHORT)
+            }
+            else {
+                this.setState(prevState => {
+                    prevState.activeFleet = value.data
+                    return prevState
+                })
+            }
+            
+        }).catch(err => {
+            console.log(err)
+            ToastAndroid.show(ERROR_GET_DETAILS, ToastAndroid.SHORT);
+        })
+
+        this.setState(prevState => {
+            prevState.isLoading = false;
+            return prevState
+        })
+    }
+
+    render() {
     return(
         <View style={{flex: 1}}>
             <ScrollView style={{display: this.state.activeFleet.length > 0? 'flex' : 'none'}}>
@@ -69,8 +94,8 @@ export default class RunningMyBookings extends Component {
                                     <Text style={{fontSize: 16, fontWeight: "700"}}>
                                     {member.name}
                                     </Text>
-                                    <Text style={{fontSize: 12, opacity: 0.4, marginVertical: 5}}>{member.vehicle}</Text>
-                                    <Text style={{fontSize: 12, opacity: 0.4}}>{member.vehicleNumber}</Text>
+                                    <Text style={{fontSize: 12, opacity: 0.4, marginVertical: 5}}>{member.vehicle_name}</Text>
+                                    <Text style={{fontSize: 12, opacity: 0.4}}>{member.vehicle_reg_no}</Text>
                                 </View>
                                 <TouchableOpacity
                                 onPress={() => {
@@ -97,8 +122,7 @@ export default class RunningMyBookings extends Component {
             alignContent: 'center', justifyContent: 'center',
             opacity: 0.3, marginHorizontal: 20, display: this.state.activeFleet.length > 0? 'none' : 'flex'}}>
                 <Text style={{textAlign: "center", fontSize: 16,}}>
-                Currently, you do not have any favourite drivers in your list. Tap on Add button to manage
-                driver on your fleet.
+                    {this.state.isLoading? 'Getting Active fleet members...' : NO_ACIVE_FLEET}
                 </Text>
             </View>
 
@@ -182,7 +206,7 @@ export default class RunningMyBookings extends Component {
             </TouchableHighlight>
         </View>
     )
-  }
+    }
 }
 
 const styles = StyleSheet.create({});
