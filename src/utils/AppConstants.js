@@ -122,6 +122,7 @@ export const NO_DRIVER_FOUND_D = "No drivers are availbale to accept your bookin
 export const CANCEL_EDIT_CONFIRM = "Cancellation charges may apply. Do you want to cancel or edit the trip?"
 export const NO_NETWORK = "Seems like you are Offline. Please connect to either a WiFi network or turn on your Cellular Data"
 export const NO_ACIVE_FLEET = "Currently, you do not have any favourite drivers in your list. Tap on Add button to manage driver on your fleet."
+export const ERR_ACTIVE_FLEET = "An error occured while upadating fleet members."
 
 export const IS_NEW_USER = "is_new_user"
 
@@ -164,7 +165,10 @@ export const FIELDS = {
     BOOKING_ID: "booking_id",
     REASON: "reason",
     ISSUE_TYPE: "issues_type",
-    ACTION: "action"
+    ACTION: "action",
+    DRIVER_ID: "driver_id",
+    MG_CODE: "mg_code",
+    STATUS_EXC: "status_exclusive"
 }
 
 

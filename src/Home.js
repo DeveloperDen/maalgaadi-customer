@@ -692,48 +692,6 @@ export default class Home extends Component {
                   )
                 })
               }
-    
-              <MapViewDirections
-                origin={this.state.origin}
-                destination={this.state.destination}
-                apikey={GOOGLE_MAPS_APIKEY}
-                strokeWidth={3}
-                strokeColor={this.state.strokeColor}
-                optimizeWaypoints={true}
-                mode={this.state.modeOfTrans}
-                onStart={(params) => {
-                  console.log(`Started routing between "${params.origin}" and "${params.destination}"`);
-                }}
-                onReady={result => {
-                  console.log(`Distance: ${result.distance} km`)
-                  console.log(`Duration: ${result.duration} min.`)
-
-                  this.setState((prevState) => {
-                    let totalDuration = parseInt(Math.ceil(parseFloat(result.duration)))
-                    let durInHours = parseInt(Math.ceil(parseFloat(totalDuration / 60)))
-                    let durInMins = parseInt(Math.ceil(parseFloat(totalDuration % 60)))
-                    prevState.duration = durInMins === 0? durInHours + ' hours' : 
-                                                          durInHours + ' hours ' + durInMins + ' mins'
-                    prevState.distance = "(" + parseInt(Math.ceil(parseFloat(result.distance))) + " km)"
-
-                    return prevState
-                  })
-                  
-                  this.mapView.fitToCoordinates(result.coordinates, {
-                    edgePadding: {
-                      right: (width / 20),
-                      bottom: (height / 20),
-                      left: (width / 20),
-                      top: (height / 20),
-                    }
-                  });
-
-                  
-                }}
-                onError={(errorMessage) => {
-                  console.log('ERROR: ' + errorMessage);
-                }}
-              />
 
           </MapView>
         </View>
