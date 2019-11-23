@@ -168,7 +168,8 @@ export const FIELDS = {
     ACTION: "action",
     DRIVER_ID: "driver_id",
     MG_CODE: "mg_code",
-    STATUS_EXC: "status_exclusive"
+    STATUS_EXC: "status_exclusive",
+    BOOKING_TYPE: "booking_type"
 }
 
 

@@ -33,6 +33,7 @@ import FareEstimation from './src/add_booking/FareEstimation'
 import TripDetails from './src/my_bookings/TripDetails'
 import RateScreen from './src/rate_card/RateScreen'
 import NoNetworkModal from './src/NoNetworkModal'
+import TrackDriver from './src/my_bookings/TrackDriver'
 
 import { createAppContainer, createSwitchNavigator } from 'react-navigation'
 import { createDrawerNavigator } from 'react-navigation-drawer'
@@ -126,6 +127,7 @@ const PendingPODTabs = createMaterialTopTabNavigator({
 const DrawerStackNavigator = createStackNavigator({
   RateScreen: {screen: RateScreen},
 
+  TrackDriver: {screen: TrackDriver},
   TripDetails: {screen: TripDetails},
   
   FareEstimation: {screen: FareEstimation},

@@ -15,6 +15,7 @@ import {
   ActivityIndicator,
   ToastAndroid
 } from 'react-native';
+import {BookingEventType} from '../models/bookings_model'
 
 const Constants = require('../utils/AppConstants')
 const DataController = require('../utils/DataStorageController')
@@ -127,6 +128,61 @@ export default class RunningMyBookings extends Component {
       return prevState
     })
   }
+
+  formatDate = (date = new Date()) => {
+    console.log(date.toUTCString().split(" "))
+    const dateArr = date.toUTCString().split(" ");  // ["Thu,", "14", "Nov", "2019", "06:13:34", "GMT"] 
+    const yyyy = dateArr[3]
+    const MMM = dateArr[2]
+    const dd = dateArr[1]
+    const hhmmss = dateArr[4].split(":")
+    const hhmm = hhmmss[0] + ':' + hhmmss[1]
+    const ampm = date.getHours() >= 12? 'PM' : 'AM'
+    console.log(date.toLocaleString())
+    return(dd + ' ' + MMM + ' ' + yyyy + ' ' + hhmm + ' ' + ampm)
+  }
+
+  editBooking = async () => {
+    const reqURL = Constants.BASE_URL + Constants.GET_BOOKING_DETAIL + '?' +
+        Constants.FIELDS.BOOKING_ID + '=' + this.state.bookings[this.state.activeIndex].trip_id + '&' +
+        Constants.FIELDS.BOOKING_TYPE + '=' + BookingEventType.EDIT;
+
+    const request = await fetch(reqURL, {
+        method: 'GET',
+        headers: {
+            key: "21db33e221e41d37e27094153b8a8a02"
+        }
+    })
+
+    const response = await request.json().then(async value => {
+        console.log(value)
+
+        if (!value.success) {
+            ToastAndroid.show(value.message, ToastAndroid.SHORT);
+        }
+        else {
+          let model = value.data;
+          model.booking_event_type = BookingEventType.EDIT
+          model.booking_time = this.formatDate()
+
+          DataController.getItem(DataController.VEHICLE).then((vehicles) => {
+            vehicles = JSON.parse(vehicles)
+            vehicles.forEach((veh, index) => {
+              if(model.selected_vehicle_category == veh.id)
+                model.vehicle = veh
+                return;
+            })
+          })
+
+          await DataController.setItem(DataController.BOOKING_MODEL, JSON.stringify(model))
+          this.props.navigation.navigate('AddBooking');
+        }
+
+    }).catch(err => {
+        console.log(err)
+        ToastAndroid.show(Constants.ERROR_GET_DETAILS, ToastAndroid.SHORT);
+    })
+}
 
   render() {
     return(
@@ -242,6 +298,13 @@ export default class RunningMyBookings extends Component {
                           <Text style={{color: ACCENT, fontSize: 13}}>Cancel</Text>
                         </TouchableOpacity>
                         <TouchableOpacity
+                        onPress={() => {
+                          this.setState(prevState => {
+                            prevState.activeIndex = index
+                            return prevState
+                          })
+                          this.editBooking()
+                        }}
                         style={{
                           borderWidth: 1, borderColor: ACCENT, borderRadius: 3,
                           paddingVertical: 5, paddingHorizontal: 10, marginStart: 10

@@ -31,6 +31,7 @@ export default class FareEstimation extends Component {
     constructor(props) {
         super(props)
         this.state = {
+            loadingModalVisible: false,
             modalVisible: false,
             noDrivAvailModalVisible: false,
             findDrivModalVisible: false,
@@ -47,12 +48,17 @@ export default class FareEstimation extends Component {
         this.payDriver = 0
     }
 
-    setModalVisible = (visible, findDriv = false) => {
+    setModalVisible = (visible, findDriv = false, loading = false) => {
         this.setState(prevState => {
-            if(findDriv)
-                prevState.findDrivModalVisible = visible
-            else
-                prevState.modalVisible = visible
+            if(loading)
+                prevState.loadingModalVisible = visible
+            else {
+                if(findDriv)
+                    prevState.findDrivModalVisible = visible
+                else
+                    prevState.modalVisible = visible
+            }
+            
             return prevState
         })
     }
@@ -141,6 +147,48 @@ export default class FareEstimation extends Component {
         this.bookingModel.booking_estimate.data.cashback_amount = 0
 
         const reqURL = Constants.BASE_URL + Constants.ADD_CUSTOMER_BOOKING
+        console.log("Req URL: ", reqURL)
+        console.log("Request: ", this.bookingModel)
+        const request = await fetch(reqURL, {
+            method: 'POST',
+            headers: {
+                key: "21db33e221e41d37e27094153b8a8a02",
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(this.bookingModel)
+        })
+    
+        const response = await request.json().then(value => {
+            console.log(value)
+            if(value.success) {
+                // TODO: Save bookingID to Storage
+                // const bookingID = value.data.booking_id
+
+                const dataObj = value.data
+                const tripObj = value.trip_data
+                const responseCode = dataObj.responseCode
+                const responseMsg = value.message
+
+                this.checkResponseCode(responseCode, responseMsg, tripObj)
+            }
+            else {
+                this.setModalVisible(false, true)
+                ToastAndroid.show(value.message, ToastAndroid.SHORT)
+            }
+        }).catch(err => {
+            console.log(err)
+            ToastAndroid.show(err, ToastAndroid.SHORT);
+            this.setModalVisible(false, true)
+        })  
+    }
+
+    editBooking = async () => {
+        this.bookingModel.booking_estimate.data.upper_customer_own_price = this.state.yourPrice
+
+        // TODO: Remove it. Presently, it is unnecessary but still required in request.
+        this.bookingModel.booking_estimate.data.cashback_amount = 0
+
+        const reqURL = Constants.BASE_URL + Constants.EDIT_CUSTOMER_BOOKING
         console.log("Req URL: ", reqURL)
         console.log("Request: ", this.bookingModel)
         const request = await fetch(reqURL, {
@@ -482,9 +530,8 @@ export default class FareEstimation extends Component {
                         if(isBookingAllow){
                             if (!this.bookingModel.book_later) {
                                 if (this.bookingModel.booking_event_type == BookingModel.BookingEventType.EDIT) {
-                                    // TODO
-                                    // this.editBooking();
-                                    ToastAndroid.show('Will edit Booking.', ToastAndroid.SHORT)
+                                    this.setModalVisible(true, true, true)
+                                    this.editBooking();
                                 } else {
                                     this.setModalVisible(true, true)
                                     this.confirmBooking();
@@ -655,6 +702,35 @@ export default class FareEstimation extends Component {
                                 }}>
                                     <Text style={{color: 'white'}}>CANCEL</Text>
                             </TouchableHighlight>
+                        </View>
+                    </View>
+                </Modal>
+            
+                {/* Dialog to Find Driver */}
+                <Modal
+                animationType="fade"
+                transparent={true}
+                visible={this.state.loadingModalVisible}
+                onRequestClose={() => {
+                    return;
+                }}>
+                    <View style={{
+                    backgroundColor: 'rgba(0, 0, 0, 0.7)',
+                    height: '100%',
+                    alignItems: "center",
+                    justifyContent: 'center'
+                    }}>
+                        <View
+                        style={{backgroundColor: 'white', width: '80%',
+                        paddingTop: 20, borderRadius: 3,
+                        elevation: 10, overflow: 'hidden'}}>
+                            <ActivityIndicator size="large" color={ACCENT} style={{alignSelf: 'center', marginTop: 15}}/>
+                            <Text style={{
+                                textAlign: 'center', alignSelf: 'center', marginVertical: 15,
+                                opacity: 0.3, marginHorizontal: 15,
+                            }}>
+                                Updating Booking details
+                            </Text>
                         </View>
                     </View>
                 </Modal>

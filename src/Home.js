@@ -417,20 +417,22 @@ export default class Home extends Component {
         }
     })
 
-    const response = await request.json().then(value => {
+    const response = await request.json().then(async value => {
         console.log(value)
 
         if(!value.success){
             ToastAndroid.show(value.message, ToastAndroid.SHORT);
         }
         else {
-            this.setState(prevState => {
-              prevState.vehiclesList = value.data
-              prevState.selectedVehicle = value.data[0].vehicle_name
-              prevState.selectedVehicleID = value.data[0].id
-              prevState.selectedVehicleIndex = 0
-              return prevState
-            })
+          await DataController.setItem(DataController.VEHICLE, JSON.stringify(value.data))
+          
+          this.setState(prevState => {
+            prevState.vehiclesList = value.data
+            prevState.selectedVehicle = value.data[0].vehicle_name
+            prevState.selectedVehicleID = value.data[0].id
+            prevState.selectedVehicleIndex = 0
+            return prevState
+          })
         }
         
     }).catch(err => {
