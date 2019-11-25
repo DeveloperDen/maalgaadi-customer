@@ -115,6 +115,7 @@ export default class TransactionHistory extends Component {
     getDataList = async () => {
         this.setState(prevState => {
             prevState.isLoading = true
+            prevState.history = []
             return prevState
         })
         const stDate = this.formatDate(this.state.startDate.date, true)

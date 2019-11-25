@@ -24,17 +24,20 @@ export default class MGWallet extends Component {
         return{
             headerTitle: 'MG Wallet',
             headerRight: 
-            <TouchableHighlight
+            <TouchableHighlight disabled={navigation.state.params? false : true}
             onPress={() => {
-                navigation.navigate('AddMoney')
+                navigation.navigate('AddMoney', {balance: navigation.state.params? navigation.state.params.balance : 0})
             }}
             underlayColor={GREEN_DARK}
             style={{
-                backgroundColor: GREEN, marginEnd: 20,
+                backgroundColor: navigation.state.params? GREEN : 'gray', marginEnd: 20,
                 paddingVertical: 8, paddingHorizontal: 12,
                 borderRadius: 3
             }}>
-                <Text style={{color: 'white', fontSize: 13}}> Add Money </Text>
+                <Text
+                style={{color: 'white', fontSize: 13, opacity: navigation.state.params? 1 : 0.4}}>
+                    Add Money
+                </Text>
             </TouchableHighlight>
         }
     }
@@ -83,6 +86,9 @@ export default class MGWallet extends Component {
                 ToastAndroid.show(value.message, ToastAndroid.SHORT);
             }
             else {
+                this.props.navigation.setParams({
+                    balance: value.data[0].final_balance
+                })
                 this.setState(prevState => {
                     prevState.isLoading = false
                     prevState.history = value.data
@@ -193,6 +199,7 @@ export default class MGWallet extends Component {
                     })}
                 </ScrollView>
 
+                {/* Filter button */}
                 <Animated.View
                 style={{
                     position: 'absolute', alignSelf: 'center', bottom: filterBottom,
@@ -219,8 +226,7 @@ export default class MGWallet extends Component {
                         </View>
                     </TouchableHighlight>
                 </Animated.View>
-                    
-            
+
                 <View style={{flex: 1, textAlign: "center",
                 alignContent: 'center', justifyContent: 'center',
                 opacity: 0.3, marginHorizontal: 20, display: this.state.history.length > 0? 'none' : 'flex'}}>

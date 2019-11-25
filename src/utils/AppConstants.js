@@ -21,7 +21,10 @@ export const IMAGE_BASE_URL = BASE_URL_DEMO;
 
 export const PAYMENT_GATEWAY_URL = "https://secure.ccavenue.com/transaction/initTrans";
 export const PAYMENT_GATEWAY_ACCESS_CODE = "AVHR74EK06AD66RHDA";
+export const MERCHANT_ID = "153491"
+export const CURRENCY = "INR"
 
+export const GET_RSA = "getRSA"
 export const ADDEXCLUSIVEDRIVER = "addExclusiveDriver";
 export const EXCLUSIVEPLANACTIVE = "exclusivePlanActivate";
 export const CHANGELOGINOPERATION = "changeLoginOperation";
@@ -170,6 +173,14 @@ export const FIELDS = {
     MG_CODE: "mg_code",
     STATUS_EXC: "status_exclusive",
     BOOKING_TYPE: "booking_type"
+}
+
+export const TRANS_PARAMS = {
+    ORDER_ID:  "order_id",
+    AMOUNT: "amount",
+    PAY_NOW: "paynow",
+    CURRENCY: "currency",
+    CURRENT_CURRENCY: "INR"
 }
 
 

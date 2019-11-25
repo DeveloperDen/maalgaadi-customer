@@ -8,6 +8,8 @@ import {
   ToastAndroid,
   TextInput
 } from 'react-native';
+import { getItem,  CUSTOMER_ID} from '../utils/DataStorageController'
+import { TRANS_PARAMS, FIELDS } from './../utils/AppConstants';
 
 const rupee = require('../../assets/rupee_outline.png')
 
@@ -27,10 +29,35 @@ export default class AddMoney extends Component {
     constructor(props) {
         super(props)
         this.state = {
-            curBalance: 100,
+            curBalance: props.navigation.getParam('balance', 0),
             isActiveInput: false,
             amount: ''
         }
+
+        this.orderID = null
+        this.custID = null
+    }
+
+    componentDidMount() {
+        this.generateOrderID()
+    }
+
+    async generateOrderID() {
+        const custID = await getItem(CUSTOMER_ID)
+        const timeStamp = new Date()
+        timeStamp = timeStamp.valueOf()
+
+        this.orderID = custID + timeStamp
+        this.custID = custID
+    }
+
+    initTrans() {
+        this.props.navigation.navigate("PaymentWebview", {
+            [TRANS_PARAMS.ORDER_ID]: this.orderID,
+            [TRANS_PARAMS.AMOUNT]: this.state.amount,
+            [TRANS_PARAMS.PAY_NOW]: false,
+            [FIELDS.CUSTOMER_ID]: this.custID,
+        })
     }
 
     render() {
@@ -96,11 +123,12 @@ export default class AddMoney extends Component {
                     style={{fontSize: 25, flex: 1}}/>
                 </View>
                 
+                {/* Add Money button */}
                 <TouchableHighlight
                 underlayColor={ACCENT_DARK}
                 onPress={() => {
                     if(this.state.amount.length > 0)
-                        ToastAndroid.show('Will add money', ToastAndroid.SHORT)
+                        this.initTrans()
                     else
                         ToastAndroid.show('Please enter amount', ToastAndroid.SHORT)
                 }}
@@ -116,7 +144,5 @@ export default class AddMoney extends Component {
     }
 }
 
-const styles = StyleSheet.create({
-
-});
+const styles = StyleSheet.create({});
 
