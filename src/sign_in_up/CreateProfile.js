@@ -10,6 +10,7 @@ import {
   ToastAndroid
 } from 'react-native';
 import { ScrollView, TextInput, TouchableOpacity } from 'react-native-gesture-handler';
+import { PopOverComp } from '../utils/PopOverComp';
 
 const Constants = require('../utils/AppConstants')
 const DataController = require('../utils/DataStorageController')
@@ -42,6 +43,11 @@ export default class CreateProfile extends Component {
         this.isExc = false
 
         this.state = {
+            romView: null,
+            popOverText: '',
+            tutCompFieldActive: null,
+            isVisible: false,
+
             isLoading: false,
             tripFreq: 0,
             name: '',
@@ -162,6 +168,22 @@ export default class CreateProfile extends Component {
         this.props.navigation.replace("Main")
     }
 
+    showPopover(compFieldText, comp) {
+        this.setState(prevState => {
+          prevState.isVisible = true;
+          prevState.fromView = comp;
+          prevState.popOverText = compFieldText;
+          return prevState;
+        });
+    }
+     
+    closePopover() {
+        this.setState(prevState => {
+            prevState.isVisible = false;
+            return prevState;
+        });
+    }
+
     render() {
         return(
             <View style={{flex: 1, backgroundColor: 'white'}}>
@@ -200,11 +222,9 @@ export default class CreateProfile extends Component {
                             })}/>
 
                             <TouchableOpacity
+                            ref={emH => {this.emailHint = emH}}
                             onPress={() => {
-                                this.setState(prevState => {
-                                    ToastAndroid.show("Invoices and proof of deliveries will be sent on this Email Id.",
-                                    ToastAndroid.LONG)
-                                })
+                                this.showPopover(Constants.HINT_PROF_EMAIL, this.emailHint)
                             }}>
                                 <Image source={{uri:'https://cdn3.iconfinder.com/data/icons/google-material-design-icons/48/ic_error_48px-512.png'}}
                                 style={{width: 20, height: 20, opacity: 0.5}}/>
@@ -224,11 +244,9 @@ export default class CreateProfile extends Component {
                             })}/>
 
                             <TouchableOpacity
+                            ref={oH => {this.orgHint = oH}}
                             onPress={() => {
-                                this.setState(prevState => {
-                                    ToastAndroid.show("Organization Name will be printed on Invoices",
-                                    ToastAndroid.LONG)
-                                })
+                                this.showPopover(Constants.HINT_PROF_ORG, this.orgHint)
                             }}>
                                 <Image source={{uri:'https://cdn3.iconfinder.com/data/icons/google-material-design-icons/48/ic_error_48px-512.png'}}
                                 style={{width: 20, height: 20, opacity: 0.5}}/>
@@ -328,6 +346,10 @@ export default class CreateProfile extends Component {
                     position: 'absolute', backgroundColor: 'white', width: '100%',
                     opacity: 0.5, height: this.state.isLoading? '100%' : 0,
                 }}/>
+
+                {/* Tutorials popover */}
+                <PopOverComp isVisible={this.state.isVisible} fromView={this.state.fromView}
+                closePopover={this.closePopover.bind(this)} text={this.state.popOverText}/>
 
                 <TouchableHighlight
                 disabled={this.state.isLoading}

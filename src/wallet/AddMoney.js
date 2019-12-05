@@ -6,8 +6,9 @@ import {
   TouchableHighlight, 
   Image,
   ToastAndroid,
-  TextInput
+  TextInput,
 } from 'react-native';
+import { NavigationEvents, StackActions } from 'react-navigation';
 import { getItem,  CUSTOMER_ID} from '../utils/DataStorageController'
 import { TRANS_PARAMS, FIELDS } from './../utils/AppConstants';
 
@@ -44,11 +45,13 @@ export default class AddMoney extends Component {
 
     async generateOrderID() {
         const custID = await getItem(CUSTOMER_ID)
-        const timeStamp = new Date()
+        let timeStamp = new Date()
         timeStamp = timeStamp.valueOf()
 
         this.orderID = custID + timeStamp
         this.custID = custID
+
+        console.log("Order Id. :", this.orderID)
     }
 
     initTrans() {
@@ -57,12 +60,18 @@ export default class AddMoney extends Component {
             [TRANS_PARAMS.AMOUNT]: this.state.amount,
             [TRANS_PARAMS.PAY_NOW]: false,
             [FIELDS.CUSTOMER_ID]: this.custID,
+            onGoBack: () => this.goToHome(),
         })
+    }
+
+    goToHome() {
+        this.props.navigation.dispatch(StackActions.popToTop())
     }
 
     render() {
         return(
             <View style={{flex: 1}}>
+
                 {/* Header showing balance */}
                 <View
                 style={{

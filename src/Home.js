@@ -9,13 +9,12 @@ import {
   ToastAndroid,
   StatusBar,
   Dimensions,
-  Keyboard,
   ScrollView,
   Animated,
-  Modal
+  Modal,
+  NativeEventEmitter, NativeModules
 } from 'react-native';
 import MapView, {PROVIDER_GOOGLE, Marker } from 'react-native-maps';
-import MapViewDirections from 'react-native-maps-directions';
 import Geolocation from 'react-native-geolocation-service';
 import { PermissionsAndroid } from 'react-native';
 import Geocoder from 'react-native-geocoding';
@@ -24,6 +23,8 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 import NetInfo from "@react-native-community/netinfo";
 import {LandmarkModel} from './models/landmark_model'
 import DotLoader from './home/components/DotLoader';
+import {formatDate} from './utils/UtilFunc'
+import { PopOverComp } from './utils/PopOverComp';
 
 const BookingModel = require('./models/bookings_model')
 const Constants = require('./utils/AppConstants')
@@ -76,7 +77,14 @@ export default class Home extends Component {
         props.navigation.navigate("NoNetworkModal");
     })
 
+    this.formatDate = formatDate
+
     this.state = {
+      fromView: null,
+      popOverText: '',
+      tutCompFieldActive: null,
+      isVisible: false,
+
       trackViewChanges: true,
       coordinates: {
         latitude: 0,
@@ -253,7 +261,7 @@ export default class Home extends Component {
     reqBody.append(Constants.FIELDS.NUMBER, this.state.editedNumber)
 
     const region = this.state.isActiveInput === ORIGIN? this.state.preLoc : this.state.destLoc
-    reqBody.append(Constants.FIELDS.LANDMARK, region.address)
+    reqBody.append(Constants.FIELDS.LANDMARK, region.landmark)
     reqBody.append(Constants.FIELDS.LAT, region.latitude)
     reqBody.append(Constants.FIELDS.LNG, region.longitude)
 
@@ -341,17 +349,17 @@ export default class Home extends Component {
           console.log(position);
           Geocoder.from(position.coords.latitude, position.coords.longitude)
           .then(res => {
-            var address = res.results[0].formatted_address;
-            console.log(address);
+            var landmark = res.results[0].formatted_address;
+            console.log(landmark);
 
             this.setState(prevState => {
               if(input === ORIGIN) {
-                prevState.origin = address
-                prevState.preLoc = address
+                prevState.origin = landmark
+                prevState.preLoc = landmark
               }
               else {
-                prevState.destination = address
-                prevState.destLoc = address
+                prevState.destination = landmark
+                prevState.destLoc = landmark
               }
                 
               return prevState
@@ -372,6 +380,32 @@ export default class Home extends Component {
   }
 
   async componentDidMount() {
+    // Listener to events emitted by Java(PaymentWebviewScreen.java)
+    // Page Finished Loading
+    const eventEmitter = new NativeEventEmitter();
+    eventEmitter.addListener('PageFinished', (event) => {
+      console.log("URL: ", event.url)
+      ToastAndroid.show("URL: " + event.url, ToastAndroid.SHORT)
+    })
+    // Transaction finished
+    eventEmitter.addListener('TransFinished', (event) => {
+      const params = event.transParams
+      console.log("Transaction Params: ", params);
+      DataController.setItem(DataController.PAYMENT_TRANS_DATA, JSON.stringify(params))
+      .then(() => {
+        if(params.success) {
+          this.props.navigation.navigate({
+            routeName: "TransactionSuccess"
+          })
+        }
+        else {
+          this.props.navigation.navigate({
+            routeName: "TransactionFailed"
+          })
+        }
+      })
+   })
+
     const isProfileCompleted = await DataController.getItem(DataController.IS_PROFILE_COMPLETED)
     isProfileCompleted === "false" ? this.props.navigation.navigate("CreateProfile", {
       [Constants.IS_NEW_USER] : true
@@ -389,8 +423,7 @@ export default class Home extends Component {
           latitudeDelta: LATITUDE_DELTA,
           longitudeDelta: LONGITUDE_DELTA
         }, 500)
-      }
-        
+      } 
     })
 
     this.getVehicleCategory()
@@ -552,10 +585,10 @@ export default class Home extends Component {
   mapRegionChangeCompleteListener = region => {
     Geocoder.from(region.latitude, region.longitude)
       .then(res => {
-        var address = res.results[0].formatted_address;
+        var landmark = res.results[0].formatted_address;
         this.setState(prevState => {
           region = {
-            address: address,
+            landmark: landmark,
             latitude: region.latitude,
             longitude: region.longitude
           }
@@ -578,22 +611,12 @@ export default class Home extends Component {
       else prevState.selectedDateTime = date
       return prevState
     })
+
+    if(mode === 'date' && !show)  // When mode is 'date' and not 'show'ing the dialog, is when Time Dialog is closed.
+      this.bookNow(false)
   }
 
-  formatDate = (date = new Date()) => {
-    console.log(date.toUTCString().split(" "))
-    const dateArr = date.toUTCString().split(" ");  // ["Thu,", "14", "Nov", "2019", "06:13:34", "GMT"] 
-    const yyyy = dateArr[3]
-    const MMM = dateArr[2]
-    const dd = dateArr[1]
-    const hhmmss = dateArr[4].split(":")
-    const hhmm = hhmmss[0] + ':' + hhmmss[1]
-    const ampm = date.getHours() >= 12? 'PM' : 'AM'
-    console.log(date.toLocaleString())
-    return(dd + ' ' + MMM + ' ' + yyyy + ' ' + hhmm + ' ' + ampm)
-  }
-
-  bookNow = async () => {
+  bookNow = async (isBookNow = true) => {
     let bookingModel = BookingModel.bookingJSON
     bookingModel.selected_vehicle_category = this.state.selectedVehicleID
     bookingModel.selected_vehicle_category_name = this.state.selectedVehicle
@@ -603,7 +626,7 @@ export default class Home extends Component {
     // const cityId = await DataController.getItem(DataController.CITY_ID)
     bookingModel.city_id = cityId
 
-    const bookingTime = this.formatDate(new Date())
+    const bookingTime = this.formatDate(isBookNow? new Date() : this.state.selectedDateTime)
     bookingModel.booking_time = bookingTime
     bookingModel.book_later = false
 
@@ -619,7 +642,7 @@ export default class Home extends Component {
     pickupModel.setFavourite(false)  // TODO: Decide on the basis of Favourites' list
     pickupModel.setLat(this.state.preLoc.latitude.toString())
     pickupModel.setLng(this.state.preLoc.longitude.toString())
-    pickupModel.setLandmark(this.state.preLoc.address)
+    pickupModel.setLandmark(this.state.preLoc.landmark)
     pickupModel.setPickup(true)
 
     // TODO
@@ -633,7 +656,7 @@ export default class Home extends Component {
       dropModel.setFavourite(false)  // TODO: Decide on the basis of Favourites' list
       dropModel.setLat(this.state.destLoc.latitude.toString())
       dropModel.setLng(this.state.destLoc.longitude.toString())
-      dropModel.setLandmark(this.state.destLoc.address)
+      dropModel.setLandmark(this.state.destLoc.landmark)
       landmarkList.push(dropModel.getModel())
     }
 
@@ -646,9 +669,9 @@ export default class Home extends Component {
     this.props.navigation.navigate('AddBooking', {
       covered: this.state.isCoveredVehicle? 'Covered' : 'Uncovered',
       origin: this.state.preLoc,
-      destination: this.state.destLoc,
+      destination: [this.state.destLoc],
       vehicle: this.state.vehiclesList[this.state.selectedVehicleIndex],
-      dateTime: this.state.selectedDateTime
+      dateTime: isBookNow? new Date() : this.state.selectedDateTime
     })
   }
 
@@ -657,6 +680,25 @@ export default class Home extends Component {
       prevState.trackViewChanges = false
       return prevState
     })
+  }
+
+  showPopover(compField, comp) {
+    this.setState(prevState => {
+      prevState.isVisible = true;
+      prevState.fromView = comp;
+      prevState.popOverText = Constants[compField];
+      prevState.tutCompFieldActive = compField;
+      return prevState;
+    });
+  }
+ 
+  closePopover() {
+    this.setState(prevState => {
+      prevState.isVisible = false;
+      return prevState;
+    });
+
+    DataController.setItem(this.state.tutCompFieldActive, "true")
   }
 
   render() {
@@ -742,7 +784,7 @@ export default class Home extends Component {
                     else this.props.navigation.navigate('Search', {screen: 'Home'})
                   })
                 }}>
-              <View style={styles.locationInputs}>
+                <View style={styles.locationInputs}>
                   <View style={[styles.destOrigLocationDots, { backgroundColor: 'green'},
                   this.state.isActiveInput === ORIGIN?
                   this.state.activeInput.icons : this.state.inactiveInput.icons]}/>
@@ -753,12 +795,23 @@ export default class Home extends Component {
                   style={[styles.inputs,
                   this.state.isActiveInput === ORIGIN?
                   this.state.activeInput.text : this.state.inactiveInput.text]}> 
-                    {this.state.preLoc === '' ? 'Pickup location' : this.state.preLoc.address}
+                    {this.state.preLoc === '' ? 'Pickup location' : this.state.preLoc.landmark}
                   </Text>
 
                   <TouchableOpacity style={{display: this.state.isActiveInput !== ORIGIN? "none" : "flex"}}
+                    ref={picFav => {this.pickupFav = picFav}}
                     onPress={() => {
-                      if((this.state.preLoc != '') && (this.state.isActiveInput === ORIGIN)) this.setModalVisible(true)
+                      DataController.getItem(DataController.TUT_FAV_LOC)
+                      .then(status => {
+                        if(status == 'true') {
+                          if((this.state.preLoc != '') && (this.state.isActiveInput === ORIGIN))
+                            this.setModalVisible(true)
+                        }
+                        else {
+                          this.showPopover(DataController.TUT_FAV_LOC, this.pickupFav)
+                        }
+                      })
+                      .catch(err => {console.log(err)})
                     }}>
                     <View>
                       <Image source={{
@@ -770,8 +823,8 @@ export default class Home extends Component {
                       tintColor='black'/>
                     </View>
                   </TouchableOpacity>
-              </View>
-            </TouchableHighlight>
+                </View>
+              </TouchableHighlight>
             </Animated.View>
             
             <Animated.View 
@@ -811,12 +864,23 @@ export default class Home extends Component {
                     style={[styles.inputs, 
                       this.state.isActiveInput === DESTINATION?
                       this.state.activeInput.text : this.state.inactiveInput.text]}>
-                      {this.state.destLoc === '' ? 'Drop location' : this.state.destLoc.address}
+                      {this.state.destLoc === '' ? 'Drop location' : this.state.destLoc.landmark}
                     </Text>
 
                     <TouchableOpacity style={{display: this.state.isActiveInput !== DESTINATION? "none" : "flex"}}
+                      ref={drFav => {this.dropFav = drFav}}
                       onPress={() => {
-                        if((this.state.destLoc != '') && (this.state.isActiveInput === DESTINATION)) this.setModalVisible(true)
+                        DataController.getItem(DataController.TUT_FAV_LOC)
+                        .then(status => {
+                          if(status == 'true') {
+                            if((this.state.destLoc != '') && (this.state.isActiveInput === DESTINATION))
+                              this.setModalVisible(true)
+                          }
+                          else {
+                            this.showPopover(DataController.TUT_FAV_LOC, this.dropFav)
+                          }
+                        })
+                        .catch(err => {console.log(err)})
                       }}>
                       <View>
                         <Image source={{
@@ -848,6 +912,7 @@ export default class Home extends Component {
 
           <View style={[styles.footer]}>  
             <TouchableHighlight
+            ref={covVeh => {this.covVehSwitch = covVeh}}
             underlayColor="#E7E7E7"
             style={{
               borderWidth: 2, 
@@ -858,10 +923,19 @@ export default class Home extends Component {
               display: this.state.vehiclesList.length > 0? 'flex' : 'none'
             }}
             onPress={() => {
-              this.setState(prevState => {
-                prevState.isCoveredVehicle = !prevState.isCoveredVehicle
-                return prevState
+              DataController.getItem(DataController.TUT_COV_VEH)
+              .then(status => {
+                if(status == 'true') {
+                  this.setState(prevState => {
+                    prevState.isCoveredVehicle = !prevState.isCoveredVehicle
+                    return prevState
+                  })
+                }
+                else {
+                  this.showPopover(DataController.TUT_COV_VEH, this.covVehSwitch)
+                }
               })
+              .catch(err => {console.log(err)})
             }}>
 
               <View style={{flexDirection: "row",
@@ -920,7 +994,7 @@ export default class Home extends Component {
             </ScrollView>
           
             <View style={{flexDirection: 'row', height: 45}}>
-              <TouchableHighlight
+              <TouchableHighlight ref={bookBt => {this.bookNowButton = bookBt}}
               underlayColor={ACCENT_DARK}
               onPress={() => {
                 this.bookNow()
@@ -932,10 +1006,20 @@ export default class Home extends Component {
                 <Text style={{color: 'white', fontSize: 15, fontWeight: "700"}}>Book</Text>
               </TouchableHighlight>
 
-              <TouchableHighlight 
+              <TouchableHighlight
+              ref={setDT => {this.setDateTime = setDT}}
               underlayColor={ACCENT_DARK}
               onPress={() => {
-                this.showDateTimePicker(true, 'date')
+                DataController.getItem(DataController.TUT_SET_DATETIME)
+                .then(status => {
+                  if(status == 'true') {
+                    this.showDateTimePicker(true, 'date')
+                  }
+                  else {
+                    this.showPopover(DataController.TUT_SET_DATETIME, this.setDateTime)
+                  }
+                })
+                .catch(err => {console.log(err)})
               }}
               style={{
                 backgroundColor: ACCENT, width: '15%', marginRight: '1%',
@@ -945,6 +1029,11 @@ export default class Home extends Component {
               </TouchableHighlight>
 
               <TouchableHighlight
+              ref={qBook => {this.quickBook = qBook}}
+              onPress={() => {
+                // TODO: Add its main functionality(presently only showing Tutorial Popover)
+                this.showPopover(DataController.TUT_Q_BOOK, this.quickBook)
+              }}
               underlayColor={ACCENT_DARK}
               style={{
                 backgroundColor: ACCENT, width: '15%', borderRadius: 5, alignItems: "center", justifyContent: "center"
@@ -982,8 +1071,8 @@ export default class Home extends Component {
               elevation: 10}}>
               <TextInput editable={false} multiline={true}
               defaultValue={this.state.isActiveInput === ORIGIN? 
-                            this.state.preLoc.address :
-                            this.state.destLoc.address}
+                            this.state.preLoc.landmark :
+                            this.state.destLoc.landmark}
               style={styles.dialogInputs}/>
 
               <TextInput placeholder="Name your favourite place"
@@ -1054,6 +1143,10 @@ export default class Home extends Component {
             this.showDateTimePicker(false, 'date', date)
         }}
         />}
+
+        {/* Tutorials popover */}
+        <PopOverComp isVisible={this.state.isVisible} fromView={this.state.fromView}
+        closePopover={this.closePopover.bind(this)} text={this.state.popOverText}/>
       
         {/* Left side strip above map, to Open Navigation Drawer. */}
         <View style={{height: '100%', width: 30, opacity: 0, position: 'absolute'}}/>

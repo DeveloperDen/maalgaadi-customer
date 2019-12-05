@@ -14,6 +14,9 @@ import {
 } from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { LandmarkModel } from '../models/landmark_model';
+import { formatDate } from './../utils/UtilFunc';
+import { BookingEventType } from '../models/bookings_model';
+import { PopOverComp } from '../utils/PopOverComp';
 
 const DataController = require('../utils/DataStorageController')
 const BookingModel = require('../models/bookings_model')
@@ -47,8 +50,14 @@ export default class AddBooking extends Component {
 
         this.months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug",
                                 "Sep", "Oct", "Nov", "Dec"];
-
+        this.formatDate = formatDate
+        
         this.state = {
+            fromView: null,
+            popOverText: '',
+            tutCompFieldActive: null,
+            isVisible: false,
+
             goodsType: DEF_GOODS,
             goodsId: 0,
             physicalPODCharge: 0,
@@ -63,7 +72,16 @@ export default class AddBooking extends Component {
             favDriverSelected: false,
             showDateTime: false,
             dateTimePickerMode: 'date',
-            selectedDateTime: this.props.navigation.getParam('dateTime')
+            selectedDateTime: props.navigation.getParam('dateTime'),
+
+            favDrivEnabled: true,
+            excDrivEnabled: true,
+            loadEnabled: true,
+            unloadEnabled: true,
+            dateTouchableEnabled: true,
+            mobNumEnabled: true,
+            goodsTypeEnabled: true,
+            podEnabled: true,
         }
 
         this.bookingModel = ''
@@ -77,7 +95,23 @@ export default class AddBooking extends Component {
             prevState.physicalPODCharge = this.bookingModel.vehicle.pod_charge
             prevState.origin = this.props.navigation.getParam('origin')
             prevState.locations = this.props.navigation.getParam('destination') !== ''?
-                                    [this.props.navigation.getParam('destination')] : []
+                                    this.props.navigation.getParam('destination') : []
+            return prevState
+        })
+        
+        this.bookingModel.booking_event_type == BookingEventType.EDIT? this.setupFieldsForEdit() : null;
+    }
+
+    setupFieldsForEdit() {
+        this.setState(prevState => {
+            prevState.favDrivEnabled = this.bookingModel.is_fav_driver_edit
+            prevState.excDrivEnabled = this.bookingModel.is_exc_driver_edit
+            prevState.loadEnabled = this.bookingModel.loading_edit
+            prevState.unloadEnabled = this.bookingModel.unloading_edit
+            prevState.dateTouchableEnabled = this.bookingModel.schedule_time_edit
+            prevState.mobNumEnabled = this.bookingModel.is_contact_edit
+            prevState.goodsTypeEnabled = this.bookingModel.is_goods_type_edit
+            prevState.podEnabled = this.bookingModel.pod_edit
             return prevState
         })
     }
@@ -110,30 +144,18 @@ export default class AddBooking extends Component {
         })
     }
 
-    setOrigin = (address) => {
+    setOrigin = (landmark) => {
         this.setState(prevState => {
-            prevState.origin = address
+            prevState.origin = landmark
             return prevState
         })
     }
 
-    setDestination = (address, index) => {
+    setDestination = (landmark, index) => {
         this.setState(prevState => {
-            prevState.locations[index] = address
+            prevState.locations[index] = landmark
             return prevState
         })
-    }
-
-    formatDate = (date = new Date()) => {
-        const dateArr = date.toUTCString().split(" ");  // ["Thu,", "14", "Nov", "2019", "06:13:34", "GMT"] 
-        const yyyy = dateArr[3]
-        const MMM = dateArr[2]
-        const dd = dateArr[1]
-        const hhmmss = dateArr[4].split(":")
-        const hhmm = hhmmss[0] + ':' + hhmmss[1]
-        const ampm = date.getHours() >= 12? 'PM' : 'AM'
-        console.log(date.toLocaleString())
-        return(dd + ' ' + MMM + ' ' + yyyy + ' ' + hhmm + ' ' + ampm)
     }
 
     estimateFare = async () => {
@@ -152,7 +174,7 @@ export default class AddBooking extends Component {
             this.bookingModel.landmark_list = this.bookingModel.landmark_list.slice(0, 1)
             let list = this.bookingModel.landmark_list
 
-            list[0].landmark = this.state.origin.address
+            list[0].landmark = this.state.origin.landmark
             list[0].latitude = this.state.origin.latitude
             list[0].longitude = this.state.origin.longitude
 
@@ -161,7 +183,7 @@ export default class AddBooking extends Component {
                 dropModel.setFavourite(false)  // TODO: Decide on the basis of Favourites' list
                 dropModel.setLat(loc.latitude.toString())
                 dropModel.setLng(loc.longitude.toString())
-                dropModel.setLandmark(loc.address)
+                dropModel.setLandmark(loc.landmark)
                 list.push(dropModel.getModel())
             });
 
@@ -196,6 +218,25 @@ export default class AddBooking extends Component {
         }
 
         return true
+    }
+
+    showPopover(compField, comp) {
+        this.setState(prevState => {
+          prevState.isVisible = true;
+          prevState.fromView = comp;
+          prevState.popOverText = Constants[compField];
+          prevState.tutCompFieldActive = compField;
+          return prevState;
+        });
+    }
+     
+    closePopover() {
+        this.setState(prevState => {
+            prevState.isVisible = false;
+            return prevState;
+        });
+
+        DataController.setItem(this.state.tutCompFieldActive, "true")
     }
 
     render() {
@@ -254,7 +295,7 @@ export default class AddBooking extends Component {
                                         }}/>
                                     <Text numberOfLines={1} ellipsizeMode='tail'
                                     style={{flex: 1, marginStart: 12, fontSize: 15}}>
-                                        {this.state.origin.address}
+                                        {this.state.origin.landmark}
                                     </Text>
                                 </View>
                             </TouchableHighlight>
@@ -287,7 +328,7 @@ export default class AddBooking extends Component {
 
                                                     <Text numberOfLines={1} ellipsizeMode='tail'
                                                     style={{flex: 1, marginStart: 12, fontSize: 15}}>
-                                                        {!item.address? `Drop off location` : item.address}
+                                                        {!item.landmark? `Drop off location` : item.landmark}
                                                     </Text>
                                                     <TouchableOpacity
                                                     style={{width: 30, height: 30, opacity: 0.3, 
@@ -345,7 +386,7 @@ export default class AddBooking extends Component {
                             </TouchableOpacity>
                         </View>
 
-                        <View style={{paddingVertical: 5}}>
+                        <View style={{paddingVertical: 5, opacity: this.state.mobNumEnabled? 1 : 0.4}}>
                             <View style={{
                                 flexDirection: 'row', backgroundColor: '#F5F5F5',
                                 alignItems: 'center', marginVertical: 5,
@@ -354,7 +395,7 @@ export default class AddBooking extends Component {
                                 <Text style={{margin: 10, opacity: 0.4}}>
                                     +91
                                 </Text>
-                                <TextInput
+                                <TextInput editable={this.state.mobNumEnabled}
                                 keyboardType="number-pad"
                                 style={{
                                     flex: 1, backgroundColor: 'white',
@@ -371,7 +412,7 @@ export default class AddBooking extends Component {
                                 <Text style={{margin: 10, opacity: 0.4}}>
                                     +91
                                 </Text>
-                                <TextInput
+                                <TextInput editable={this.state.mobNumEnabled}
                                 keyboardType="number-pad"
                                 style={{
                                     flex: 1, backgroundColor: 'white',
@@ -383,8 +424,8 @@ export default class AddBooking extends Component {
                     
                         <View
                         style={{
-                            backgroundColor: 'white',
-                            borderRadius: 3, justifyContent: "space-between"
+                            backgroundColor: 'white', borderRadius: 3, justifyContent: "space-between",
+                            opacity: this.state.loadEnabled? 1 : 0.4
                         }}>
                             <Text style={{opacity: 0.4, margin: 8, fontSize: 12}}>
                                 ADDITIONAL SERVICES
@@ -396,7 +437,7 @@ export default class AddBooking extends Component {
                                 borderTopWidth: 1}}/>
 
                             <View style={{flexDirection: 'row', justifyContent: "space-around"}}>
-                                <TouchableHighlight 
+                                <TouchableHighlight disabled={!this.state.loadEnabled}
                                 underlayColor='white'
                                 style={{
                                     justifyContent: 'center',
@@ -427,7 +468,7 @@ export default class AddBooking extends Component {
                                     borderStartWidth: 1,
                                     }}/>
 
-                                <TouchableHighlight 
+                                <TouchableHighlight disabled={!this.state.loadEnabled}
                                 underlayColor='white'
                                 style={{
                                     justifyContent: 'center',
@@ -458,7 +499,7 @@ export default class AddBooking extends Component {
                         style={{
                             backgroundColor: 'white',
                             borderRadius: 3, justifyContent: "space-between",
-                            marginTop: 10
+                            marginTop: 10, opacity: this.state.podEnabled? 1 : 0.4
                         }}>
                             <Text style={{opacity: 0.4, margin: 8, fontSize: 12}}>
                                 PROOF OF DELIVERY
@@ -473,9 +514,9 @@ export default class AddBooking extends Component {
                             <View 
                             style={{
                                     flex: 1, justifyContent: 'center',
-                                    margin: 3
+                                    margin: 3,
                                 }}>
-                                <TouchableHighlight 
+                                <TouchableHighlight disabled={!this.state.podEnabled}
                                 underlayColor='white'
                                 style={{
                                     flex: 1, justifyContent: 'center',
@@ -518,9 +559,9 @@ export default class AddBooking extends Component {
                             borderRadius: 3,
                             marginTop: 10,
                             flexDirection: 'row', justifyContent: "space-between",
-                            alignItems: 'center',
+                            alignItems: 'center', opacity: this.state.favDrivEnabled? 1 : 0.3
                         }}>
-                            <TouchableHighlight
+                            <TouchableHighlight disabled={!this.state.favDrivEnabled}
                             underlayColor='white'
                             style={{flex: 1, padding: 10}}
                             onPress={() => {
@@ -531,7 +572,7 @@ export default class AddBooking extends Component {
                             }}>
                                 <Text style={{fontSize: 15, opacity: 0.5}}>Allot only favourite drivers</Text>
                             </TouchableHighlight>
-                            <Switch
+                            <Switch disabled={!this.state.favDrivEnabled}
                             trackColor= {{false: 'rgba(0, 0, 0, 0.3', true: 'rgba(255, 203, 40, 0.5)'}}
                             thumbColor= {this.state.favDriverSelected? ACCENT : '#F0F0F0'}
                             style={{padding: 10}}
@@ -550,9 +591,9 @@ export default class AddBooking extends Component {
                             borderRadius: 3,
                             marginTop: 10,
                             flexDirection: 'row', justifyContent: "space-between",
-                            alignItems: 'center',
+                            alignItems: 'center', opacity: this.state.excDrivEnabled? 1 : 0.4
                         }}>
-                            <TouchableHighlight
+                            <TouchableHighlight disabled={!this.state.excDrivEnabled}
                             underlayColor='white'
                             style={{flex: 1, padding: 10}}
                             onPress={() => {
@@ -563,7 +604,7 @@ export default class AddBooking extends Component {
                             }}>
                                 <Text style={{fontSize: 15, opacity: 0.5}}>Allot only exclusive drivers</Text>
                             </TouchableHighlight>
-                            <Switch
+                            <Switch disabled={!this.state.excDrivEnabled}
                             trackColor= {{false: 'rgba(0, 0, 0, 0.3', true: 'rgba(255, 203, 40, 0.5)'}}
                             thumbColor= {this.state.excDriverSelected? ACCENT : '#F0F0F0'}
                             style={{padding: 10}}
@@ -580,12 +621,22 @@ export default class AddBooking extends Component {
                         style={{
                             backgroundColor: 'white',
                             borderRadius: 3,
-                            marginTop: 10,
+                            marginTop: 10, opacity: this.state.goodsTypeEnabled? 1 : 0.4
                         }}>
-                            <TouchableHighlight
+                            <TouchableHighlight disabled={!this.state.goodsTypeEnabled}
+                            ref={gType => {this.goodsType = gType}}
                             underlayColor='white'
                             onPress={() => {
-                                this.props.navigation.navigate('GoodsList', {setGoodsType: this.setGoodsType.bind(this)})
+                                DataController.getItem(DataController.TUT_GOODS_TYPE)
+                                .then(status => {
+                                    if(status == 'true') {
+                                        this.props.navigation.navigate('GoodsList', {setGoodsType: this.setGoodsType.bind(this)})
+                                    }
+                                    else {
+                                        this.showPopover(DataController.TUT_GOODS_TYPE, this.goodsType)
+                                    }
+                                })
+                                .catch(err => {console.log(err)})
                             }}
                             style={{
                                 padding: 10
@@ -661,7 +712,7 @@ export default class AddBooking extends Component {
                         </Animated.Text>
                     </Animated.View>
 
-                    <TouchableHighlight
+                    <TouchableHighlight disabled={!this.state.dateTouchableEnabled}
                         underlayColor='black'
                         onPress={() => {
                             this.showDateTimePicker(true, 'date')
@@ -670,12 +721,14 @@ export default class AddBooking extends Component {
                             borderRadius: 100,
                             paddingVertical: 8,
                             width: '75%',
-                            backgroundColor: 'black',
+                            backgroundColor: this.state.dateTouchableEnabled? 'black' : 'gray',
                             alignItems: 'center',
                             justifyContent: 'center',
                             marginTop: -20, alignSelf: 'center'
                         }}>
-                        <Text style={{color: 'white',}}>{this.formatDate(this.state.selectedDateTime)}</Text>
+                        <Text style={{color: 'white', opacity: this.state.dateTouchableEnabled? 1 : 0.4}}>
+                            {this.formatDate(this.state.selectedDateTime)}
+                        </Text>
                     </TouchableHighlight>
                 </Animated.View>
             
@@ -692,6 +745,10 @@ export default class AddBooking extends Component {
                     this.showDateTimePicker(false, 'date', date)
                 }}
                 />}
+
+                {/* Tutorials popover */}
+                <PopOverComp isVisible={this.state.isVisible} fromView={this.state.fromView}
+                closePopover={this.closePopover.bind(this)} text={this.state.popOverText}/>
             </View>
         )
     }

@@ -79,8 +79,8 @@ export default class Login extends Component {
                 dataToWrite.append(DataController.CUSTOMER_ID, value.data.id.toString())
                 dataToWrite.append(DataController.CUSTOMER_MOBILE, value.data.cust_number)
                 dataToWrite.append(DataController.BUFFER_TIME, value.data.configure_setting.buffered_schedule_time.toString())
-                
-                console.log(JSON.stringify(value.data.configure_setting));
+
+                // TODO: Save configure settings.
                 // dataToWrite.append(DataController.CONFIGURE_SETTING, JSON.stringify(value.data.configure_setting))
 
                 if(value.data.cust_name !== "") {
@@ -93,7 +93,7 @@ export default class Login extends Component {
                     // TODO: Decide on the basis of city_list
                     dataToWrite.append(DataController.CITY, "Indore")
 
-                    dataToWrite.append(DataController.CITY_ID, value.data.city_id)
+                    dataToWrite.append(DataController.CITY_ID, value.data.city_id.toString())
                     
                     dataToWrite.append(DataController.ADDRESS, value.data.cust_address)
                     dataToWrite.append(DataController.GOODS_NAME, value.data.goods_name)

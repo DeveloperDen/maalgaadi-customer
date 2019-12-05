@@ -23,6 +23,8 @@ export const PAYMENT_GATEWAY_URL = "https://secure.ccavenue.com/transaction/init
 export const PAYMENT_GATEWAY_ACCESS_CODE = "AVHR74EK06AD66RHDA";
 export const MERCHANT_ID = "153491"
 export const CURRENCY = "INR"
+export const CURRENT_REDIRECT_URL = BASE_URL + "successPaymentResponseFromCCAPI";
+export const CURRENT_CANCEL_URL = BASE_URL + "cancelPaymentResponseFromCCAPI"
 
 export const GET_RSA = "getRSA"
 export const ADDEXCLUSIVEDRIVER = "addExclusiveDriver";
@@ -126,6 +128,17 @@ export const CANCEL_EDIT_CONFIRM = "Cancellation charges may apply. Do you want 
 export const NO_NETWORK = "Seems like you are Offline. Please connect to either a WiFi network or turn on your Cellular Data"
 export const NO_ACIVE_FLEET = "Currently, you do not have any favourite drivers in your list. Tap on Add button to manage driver on your fleet."
 export const ERR_ACTIVE_FLEET = "An error occured while upadating fleet members."
+export const ERROR_LOGOUT = "An error occured while Logging Out. Please try restarting the application."
+export const TRANS_FAIL_GUIDE = "Due to bank\'s system and processes it may take approximately 4 hours to reflect money in your Maalgaadi Wallet. Maalgaadi has no control over the time taken by your bank"
+
+// Text for Tutorial/Hint Popover
+export const tut_fav_loc = "Place location pin to a location, and tap on Favourite button, to add the location to Favourites"
+export const tut_set_date = "You can Schedule Bookings for a later time. Your booked vehicle will arrive at your pick-up location at the scheduled date and time."
+export const tut_q_book = "Use Quick Booking to access your previous trips, and re-book them instantly."
+export const tut_cov_veh = "Select the option if Covered Vehicle and unselect if Uncovered Vehicle, is required."
+export const tut_goods_type = "Tell us the nature of Goods that will be transfered and we will allot the best vehicle and driver to your booking"
+export const HINT_PROF_EMAIL = "Invoices and Proof of Deliveries will be sent on this Email id"
+export const HINT_PROF_ORG = "Organization Name will be printed on Invoices"
 
 export const IS_NEW_USER = "is_new_user"
 
@@ -180,7 +193,20 @@ export const TRANS_PARAMS = {
     AMOUNT: "amount",
     PAY_NOW: "paynow",
     CURRENCY: "currency",
-    CURRENT_CURRENCY: "INR"
+    CURRENT_CURRENCY: "INR",
+    ACCESS_CODE: "access_code",
+    MERCHANT_ID: "merchant_id",
+    REDIRECT_URL: "redirect_url",
+    CANCEL_URL: "cancel_url",
+    ENC_VAL: "enc_val",
+    BILLING_NAME: "billing_name",
+    BILLING_ZIP: "billing_zip",
+    BILLING_ADDRESS: "billing_address",
+    BILLING_COUNTRY: "billing_country",
+    BILLING_EMAIL: "billing_email",
+    BILLING_TEL: "billing_tel",
+    BILLING_CITY: "billing_city",
+    BILLING_STATE: "billing_state"
 }
 
 

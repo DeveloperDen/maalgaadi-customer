@@ -16,6 +16,7 @@ import {
   ToastAndroid
 } from 'react-native';
 import {BookingEventType} from '../models/bookings_model'
+import { formatDate, unFormatDate } from './../utils/UtilFunc';
 
 const Constants = require('../utils/AppConstants')
 const DataController = require('../utils/DataStorageController')
@@ -27,6 +28,8 @@ const GREEN = '#24C800' // 36, 200, 0
 export default class RunningMyBookings extends Component {
   constructor(props) {
     super(props)
+
+    this.formatDate = formatDate
     this.state = {
       cancelModalVisible: false,
       activeIndex: 0,
@@ -129,19 +132,6 @@ export default class RunningMyBookings extends Component {
     })
   }
 
-  formatDate = (date = new Date()) => {
-    console.log(date.toUTCString().split(" "))
-    const dateArr = date.toUTCString().split(" ");  // ["Thu,", "14", "Nov", "2019", "06:13:34", "GMT"] 
-    const yyyy = dateArr[3]
-    const MMM = dateArr[2]
-    const dd = dateArr[1]
-    const hhmmss = dateArr[4].split(":")
-    const hhmm = hhmmss[0] + ':' + hhmmss[1]
-    const ampm = date.getHours() >= 12? 'PM' : 'AM'
-    console.log(date.toLocaleString())
-    return(dd + ' ' + MMM + ' ' + yyyy + ' ' + hhmm + ' ' + ampm)
-  }
-
   editBooking = async () => {
     const reqURL = Constants.BASE_URL + Constants.GET_BOOKING_DETAIL + '?' +
         Constants.FIELDS.BOOKING_ID + '=' + this.state.bookings[this.state.activeIndex].trip_id + '&' +
@@ -175,7 +165,13 @@ export default class RunningMyBookings extends Component {
           })
 
           await DataController.setItem(DataController.BOOKING_MODEL, JSON.stringify(model))
-          this.props.navigation.navigate('AddBooking');
+          this.props.navigation.navigate('AddBooking', {
+            covered: model.covered? 'Covered' : 'Uncovered',
+            origin: model.landmark_list[0].landmark,
+            destination: model.landmark_list.slice(1),
+            vehicle: model.vehicle,
+            dateTime: unFormatDate(model.booking_time)
+          });
         }
 
     }).catch(err => {

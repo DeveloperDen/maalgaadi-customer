@@ -34,6 +34,9 @@ import TripDetails from './src/my_bookings/TripDetails'
 import RateScreen from './src/rate_card/RateScreen'
 import NoNetworkModal from './src/NoNetworkModal'
 import TrackDriver from './src/my_bookings/TrackDriver'
+import PaymentWebview from './src/wallet/PaymentWebview';
+import TransactionSuccess from './src/wallet/TransactionSuccess'
+import TransactionFailed from './src/wallet/TransactionFailed'
 
 import { createAppContainer, createSwitchNavigator } from 'react-navigation'
 import { createDrawerNavigator } from 'react-navigation-drawer'
@@ -125,6 +128,9 @@ const PendingPODTabs = createMaterialTopTabNavigator({
 })
 
 const DrawerStackNavigator = createStackNavigator({
+  TransactionSuccess: {screen: TransactionSuccess},
+  TransactionFailed: {screen: TransactionFailed},
+
   RateScreen: {screen: RateScreen},
 
   TrackDriver: {screen: TrackDriver},
@@ -150,6 +156,8 @@ const DrawerStackNavigator = createStackNavigator({
   },
 
   Notifications: {screen: Notifications},
+  // Notifications: {screen: TransactionSuccess},
+  // Notifications: {screen: TransactionFailed},
 
   AddMoney: {screen: AddMoney},
   MGWallet: {screen: MGWallet},
@@ -228,7 +236,13 @@ const HomeStackNavigator = createStackNavigator({
     NoNetworkModal: {screen: NoNetworkModal,
       navigationOptions: () => ({
         headerStyle: {display: 'none'},
-      })}
+      })
+    },
+    PaymentWebview: {screen: PaymentWebview,
+      navigationOptions: () => ({
+        headerStyle: {display: 'none'},
+      })
+    }
   }, {
     initialRouteName: "Home",
     mode: 'card',

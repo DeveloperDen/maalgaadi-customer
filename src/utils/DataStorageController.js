@@ -23,6 +23,14 @@ export const BOOKING_MODEL = "booking_model"
 export const CREDIT_LIM = "credit_limit"
 export const RUNNING_TRIP_DATA = "runn_trip_data"
 export const VEHICLE = "vehicle"
+export const PAYMENT_TRANS_DATA = "payment_trans"
+export const WALLET_BALANCE = "wallet_balance"
+
+export const TUT_FAV_LOC = "tut_fav_loc"
+export const TUT_SET_DATETIME = "tut_set_date"
+export const TUT_Q_BOOK = "tut_q_book"
+export const TUT_COV_VEH = "tut_cov_veh"
+export const TUT_GOODS_TYPE = "tut_goods_type"
 
 export const getItem = async (key) => {
     try {

@@ -61,8 +61,7 @@ export default class MGWallet extends Component {
             prevState.isLoading = true
             return prevState
         })
-
-        const id = 3 // TODO: Remove this line. Uncomment below line
+        const id = 3 // TODO: Uncomment the line below, and remove this line
         // const id = await DataController.getItem(DataController.CUSTOMER_ID)
 
         const reqURL = Constants.BASE_URL + Constants.GET_WALLET_LIST + '?' + 
@@ -86,6 +85,8 @@ export default class MGWallet extends Component {
                 ToastAndroid.show(value.message, ToastAndroid.SHORT);
             }
             else {
+                DataController.setItem(DataController.WALLET_BALANCE, value.data[0].final_balance.toString())
+
                 this.props.navigation.setParams({
                     balance: value.data[0].final_balance
                 })
@@ -110,7 +111,7 @@ export default class MGWallet extends Component {
     render() {
         const filterBottom = this.state.scrollY.interpolate({
             inputRange: [0, 80],
-            outputRange: [40, -40],
+            outputRange: [0, 100],
             extrapolate: 'clamp',
         });
 
@@ -142,9 +143,11 @@ export default class MGWallet extends Component {
                     </View>
                 </View>
 
-                <ScrollView
+                <Animated.ScrollView
+                scrollEventThrottle={1}
                 onScroll={Animated.event(
                     [{nativeEvent: {contentOffset: {y: this.state.scrollY}}}],
+                    {useNativeDriver: true}
                 )}
                 style={{display: this.state.history.length > 0? 'flex' : 'none'}}>
                     {this.state.history.map((value, index) => {
@@ -197,13 +200,13 @@ export default class MGWallet extends Component {
                             </View> 
                         )
                     })}
-                </ScrollView>
+                </Animated.ScrollView>
 
                 {/* Filter button */}
                 <Animated.View
                 style={{
-                    position: 'absolute', alignSelf: 'center', bottom: filterBottom,
-                    opacity: this.state.history.length > 0? filterOp : 0
+                    position: 'absolute', alignSelf: 'center', translateY: filterBottom,
+                    opacity: this.state.history.length > 0? filterOp : 0, bottom: 40
                 }}>
                     <TouchableHighlight
                     underlayColor='black'
@@ -239,7 +242,5 @@ export default class MGWallet extends Component {
     }
 }
 
-const styles = StyleSheet.create({
-
-});
+const styles = StyleSheet.create({});
 
