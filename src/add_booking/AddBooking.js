@@ -19,6 +19,7 @@ import { BookingEventType } from '../models/bookings_model';
 import { PopOverComp } from '../utils/PopOverComp';
 
 const DataController = require('../utils/DataStorageController')
+const Constants = require('../utils/AppConstants')
 const BookingModel = require('../models/bookings_model')
 const vehicleIcon = require('../../assets/vehicle.png')
 
@@ -64,7 +65,7 @@ export default class AddBooking extends Component {
             number: '',
             scrollY: new Animated.Value(0),
             origin: '',
-            locations: '',
+            locations: [],
             isUnLoadingSelected: false,
             isLoadingSelected: false,
             isPhysicalSelected: false,
@@ -144,18 +145,20 @@ export default class AddBooking extends Component {
         })
     }
 
-    setOrigin = (landmark) => {
+    setOrigin = (address) => {
         this.setState(prevState => {
-            prevState.origin = landmark
+            prevState.origin = address
             return prevState
         })
     }
 
-    setDestination = (landmark, index) => {
+    setDestination = (address, index) => {
+        console.log("Setting destination at index ", index);
         this.setState(prevState => {
-            prevState.locations[index] = landmark
+            prevState.locations[index] = address
             return prevState
         })
+        console.log("Locations: ", this.state.locations)
     }
 
     estimateFare = async () => {
@@ -174,7 +177,7 @@ export default class AddBooking extends Component {
             this.bookingModel.landmark_list = this.bookingModel.landmark_list.slice(0, 1)
             let list = this.bookingModel.landmark_list
 
-            list[0].landmark = this.state.origin.landmark
+            list[0].landmark = this.state.origin.address
             list[0].latitude = this.state.origin.latitude
             list[0].longitude = this.state.origin.longitude
 
@@ -183,7 +186,7 @@ export default class AddBooking extends Component {
                 dropModel.setFavourite(false)  // TODO: Decide on the basis of Favourites' list
                 dropModel.setLat(loc.latitude.toString())
                 dropModel.setLng(loc.longitude.toString())
-                dropModel.setLandmark(loc.landmark)
+                dropModel.setLandmark(loc.address)
                 list.push(dropModel.getModel())
             });
 
@@ -263,9 +266,8 @@ export default class AddBooking extends Component {
                 style={styles.fill}
                 scrollEventThrottle={16}
                 onScroll={Animated.event(
-                        [{nativeEvent: {contentOffset: {y: this.state.scrollY}}}]
-                        )}
-                >
+                    [{nativeEvent: {contentOffset: {y: this.state.scrollY}}}],
+                )}>
                     <View style={styles.scrollViewContent}>
                         <View 
                             style={{
@@ -295,12 +297,12 @@ export default class AddBooking extends Component {
                                         }}/>
                                     <Text numberOfLines={1} ellipsizeMode='tail'
                                     style={{flex: 1, marginStart: 12, fontSize: 15}}>
-                                        {this.state.origin.landmark}
+                                        {this.state.origin.address}
                                     </Text>
                                 </View>
                             </TouchableHighlight>
                             
-                            {this.state.locations !== '' && this.state.locations.map((item, index) => {
+                            {this.state.locations !== [] && this.state.locations.map((item, index) => {
                                 return(
                                     <TouchableHighlight
                                     key={index}
@@ -328,7 +330,7 @@ export default class AddBooking extends Component {
 
                                                     <Text numberOfLines={1} ellipsizeMode='tail'
                                                     style={{flex: 1, marginStart: 12, fontSize: 15}}>
-                                                        {!item.landmark? `Drop off location` : item.landmark}
+                                                        {!item.address? `Drop off location` : item.address}
                                                     </Text>
                                                     <TouchableOpacity
                                                     style={{width: 30, height: 30, opacity: 0.3, 

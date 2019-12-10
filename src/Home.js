@@ -12,19 +12,20 @@ import {
   ScrollView,
   Animated,
   Modal,
-  NativeEventEmitter, NativeModules
+  NativeEventEmitter,
+  PermissionsAndroid, Alert
 } from 'react-native';
 import MapView, {PROVIDER_GOOGLE, Marker } from 'react-native-maps';
 import Geolocation from 'react-native-geolocation-service';
-import { PermissionsAndroid } from 'react-native';
 import Geocoder from 'react-native-geocoding';
 import { TextInput } from 'react-native-gesture-handler';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import NetInfo from "@react-native-community/netinfo";
 import {LandmarkModel} from './models/landmark_model'
 import DotLoader from './home/components/DotLoader';
-import {formatDate} from './utils/UtilFunc'
+import {formatDate, showNotification} from './utils/UtilFunc'
 import { PopOverComp } from './utils/PopOverComp';
+import messaging from '@react-native-firebase/messaging';
 
 const BookingModel = require('./models/bookings_model')
 const Constants = require('./utils/AppConstants')
@@ -261,7 +262,7 @@ export default class Home extends Component {
     reqBody.append(Constants.FIELDS.NUMBER, this.state.editedNumber)
 
     const region = this.state.isActiveInput === ORIGIN? this.state.preLoc : this.state.destLoc
-    reqBody.append(Constants.FIELDS.LANDMARK, region.landmark)
+    reqBody.append(Constants.FIELDS.LANDMARK, region.address)
     reqBody.append(Constants.FIELDS.LAT, region.latitude)
     reqBody.append(Constants.FIELDS.LNG, region.longitude)
 
@@ -349,17 +350,17 @@ export default class Home extends Component {
           console.log(position);
           Geocoder.from(position.coords.latitude, position.coords.longitude)
           .then(res => {
-            var landmark = res.results[0].formatted_address;
-            console.log(landmark);
+            var address = res.results[0].formatted_address;
+            console.log(address);
 
             this.setState(prevState => {
               if(input === ORIGIN) {
-                prevState.origin = landmark
-                prevState.preLoc = landmark
+                prevState.origin = address
+                prevState.preLoc = address
               }
               else {
-                prevState.destination = landmark
-                prevState.destLoc = landmark
+                prevState.destination = address
+                prevState.destLoc = address
               }
                 
               return prevState
@@ -414,6 +415,7 @@ export default class Home extends Component {
 
     this.requestLocationPermission()
     
+    // Will Focus listener
     this.willFocusListener = this.props.navigation.
     addListener('willFocus', () => {
       if(this.props.navigation.state.params){
@@ -423,15 +425,85 @@ export default class Home extends Component {
           latitudeDelta: LATITUDE_DELTA,
           longitudeDelta: LONGITUDE_DELTA
         }, 500)
-      } 
+      }
+
+      // On focusing, check if any payment is pending, if so then, show the dialog.
+      DataController.getItem(DataController.PAYMENT_TRANS_DATA)
+      .then(value => {
+        if(value != null){
+          this.paymentModel = value;
+          this.showPaymentDialog();
+        }
+        else
+          ToastAndroid.show("Payment Transaction Data not found", ToastAndroid.SHORT);
+      })
+      .catch(err => {
+        ToastAndroid.show(err, ToastAndroid.SHORT);
+      })
     })
 
     this.getVehicleCategory()
     this.getFreeDrivers()
+
+    // Subscribe to FCM Message listener
+    this.unsubscribeFCM = messaging().onMessage(async message => {
+      showNotification(message.data.message, "MaalGaadi");
+      console.log("Got message: ", message.data);
+
+      const data = message.data;
+      const type = data.type;
+      if(type == "booking_notification") {
+        const title = data.title;
+        const message = data.message;
+        const messObj = JSON.parse(message);
+
+        if(message.includes("Kindly pay")) {
+          const paymentModel = {
+            [Constants.TRANS_PARAMS.BOOKING_ID]: messObj[Constants.TRANS_PARAMS.BOOKING_ID],
+            [Constants.TRANS_PARAMS.AMOUNT]: messObj[Constants.TRANS_PARAMS.AMOUNT],
+            [Constants.FIELDS.CUSTOMER_ID]: await DataController.getItem(DataController.CUSTOMER_ID),
+            [Constants.TRANS_PARAMS.ENC_RESP]: '',
+            [Constants.TRANS_PARAMS.MESSAGE]: messObj[Constants.TRANS_PARAMS.MESSAGE],
+            [Constants.TRANS_PARAMS.ORDER_ID]: '',
+            [Constants.TRANS_PARAMS.STATUS]: ''
+          }
+          this.paymentModel = paymentModel;
+          DataController.setItem(DataController.PAYMENT_TRANS_DATA, paymentModel);
+          this.showPaymentDialog();
+        }
+      }
+
+      Alert.alert(data.title, data.message,
+        [
+          {text: "Ok", onPress: () => {return;}}
+        ])
+    })
   }
 
   componentWillUnmount() {
     this.netInfoSub();
+    this.unsubscribeFCM();
+  }
+
+  showPaymentDialog() {
+    Alert.alert("Make Payment", "Please complete the payment to MaalGaadi driver",
+    [
+      {text: "OK", style: "default", onPress: () => {
+        console.log("Completing booking payment..");
+        this.props.navigation.navigate("PaymentWebview", {
+          [Constants.TRANS_PARAMS.ORDER_ID]: this.paymentModel[Constants.TRANS_PARAMS.ORDER_ID],
+          [Constants.TRANS_PARAMS.AMOUNT]: this.paymentModel[Constants.TRANS_PARAMS.AMOUNT],
+          [Constants.TRANS_PARAMS.PAY_NOW]: true,
+          [Constants.FIELDS.CUSTOMER_ID]: this.paymentModel[Constants.FIELDS.CUSTOMER_ID],
+          onGoBack: () => {return;},
+        })
+      }},
+      {
+        text: "Ask me later", style: "cancel", onPress: () => {
+          console.log("Skipping booking payment until next execution.");
+        }
+      }
+    ]);
   }
 
   getVehicleCategory = async () => {
@@ -585,10 +657,10 @@ export default class Home extends Component {
   mapRegionChangeCompleteListener = region => {
     Geocoder.from(region.latitude, region.longitude)
       .then(res => {
-        var landmark = res.results[0].formatted_address;
+        var address = res.results[0].formatted_address;
         this.setState(prevState => {
           region = {
-            landmark: landmark,
+            address: address,
             latitude: region.latitude,
             longitude: region.longitude
           }
@@ -642,7 +714,7 @@ export default class Home extends Component {
     pickupModel.setFavourite(false)  // TODO: Decide on the basis of Favourites' list
     pickupModel.setLat(this.state.preLoc.latitude.toString())
     pickupModel.setLng(this.state.preLoc.longitude.toString())
-    pickupModel.setLandmark(this.state.preLoc.landmark)
+    pickupModel.setLandmark(this.state.preLoc.address)
     pickupModel.setPickup(true)
 
     // TODO
@@ -656,7 +728,7 @@ export default class Home extends Component {
       dropModel.setFavourite(false)  // TODO: Decide on the basis of Favourites' list
       dropModel.setLat(this.state.destLoc.latitude.toString())
       dropModel.setLng(this.state.destLoc.longitude.toString())
-      dropModel.setLandmark(this.state.destLoc.landmark)
+      dropModel.setLandmark(this.state.destLoc.address)
       landmarkList.push(dropModel.getModel())
     }
 
@@ -795,7 +867,7 @@ export default class Home extends Component {
                   style={[styles.inputs,
                   this.state.isActiveInput === ORIGIN?
                   this.state.activeInput.text : this.state.inactiveInput.text]}> 
-                    {this.state.preLoc === '' ? 'Pickup location' : this.state.preLoc.landmark}
+                    {this.state.preLoc === '' ? 'Pickup location' : this.state.preLoc.address}
                   </Text>
 
                   <TouchableOpacity style={{display: this.state.isActiveInput !== ORIGIN? "none" : "flex"}}
@@ -864,7 +936,7 @@ export default class Home extends Component {
                     style={[styles.inputs, 
                       this.state.isActiveInput === DESTINATION?
                       this.state.activeInput.text : this.state.inactiveInput.text]}>
-                      {this.state.destLoc === '' ? 'Drop location' : this.state.destLoc.landmark}
+                      {this.state.destLoc === '' ? 'Drop location' : this.state.destLoc.address}
                     </Text>
 
                     <TouchableOpacity style={{display: this.state.isActiveInput !== DESTINATION? "none" : "flex"}}
@@ -1071,8 +1143,8 @@ export default class Home extends Component {
               elevation: 10}}>
               <TextInput editable={false} multiline={true}
               defaultValue={this.state.isActiveInput === ORIGIN? 
-                            this.state.preLoc.landmark :
-                            this.state.destLoc.landmark}
+                            this.state.preLoc.address :
+                            this.state.destLoc.address}
               style={styles.dialogInputs}/>
 
               <TextInput placeholder="Name your favourite place"

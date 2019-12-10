@@ -8,7 +8,7 @@ import {
   Animated, Easing,
   ActivityIndicator
 } from 'react-native';
-import { getItem, PAYMENT_TRANS_DATA, setItem, WALLET_BALANCE, CUSTOMER_ID } from '../utils/DataStorageController';
+import { getItem, PAYMENT_TRANS_DATA, setItem, WALLET_BALANCE, CUSTOMER_ID, removeItem } from '../utils/DataStorageController';
 import { BASE_URL, SEND_TRANSACTION_STATUS } from '../utils/AppConstants';
 
 const ACCENT = '#FFCB28' // 255, 203, 40
@@ -106,6 +106,8 @@ export default class TransactionStatus extends Component {
                 })
                 this.startAnim()
             }
+
+            removeItem(PAYMENT_TRANS_DATA);
             
         }).catch(err => {
             console.log(err)

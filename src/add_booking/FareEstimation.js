@@ -106,12 +106,11 @@ export default class FareEstimation extends Component {
             headers: {
                 key: "21db33e221e41d37e27094153b8a8a02",
                 'Content-Type': 'application/json',
-
             },
             body: JSON.stringify(this.bookingModel)
         })
-    
-        const response = await request.json().then(value => {
+
+        await request.json().then(value => {
             console.log(value)
             if(value.success) {
                 const UUID = uuid()

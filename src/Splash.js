@@ -6,6 +6,7 @@ import {
   Image,
 } from 'react-native';
 import {firebase} from '@react-native-firebase/messaging'
+import { getDeviceId } from 'react-native-device-info';
 
 const Constants = require('./utils/AppConstants')
 const DataController = require('./utils/DataStorageController')
@@ -36,11 +37,42 @@ export default class Splash extends Component {
             }
         })
 
+        this.unsubscribeFCMRefresh = firebase.messaging().onTokenRefresh((token) => {
+            this.updateFCMToken(token);
+        })
+        this.updateFCMToken();
+
         setTimeout(async () => {
             const screen = (await DataController.getItem(DataController.IS_LOGIN) === "true")? 
             'HomeDrawerNavigator' : 'RegistrationNavigator'
             this.props.navigation.navigate(screen)
         }, Constants.SPLASH_TIMEOUT)
+    }
+
+    async updateFCMToken(token = '') {
+        if(!token == '')
+            token = await firebase.messaging().getToken();
+        DataController.setItem(DataController.FCM_TOKEN, token);
+
+        const reqURL = Constants.BASE_URL + Constants.APP_DOWNLOAD + '?' + 
+                        Constants.FIELDS_LOGIN.DEVICE_ID + '=' + getDeviceId() + '&' +
+                        Constants.FIELDS_LOGIN.FCM_TOKEN + '=' + token
+        
+        console.log("Request: ", reqURL)
+
+        const request = await fetch(reqURL, {
+            method: 'GET',
+            headers: {
+                key: "21db33e221e41d37e27094153b8a8a02"
+            }
+        })
+
+        const response = await request.json().then(value => {
+            console.log("FCM update response: ", value)
+        }).catch(err => {
+            console.log(err)
+            ToastAndroid.show(Constants.UPDATE_CUSTOMER_PROFILE, ToastAndroid.SHORT);
+        })
     }
 
     requestFirebasePermission() {
@@ -52,6 +84,10 @@ export default class Splash extends Component {
             console.log("Firebase Permission Error: ", error);
             this.requestFirebasePermission();
         })
+    }
+
+    componentWillUnmount() {
+        this.unsubscribeFCMRefresh();
     }
 
     render() {

@@ -71,3 +71,12 @@ export const getItems = async (keys) => {
         console.log(err);
     }
 }
+
+export const removeItem = async (key) => {
+    try {
+        await AsyncStorage.removeItem(key);
+    }
+    catch (err) {
+        console.log(err);
+    }
+}

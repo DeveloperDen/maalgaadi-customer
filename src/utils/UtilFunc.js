@@ -1,3 +1,5 @@
+var PushNotification = require("react-native-push-notification");
+
 export const formatDate = (date = new Date()) => {
     const dateArr = date.toLocaleString().split(" ");  // [Sat, Nov, 30, 16:45:44, 2019] 
     const yyyy = dateArr[4]
@@ -16,4 +18,17 @@ export const unFormatDate = (dateStr) => {
 
   date = new Date(dateStr)
   return date
+}
+
+export const showNotification = (notMessage, notTitle) => {
+  PushNotification.localNotification({
+      /* Android Only Properties */
+      largeIcon: "ic_launcher", // (optional) default: "ic_launcher"
+      smallIcon: "ic_notification", // (optional) default: "ic_notification" with fallback for "ic_launcher"
+      vibrate: false, 
+
+      /* iOS and Android properties */
+      title: notTitle,
+      message: notMessage,
+  });
 }

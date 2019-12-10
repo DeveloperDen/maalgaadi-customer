@@ -146,7 +146,8 @@ export const FIELDS_LOGIN = {
     CUSTOMER_PHONE: "customer_phone",
     CUSTOMER_PASSWORD: "customer_password",
     DEVICE_ID: "device_id",
-    DEVICE_FCM_TOKEN: "device_fcm_token"
+    DEVICE_FCM_TOKEN: "device_fcm_token",
+    FCM_TOKEN: "token"
 }
 
 export const FIELDS = {
@@ -191,7 +192,11 @@ export const FIELDS = {
 export const TRANS_PARAMS = {
     ORDER_ID:  "order_id",
     AMOUNT: "amount",
+    ENC_RESP: "encResp",
+    MESSAGE: "message",
     PAY_NOW: "paynow",
+    STATUS: "status",
+    BOOKING_ID: "booking_id",
     CURRENCY: "currency",
     CURRENT_CURRENCY: "INR",
     ACCESS_CODE: "access_code",
