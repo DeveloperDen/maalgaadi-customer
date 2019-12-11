@@ -1103,8 +1103,17 @@ export default class Home extends Component {
               <TouchableHighlight
               ref={qBook => {this.quickBook = qBook}}
               onPress={() => {
-                // TODO: Add its main functionality(presently only showing Tutorial Popover)
-                this.showPopover(DataController.TUT_Q_BOOK, this.quickBook)
+                DataController.getItem(DataController.TUT_Q_BOOK)
+                .then(status => {
+                  if(status == 'true') {
+                    this.props.navigation.navigate("MyBookings", {quickBook: true})
+                  }
+                  else {
+                    this.showPopover(DataController.TUT_Q_BOOK, this.quickBook)
+                  }
+                })
+                .catch(err => {console.log(err)})
+                
               }}
               underlayColor={ACCENT_DARK}
               style={{

@@ -210,6 +210,7 @@ export default class RunningMyBookings extends Component {
 
         const response = await request.json().then(value => {
             console.log(value)
+            this.props.navigation.navigate("Main");
             Alert.alert("Add Driver", value.message, [
                 {text: "OK"}
             ])

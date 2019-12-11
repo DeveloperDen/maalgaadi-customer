@@ -39,7 +39,8 @@ export default class RunningMyBookings extends Component {
   }
 
   componentDidMount() {
-    this.getRunningTrip()
+    this.props.navigation.dangerouslyGetParent().getParam('quickBook')?
+    this.props.navigation.navigate("Past") : this.getRunningTrip();
   }
 
   getRunningTrip = async () => {
@@ -178,7 +179,7 @@ export default class RunningMyBookings extends Component {
         console.log(err)
         ToastAndroid.show(Constants.ERROR_GET_DETAILS, ToastAndroid.SHORT);
     })
-}
+  }
 
   render() {
     return(
@@ -193,7 +194,9 @@ export default class RunningMyBookings extends Component {
                 <TouchableHighlight key={index} underlayColor='rgba(0, 0, 0, 0.06)'
                 onPress={async () => {
                   await DataController.setItem(DataController.RUNNING_TRIP_DATA, JSON.stringify(value))
-                  this.props.navigation.navigate("TripDetails")
+                  this.props.navigation.navigate("TripDetails", {
+                    [DataController.RUNNING_TRIP_DATA]: true
+                  })
                 }}
                 style={{
                   borderRadius: 3, backgroundColor: 'rgba(0, 0, 0, 0.03)', margin: 5,
@@ -391,4 +394,3 @@ export default class RunningMyBookings extends Component {
 }
 
 const styles = StyleSheet.create({});
-

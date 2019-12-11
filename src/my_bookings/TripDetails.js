@@ -28,7 +28,7 @@ export default class TripDetails extends Component {
             headerTitle: 'Trip Details',
             headerRight:
                 <Text style={{
-                    backgroundColor: navigation.getParam('status', '-') == "Pending" ? ACCENT : GREEN,
+                    backgroundColor: navigation.getParam('status', '-') == "Pending" ? ACCENT : navigation.getParam('status', '-') == "Cancelled"? 'red' : GREEN,
                     paddingHorizontal: 12, paddingVertical: 6, marginEnd: 16, borderRadius: 3, color: 'white'
                 }}>
                     {navigation.getParam('status', '-')}
@@ -54,7 +54,8 @@ export default class TripDetails extends Component {
             tripCharge: '',
             loading: '-',
             unloading: '-',
-            total: ''
+            total: '',
+            status: ''
         }
         this.tripData = {}
         this.status = props.navigation.getParam('status', '-')
@@ -64,8 +65,8 @@ export default class TripDetails extends Component {
         return (
             <View style={[styles.row_space, { backgroundColor: 'white', elevation: 10, justifyContent: 'space-evenly' }]}>
                 <TouchableHighlight underlayColor='rgba(0, 0, 0, 0.02)'
-                    disabled={(this.status != PENDING && this.status != CANCELLED) ? false : true}
-                    style={{ opacity: (this.status != PENDING && this.status != CANCELLED) ? 1 : 0.3 }}
+                    disabled={(this.state.status != PENDING && this.state.status != CANCELLED) ? false : true}
+                    style={{ opacity: (this.state.status != PENDING && this.state.status != CANCELLED) ? 1 : 0.3 }}
                     onPress={() => this.trackDriver()}>
                     <View style={{ alignItems: 'center', marginHorizontal: 30, marginVertical: 10 }}>
                         <Image source={{ uri: 'https://cdn3.iconfinder.com/data/icons/google-material-design-icons/48/ic_my_location_48px-512.png' }}
@@ -75,8 +76,8 @@ export default class TripDetails extends Component {
                 </TouchableHighlight>
 
                 <TouchableHighlight underlayColor='rgba(0, 0, 0, 0.02)'
-                    disabled={(this.status == PENDING) ? false : true}
-                    style={{ opacity: (this.status == PENDING) ? 1 : 0.3 }}
+                    disabled={(this.state.status == PENDING) ? false : true}
+                    style={{ opacity: (this.state.status == PENDING) ? 1 : 0.3 }}
                     onPress={() => {
                         this.showCancelModal(true)
                     }}>
@@ -90,14 +91,14 @@ export default class TripDetails extends Component {
         )
     }
 
-    async componentDidMount() {
-        await DataController.getItem(DataController.RUNNING_TRIP_DATA)
+    componentDidMount() {
+        this.props.navigation.getParam(DataController.RUNNING_TRIP_DATA)?
+        DataController.getItem(DataController.RUNNING_TRIP_DATA)
             .then(res => {
                 const value = JSON.parse(res)
                 this.tripData = value
                 this.props.navigation.setParams({ status: value.status })
                 this.setState(prevState => {
-                    prevState.drivName = value.driver_number
                     prevState.bookingDate = value.date
                     prevState.pickupLoc = value.pick_up
                     prevState.dropLoc = value.drop
@@ -109,6 +110,44 @@ export default class TripDetails extends Component {
                     prevState.bookingType = value.booking_type
                     prevState.chargeBill = value.billOffered
                     prevState.tripCharge = value.amount_to_be_paid
+                    prevState.status = value.status
+
+                    if (value.is_offered_billing == "1")
+                        prevState.total = value.billOffered
+                    else
+                        prevState.total = value.total_charge
+
+                    if (value.loading_charge != 0) {
+                        if (value.is_offered_billing != '1')
+                            prevState.loading = value.loading_charge
+                    }
+                    if (value.unloading_charge != 0) {
+                        if (value.is_offered_billing != '1')
+                            prevState.loading = value.unloading_charge
+                    }
+
+                    return prevState
+                })
+            })
+        :
+        DataController.getItem(DataController.COMPLETED_TRIP_DATA)
+            .then(res => {
+                const value = JSON.parse(res)
+                this.tripData = value
+                this.props.navigation.setParams({ status: value.status })
+                this.setState(prevState => {
+                    prevState.bookingDate = value.date
+                    prevState.pickupLoc = value.pick_up
+                    prevState.dropLoc = value.drop
+                    prevState.bookingID = value.trip_id
+                    prevState.drivName = value.status == "Cancelled"? "Not Available" : value.driver
+                    prevState.vehicle = value.vehicle_name
+                    prevState.vehicleNum = value.vehicle_reg_no
+                    prevState.chargePayment = value.payment
+                    prevState.bookingType = value.booking_type
+                    prevState.chargeBill = value.billOffered
+                    prevState.tripCharge = value.payment
+                    prevState.status = value.status
 
                     if (value.is_offered_billing == "1")
                         prevState.total = value.billOffered
@@ -245,7 +284,7 @@ export default class TripDetails extends Component {
                                 style={{
                                     width: 60, height: 60, opacity: 0.4, marginStart: 20,
                                 }} />
-                            <View>
+                            <View style={{marginEnd: 20}}>
                                 <Text style={{ fontWeight: "700", fontSize: 15 }}>
                                     {this.state.drivName}
                                 </Text>
@@ -256,7 +295,8 @@ export default class TripDetails extends Component {
                                     {this.state.vehicleNum}
                                 </Text>
                             </View>
-                            <TouchableHighlight
+
+                            {this.props.navigation.getParam(DataController.RUNNING_TRIP_DATA) && <TouchableHighlight
                                 underlayColor='rgba(36, 200, 0, 0.7)'
                                 onPress={() => {
                                     Linking.openURL(`tel: ${this.tripData.driver_number}`)
@@ -274,7 +314,7 @@ export default class TripDetails extends Component {
                                         style={{ width: 18, height: 18, marginEnd: 15 }} tintColor='white' />
                                     <Text style={{ color: 'white', fontWeight: '700' }}>Call</Text>
                                 </View>
-                            </TouchableHighlight>
+                            </TouchableHighlight>}
                         </View>
                     </View>
 
@@ -429,4 +469,3 @@ const styles = StyleSheet.create({
         marginBottom: 10,
     }
 });
-

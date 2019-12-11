@@ -4,8 +4,10 @@ import {
   TouchableOpacity,
   View,
   Text,
-  ScrollView
+  ScrollView,
+  TouchableHighlight,
 } from 'react-native';
+import { BookingEventType } from '../models/bookings_model';
 
 const ACCENT = '#FFCB28' // 255, 203, 40
 const GREEN = '#24C800' // 36, 200, 0
@@ -54,7 +56,7 @@ export default class PastMyBookings extends Component {
       else {
         ToastAndroid.show(value.message, ToastAndroid.SHORT);
       }
-      console.log("Response: ", value)
+      console.log("Response: ", JSON.stringify(value));
     })
     .catch(err => {
         console.log(err);
@@ -67,6 +69,58 @@ export default class PastMyBookings extends Component {
     })
   }
 
+  reBook(bookID) {
+    this.getBookingDetails(bookID);
+  }
+
+  getBookingDetails = async (bookID) => {
+    const reqURL = Constants.BASE_URL + Constants.GET_BOOKING_DETAIL + '?' +
+        Constants.FIELDS.BOOKING_ID + '=' + bookID + '&' +
+        Constants.FIELDS.BOOKING_TYPE + '=' + BookingEventType.RE_BOOK;
+
+    const request = await fetch(reqURL, {
+        method: 'GET',
+        headers: {
+            key: "21db33e221e41d37e27094153b8a8a02"
+        }
+    })
+
+    const response = await request.json().then(async value => {
+        console.log(value)
+
+        if (!value.success) {
+            ToastAndroid.show(value.message, ToastAndroid.SHORT);
+        }
+        else {
+          let model = value.data;
+          model.booking_event_type = BookingEventType.EDIT
+          model.booking_time = this.formatDate()
+
+          DataController.getItem(DataController.VEHICLE).then((vehicles) => {
+            vehicles = JSON.parse(vehicles)
+            vehicles.forEach((veh, index) => {
+              if(model.selected_vehicle_category == veh.id)
+                model.vehicle = veh
+                return;
+            })
+          })
+
+          await DataController.setItem(DataController.BOOKING_MODEL, JSON.stringify(model))
+          this.props.navigation.navigate('AddBooking', {
+            covered: model.covered? 'Covered' : 'Uncovered',
+            origin: model.landmark_list[0].landmark,
+            destination: model.landmark_list.slice(1),
+            vehicle: model.vehicle,
+            dateTime: unFormatDate(model.booking_time)
+          });
+        }
+
+    }).catch(err => {
+        console.log(err)
+        ToastAndroid.show(Constants.ERROR_GET_DETAILS, ToastAndroid.SHORT);
+    })
+  }
+
   render() {
     return(
       <View style={{flex: 1}}>
@@ -74,109 +128,122 @@ export default class PastMyBookings extends Component {
           {
             this.state.bookings.map((value, index) => {
               return(
-                <View
+                <TouchableHighlight underlayColor='rgba(0, 0, 0, 0.06)'
                 key={index} style={{
                   borderRadius: 3, backgroundColor: 'rgba(0, 0, 0, 0.03)', margin: 5,
                   padding: 15,
+                }}
+                onPress={async () => {
+                  await DataController.setItem(DataController.COMPLETED_TRIP_DATA, JSON.stringify(value))
+                    this.props.navigation.navigate("TripDetails", {
+                      [DataController.RUNNING_TRIP_DATA]: false
+                    })
                 }}>
-                  <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
-                    <View>
-                      <Text style={{opacity: 0.4, fontSize: 13, marginBottom: 5}}>{value.date}</Text>
-                      <Text style={{fontWeight: '700', fontSize: 13}}>{value.vehicle_name}</Text>
-                      <Text style={{opacity: 0.4, fontSize: 13}}>{value.trip_id}</Text>
-                    </View>
-                    <View style={{alignItems: 'flex-end'}}>
-                      <Text style={{fontWeight: '700', fontSize: 13, marginBottom: 5}}>
-                        {String.fromCharCode(8377) + ' ' + value.billOffered}
-                      </Text>
-                      {value.driver !== ""? 
-                      <Text style={{fontWeight: '700', fontSize: 13}}>
-                        {value.driver}
-                      </Text> : null}
-                      {value.driver_number !== ""? 
-                      <Text style={{opacity: 0.3, fontSize: 13}}>
-                        {value.driver_number}
-                      </Text> : null}
-                    </View>
-                  </View>
 
                   <View>
-                    <View style={{flexDirection: 'row', alignItems: 'center', marginTop: 15, marginHorizontal: 10}}>
-                      <View style={{
-                        backgroundColor: GREEN,
-                        elevation: 3,
-                        borderWidth: 1,
-                        borderColor: 'white',
-                        width: 12,
-                        height: 12,
-                        borderRadius: 100
-                        }}/>
-                      
-                      <Text
-                      style={{marginStart: 10, fontWeight: '700', fontSize: 13}}>
-                        {value.pick_up}
-                      </Text>
-                    </View>
-
-                    <View style={{flexDirection: 'row', alignItems: 'center', marginTop: 10, marginHorizontal: 10}}>
-                      <View style={{
-                        backgroundColor: 'red',
-                        elevation: 3,
-                        borderWidth: 1,
-                        borderColor: 'white',
-                        width: 12,
-                        height: 12,
-                        borderRadius: 100
-                        }}/>
-                      
-                      <Text
-                      style={{marginStart: 10, fontWeight: '700', fontSize: 13}}>
-                        {value.drop}
-                      </Text>
-                    </View>
-                  </View>
-
-                  {value.rating !== 0?
-                  <View style={{flexDirection: 'row', marginTop: 15, alignItems: 'center'}}>
-                    <Text style={{fontSize: 13, opacity: 0.3, marginEnd: 10}}>
-                    You Rated this Trip
-                    </Text>
-                    {[1,2,3,4,5].map((x, i) => {
-                      return(
-                        <Text key={i} style={{
-                          color: i < value.rating? ACCENT : 'rgba(0, 0, 0, 0.1)',
-                          fontSize: 18
-                        }}>
-                          {String.fromCharCode(9733)}
+                    <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
+                      <View>
+                        <Text style={{opacity: 0.4, fontSize: 13, marginBottom: 5}}>{value.date}</Text>
+                        <Text style={{fontWeight: '700', fontSize: 13}}>{value.vehicle_name}</Text>
+                        <Text style={{opacity: 0.4, fontSize: 13}}>{value.trip_id}</Text>
+                      </View>
+                      <View style={{alignItems: 'flex-end'}}>
+                        <Text style={{fontWeight: '700', fontSize: 13, marginBottom: 5}}>
+                          {String.fromCharCode(8377) + ' ' + value.billOffered}
                         </Text>
-                      )
-                    })}
-                  </View>
-                  :
-                  null}
+                        {value.driver !== ""? 
+                        <Text style={{fontWeight: '700', fontSize: 13}}>
+                          {value.driver}
+                        </Text> : null}
+                        {value.driver_number !== ""? 
+                        <Text style={{opacity: 0.3, fontSize: 13}}>
+                          {value.driver_number}
+                        </Text> : null}
+                      </View>
+                    </View>
 
-                  <View style={{
-                    flexDirection: 'row', justifyContent: 'space-between', marginTop: 10,
-                    alignItems: 'center'
-                  }}>
-                    <Text style={{
-                      backgroundColor: value.status === COMPLETED? GREEN : 'red',
-                      paddingVertical: 3, paddingHorizontal: 20, borderRadius: 3, 
-                      fontSize: 12, color: 'white', textAlignVertical: 'center',
+                    <View>
+                      <View style={{flexDirection: 'row', alignItems: 'center', marginTop: 15, marginHorizontal: 10}}>
+                        <View style={{
+                          backgroundColor: GREEN,
+                          elevation: 3,
+                          borderWidth: 1,
+                          borderColor: 'white',
+                          width: 12,
+                          height: 12,
+                          borderRadius: 100
+                          }}/>
+                        
+                        <Text
+                        style={{marginStart: 10, fontWeight: '700', fontSize: 13}}>
+                          {value.pick_up}
+                        </Text>
+                      </View>
+
+                      <View style={{flexDirection: 'row', alignItems: 'center', marginTop: 10, marginHorizontal: 10}}>
+                        <View style={{
+                          backgroundColor: 'red',
+                          elevation: 3,
+                          borderWidth: 1,
+                          borderColor: 'white',
+                          width: 12,
+                          height: 12,
+                          borderRadius: 100
+                          }}/>
+                        
+                        <Text
+                        style={{marginStart: 10, fontWeight: '700', fontSize: 13}}>
+                          {value.drop}
+                        </Text>
+                      </View>
+                    </View>
+
+                    {value.rating !== 0?
+                    <View style={{flexDirection: 'row', marginTop: 15, alignItems: 'center'}}>
+                      <Text style={{fontSize: 13, opacity: 0.3, marginEnd: 10}}>
+                      You Rated this Trip
+                      </Text>
+                      {[1,2,3,4,5].map((x, i) => {
+                        return(
+                          <Text key={i} style={{
+                            color: i < value.rating? ACCENT : 'rgba(0, 0, 0, 0.1)',
+                            fontSize: 18
+                          }}>
+                            {String.fromCharCode(9733)}
+                          </Text>
+                        )
+                      })}
+                    </View>
+                    :
+                    null}
+
+                    <View style={{
+                      flexDirection: 'row', justifyContent: 'space-between', marginTop: 10,
+                      alignItems: 'center'
                     }}>
-                      {value.status}
-                    </Text>
-                    
-                    {value.status === COMPLETED?
-                    <TouchableOpacity
-                    style={{
-                      borderWidth: 1, borderColor: ACCENT, borderRadius: 3,
-                      paddingVertical: 5, paddingHorizontal: 10
-                    }}>
-                      <Text style={{color: ACCENT, fontSize: 13}}>Book</Text>
-                    </TouchableOpacity> : null}
+                      <Text style={{
+                        backgroundColor: value.status === COMPLETED? GREEN : 'red',
+                        paddingVertical: 3, paddingHorizontal: 20, borderRadius: 3, 
+                        fontSize: 12, color: 'white', textAlignVertical: 'center',
+                      }}>
+                        {value.status}
+                      </Text>
+                      
+                      {!value.status === COMPLETED?
+                      <TouchableOpacity
+                      style={{
+                        borderWidth: 1, borderColor: ACCENT, borderRadius: 3,
+                        paddingVertical: 5, paddingHorizontal: 10
+                      }}
+                      onPress={() => {
+                        this.reBook(value.trip_id)
+                      }}>
+                        <Text style={{color: ACCENT, fontSize: 13}}>Book</Text>
+                      </TouchableOpacity> : null}
+                    </View>
                   </View>
-                </View>
+                
+                </TouchableHighlight>
             )})
           }
         </ScrollView>
@@ -194,4 +261,3 @@ export default class PastMyBookings extends Component {
 }
 
 const styles = StyleSheet.create({});
-
