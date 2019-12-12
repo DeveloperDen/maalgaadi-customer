@@ -114,6 +114,12 @@ const logoutUser = async (props) => {
                 toWrite.append(DataController.CUSTOMER_MOBILE, "")
                 toWrite.append(DataController.RATING, "")
                 toWrite.append(DataController.CUSTOMER_NAME, "")
+                toWrite.append(DataController.EMAIL, "")
+                toWrite.append(DataController.ORG, "")
+                toWrite.append(DataController.ADDRESS, "")
+                toWrite.append(DataController.GOODS_ID, "")
+                toWrite.append(DataController.GOODS_NAME, "")
+                toWrite.append(DataController.TRIP_FREQ, "")
                 console.log("To write: ", toWrite)
 
                 await DataController.setItems(toWrite)

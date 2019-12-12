@@ -2,8 +2,11 @@ import React, { Component } from 'react';
 import {
   StyleSheet,
   View,
-  Animated
+  ToastAndroid,
+  ActivityIndicator
 } from 'react-native';
+import { FIELDS, BASE_URL, GET_NOTIFICATION_LIST, ERROR_GET_DETAILS} from './utils/AppConstants';
+import { getItem, CUSTOMER_ID } from './utils/DataStorageController';
 
 const ACCENT = '#FFCB28' // 255, 203, 40
 const ACCENT_DARK = '#F1B800' 
@@ -17,32 +20,58 @@ export default class Notifications extends Component {
 
     constructor(props) {
         super(props)
-        this.state = {}
+        this.state = {
+            isLoading: true
+        }
+    }
+
+    componentDidMount() {
+        this.getNotificationsList();
+    }
+
+    getNotificationsList = async () => {
+
+        const reqBody = new FormData()
+        reqBody.append(FIELDS.CUSTOMER_ID, await getItem(CUSTOMER_ID))
+
+        console.log('Request Body: ', reqBody)
+
+        const request = await fetch(BASE_URL + GET_NOTIFICATION_LIST, {
+            method: 'POST',
+            body: reqBody,
+            headers: {
+                key: "21db33e221e41d37e27094153b8a8a02"
+            }
+        })
+
+        const response = await request.json().then(async value => {
+            console.log("Response Body: ", value);
+
+            if(value.success) {
+                console.log("Got Notifications!");
+            }
+            else {
+                console.log("Could not get Notifications!");
+            }
+        }).catch(err => {
+            console.log(err)
+            ToastAndroid.show(ERROR_GET_DETAILS, ToastAndroid.SHORT);
+        })
+
+        this.setState(prevState => {
+            prevState.isLoading = false
+            return prevState
+        })
     }
 
     render() {
         return(
             <View style={{flex: 1}}>
-                <View style={{backgroundColor: 'red', height: 120, width: '100%',alignItems: 'center', justifyContent: 'center', alignSelf: 'center'}}
-                onStartShouldSetResponder={(event) => {
-                    console.log("___Start X: ", event.nativeEvent.locationX)
-
-                }}
-                onTouchEnd={(event) => {
-                    console.log("___End X: ", event.nativeEvent.locationX)
-                }}
-                onMoveShouldSetResponderCapture={(event) => {
-                    console.log("Move X: ", event.nativeEvent.locationX)
-                }}>
-                    <Animated.Image style={{height: 100, width: "100%"}}
-                        resizeMode="cover"
-                        source={{uri: "https://irisapi.dcnpl.com/IrisAdmin/admin-assets/images/product/head-turn-all/fh-2019-11-19-15-51-14.png"}}
-                    />
-                </View>
+                <ActivityIndicator size="large" color={ACCENT_DARK}
+                style={{alignSelf: 'center', scaleX: this.state.isLoading? 1 : 0, position: 'absolute', top: 0, bottom: 0, start: 0, end: 0}}/>
             </View>
         )
     }
 }
 
 const styles = StyleSheet.create({});
-

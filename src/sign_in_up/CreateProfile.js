@@ -143,7 +143,7 @@ export default class CreateProfile extends Component {
             // TODO: Decide on the basis of city_list
             dataToWrite.append(DataController.CITY, "Indore")
 
-            dataToWrite.append(DataController.CITY_ID, value.data.city_id)
+            dataToWrite.append(DataController.CITY_ID, value.data.city_id.toString())
 
             dataToWrite.append(DataController.ADDRESS, value.data.cust_address)
             dataToWrite.append(DataController.GOODS_NAME, value.data.goods_name)
@@ -383,4 +383,3 @@ const styles = StyleSheet.create({
         marginBottom: 15
     }
 });
-

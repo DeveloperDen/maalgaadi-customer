@@ -455,9 +455,9 @@ export default class Home extends Component {
       if(type == "booking_notification") {
         const title = data.title;
         const message = data.message;
-        const messObj = JSON.parse(message);
 
         if(message.includes("Kindly pay")) {
+          const messObj = JSON.parse(message);
           const paymentModel = {
             [Constants.TRANS_PARAMS.BOOKING_ID]: messObj[Constants.TRANS_PARAMS.BOOKING_ID],
             [Constants.TRANS_PARAMS.AMOUNT]: messObj[Constants.TRANS_PARAMS.AMOUNT],
@@ -1125,6 +1125,7 @@ export default class Home extends Component {
           </View>
         </View>
 
+        {/* Pin on Map */}
         <View style={{top: '50%', bottom: '50%', marginTop: -50, position: 'absolute', 
           alignSelf: "center", }}>
             <Image source={this.state.isActiveInput === ORIGIN? greenPin : redPin}

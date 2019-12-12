@@ -232,7 +232,12 @@ export default class FareEstimation extends Component {
             case 1:
                 ToastAndroid.show(message, ToastAndroid.SHORT);
                 await DataController.setItem(DataController.RUNNING_TRIP_DATA, JSON.stringify(tripObj))
-                this.props.navigation.reset([NavigationActions.navigate({routeName: "TripDetails"})])
+                this.props.navigation.reset([
+                    NavigationActions.navigate({routeName: "Main"
+                    }),
+                    NavigationActions.navigate({routeName: "TripDetails", params: {
+                    [DataController.RUNNING_TRIP_DATA]: true,
+                }})])
                 break;
             case 2:
                 // this.showNoFavDriverAvailableDialog()
@@ -740,4 +745,3 @@ export default class FareEstimation extends Component {
 
 const styles = StyleSheet.create({
 });
-

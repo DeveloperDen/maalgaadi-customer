@@ -13,7 +13,7 @@ export const PopOverComp = (props) => {
             onRequestClose={() => props.closePopover()}
             popoverStyle={{padding: 10, backgroundColor: ACCENT}}
             arrowStyle={{backgroundColor: ACCENT_DARK}}>
-            <Text style={{fontWeight: '700'}}>{props.text}</Text>
+            <Text style={{fontWeight: '700', color: 'white'}}>{props.text}</Text>
         </Popover>
     )
 }
