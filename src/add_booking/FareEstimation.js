@@ -7,12 +7,14 @@ import {
   Modal,
   TouchableHighlight,
   ToastAndroid,
-  ActivityIndicator
+  ActivityIndicator,
+  TouchableOpacity
 } from 'react-native';
-import { TextInput, ScrollView } from 'react-native-gesture-handler';
+import { TextInput, ScrollView} from 'react-native-gesture-handler';
 import uuid from 'uuid-random'
 import { TripEstimateDataModel } from '../models/trip_estimate_model';
 import { NavigationActions } from 'react-navigation';
+import ProgressCircle from 'react-native-progress-circle'
 
 const DataController = require('../utils/DataStorageController')
 const Constants = require('../utils/AppConstants')
@@ -34,12 +36,18 @@ export default class FareEstimation extends Component {
             loadingModalVisible: false,
             modalVisible: false,
             noDrivAvailModalVisible: false,
+            noDrivAvailModalMessage: '',
             findDrivModalVisible: false,
             tripEstimate: 0,
             yourPrice: 0,
             payDriver: 0,
             mgMoney: 0,
-            inValidPrice: false
+            inValidPrice: false,
+            findDrivTime: 0,
+            timer: 0,
+            showWaitModal: false,
+            waitingArray: null,
+            selectedWaitingTime: 0
         }
         this.destinations = props.navigation.getParam('destination')
         this.bookingModel = ''
@@ -63,9 +71,10 @@ export default class FareEstimation extends Component {
         })
     }
 
-    showNoDriverAvailableDialog = (visible) => {
+    showNoDriverAvailableDialog = (visible, message = '') => {
         this.setState(prevState => {
             prevState.noDrivAvailModalVisible = visible
+            prevState.noDrivAvailModalMessage = message
             return prevState
         })
     }
@@ -73,6 +82,8 @@ export default class FareEstimation extends Component {
     async componentDidMount() {
         this.bookingModel = JSON.parse(await DataController.getItem(DataController.BOOKING_MODEL))
         this.bookingModel.customer_id = parseInt(this.bookingModel.customer_id)
+        this.confSettings = JSON.parse(await DataController.getItem(DataController.CONFIGURE_SETTING))
+
         this.getOfferedPercentage()
         this.getBookingEstimate()
     }
@@ -160,8 +171,8 @@ export default class FareEstimation extends Component {
         const response = await request.json().then(value => {
             console.log(value)
             if(value.success) {
-                // TODO: Save bookingID to Storage
-                // const bookingID = value.data.booking_id
+                const bookingID = value.data.booking_id
+                DataController.setItem(DataController.BOOKING_ID, bookingID.toString());
 
                 const dataObj = value.data
                 const tripObj = value.trip_data
@@ -202,8 +213,8 @@ export default class FareEstimation extends Component {
         const response = await request.json().then(value => {
             console.log(value)
             if(value.success) {
-                // TODO: Save bookingID to Storage
-                // const bookingID = value.data.booking_id
+                const bookingID = value.data.booking_id
+                DataController.setItem(DataController.BOOKING_ID, bookingID.toString());
 
                 const dataObj = value.data
                 const tripObj = value.trip_data
@@ -227,7 +238,7 @@ export default class FareEstimation extends Component {
         console.log("Code: ", code)
         switch(code){
             case 0:
-                this.showNoDriverAvailableDialog()
+                this.showNoDriverAvailableDialog(true, message)
                 break;
             case 1:
                 ToastAndroid.show(message, ToastAndroid.SHORT);
@@ -249,9 +260,14 @@ export default class FareEstimation extends Component {
                 // TODO
                 // this.props.navigation.replace("MyBookings")
                 break;
+            case 5:
+                    this.showNoDriverAvailableDialog(true, message)
+                    break;
         }
 
-        this.setModalVisible(false, true)
+        this.setModalVisible(false, true);
+        clearInterval(this.findDrivInterval);
+        clearTimeout(this.findDrivTimeout);
     }
 
     cancelBooking = async () => {
@@ -291,6 +307,93 @@ export default class FareEstimation extends Component {
         }).catch(err => {
             console.log(err)
             ToastAndroid.show(err, ToastAndroid.SHORT);
+        })
+    }
+
+    startFindDrivInterval() {
+        // Set an interval to increase progress value after every second. It returns an Interval number.
+        this.findDrivInterval = setInterval(() => {
+            this.setState(prevState => {
+                prevState.findDrivTime += 1.66 // As the progress circle gets percentage input from 0 to 100
+                prevState.timer += 1
+                return prevState
+            })
+        }, 1000);
+
+        // After 60 seconds, clear the interval to find driver, using the interval number returned.
+        this.findDrivTimeout = setTimeout(() => {
+            console.log("Timer Completed!")
+            clearInterval(this.findDrivInterval);
+            clearTimeout(this.findDrivTimeout);
+            this.setModalVisible(false, true);
+            this.showNoDriverAvailableDialog(true);
+        }, 60000)
+    }
+
+    // Called when Waiting time is selected.
+    async saveBookingResponse() {
+        const bookingID = parseInt(await DataController.getItem(DataController.BOOKING_ID));
+        const isAllotToFavDriv = this.bookingModel.allot_to_fav_driver
+        const bookEveType = this.bookingModel.booking_event_type
+
+        const reqBody = new FormData()
+        reqBody.append(Constants.FIELDS.BOOKING_ID, bookingID)
+        reqBody.append(Constants.FIELDS.FAV_DRIV_REQ, isAllotToFavDriv)
+        reqBody.append(Constants.FIELDS.WAIT_TIME, this.state.selectedWaitingTime)
+        reqBody.append(Constants.FIELDS.BOOK_EVE, bookEveType)
+
+        console.log('Request: ', reqBody)
+
+        const request = await fetch(Constants.BASE_URL + Constants.SAVE_BOOKING_RESPONSE, {
+            method: 'POST',
+            body: reqBody,
+            headers: {
+                key: "21db33e221e41d37e27094153b8a8a02"
+            }
+        })
+        
+        await request.json().then(async value => {
+            console.log("Response: ", value)
+
+            if(value.success) {
+                DataController.setItem(DataController.RUNNING_TRIP_DATA, JSON.stringify(value.data));
+                this.props.navigation.popToTop()
+                ToastAndroid.show(value.message, ToastAndroid.LONG);
+            }
+            else{
+                ToastAndroid.show(value.message, ToastAndroid.SHORT);
+                this.showNoDriverAvailableDialog(true, this.state.noDrivAvailModalMessage);
+            }
+            
+        })
+        .catch(err => {
+            console.log(err);
+            ToastAndroid.show(err, ToastAndroid.SHORT);
+            this.showNoDriverAvailableDialog(true, this.state.noDrivAvailModalMessage);
+        })
+
+        this.showWaitDialog(false);
+    }
+
+    async showWaitDialog(visible) {
+        this.showNoDriverAvailableDialog(false);
+        this.setState(prevState => {
+            prevState.showWaitModal = visible;
+
+            if(visible) {
+                prevState.waitingArray = [];
+
+                console.log("Selected ID: ", this.bookingModel.selected_vehicle_category,
+                "Configuration Settings: ", this.confSettings.waiting_array);
+
+                this.confSettings.waiting_array.forEach((value, index, array) => {
+                    if(value.vehicle_id == this.bookingModel.selected_vehicle_category) {
+                        prevState.waitingArray = value.waiting_list
+                    }
+                })
+            }
+
+            return prevState
         })
     }
 
@@ -400,10 +503,18 @@ export default class FareEstimation extends Component {
                             borderTopColor:'rgba(0, 0, 0, 0.1)',
                             borderTopWidth: 1}}/>
 
+                            <Text
+                            style={{
+                                alignSelf: 'center', color: 'red', fontStyle: 'italic', fontSize: 12,
+                                marginTop: 15, display: this.state.inValidPrice? 'flex' : 'none'
+                            }}>
+                                Price too Low. Please upgrade it.
+                            </Text>
+
                             <View
                             style={{
                                 flexDirection: 'row', alignItems: "center", alignSelf: 'center',
-                                marginBottom: 10, borderBottomColor: 'rgba(0, 0, 0, 0.2)', borderBottomWidth: 2,
+                                marginBottom: 15, borderBottomColor: 'rgba(0, 0, 0, 0.2)', borderBottomWidth: 2,
                             }}>
                                 <Text style={{fontSize: 35}}>{String.fromCharCode(8377)}</Text>
                                 <TextInput value={this.state.yourPrice}
@@ -454,14 +565,6 @@ export default class FareEstimation extends Component {
                                     }
                                 }}/>
                             </View>
-
-                            <Text
-                            style={{
-                                alignSelf: 'center', color: 'red', fontStyle: 'italic', fontSize: 12,
-                                marginBottom: 15, display: this.state.inValidPrice? 'flex' : 'none'
-                            }}>
-                                Price too Low. Please upgrade it.
-                            </Text>
 
                             <View style={{
                             flex: 1,
@@ -545,6 +648,8 @@ export default class FareEstimation extends Component {
                                 // this.confirmBooking();
                                 ToastAndroid.show("Will book later.", ToastAndroid.SHORT)
                             }
+
+                            this.startFindDrivInterval();
                         }
                             
                     }
@@ -641,7 +746,19 @@ export default class FareEstimation extends Component {
                             }}>
                                 {Constants.FIND_DRIVER_TITLE}
                             </Text>
-                            <ActivityIndicator size="large" color={ACCENT} style={{alignSelf: 'center', marginTop: 15}}/>
+                            
+                            <ProgressCircle
+                                percent={this.state.findDrivTime}
+                                radius={40}
+                                borderWidth={10}
+                                color={ACCENT}
+                                bgColor="#fff" // Overlay White
+                                shadowColor="#E8E8E8" // Stroke background color
+                                outerCircleStyle={{alignSelf: 'center', marginTop: 15}}
+                            >
+                                <Text style={{color: "#E8E8E8"}}>{this.state.timer}s</Text>
+                            </ProgressCircle>
+                            
                             <Text style={{
                                 textAlign: 'center', alignSelf: 'center', marginTop: 15,
                                 opacity: 0.3, marginHorizontal: 15
@@ -664,7 +781,7 @@ export default class FareEstimation extends Component {
                     </View>
                 </Modal>
 
-                {/* No Driver Found Dialog  */}
+                {/* No Driver Found/Available Dialog  */}
                 <Modal
                 animationType="fade"
                 transparent={true}
@@ -682,35 +799,138 @@ export default class FareEstimation extends Component {
                         style={{backgroundColor: 'white', width: '80%',
                         paddingTop: 20, borderRadius: 3,
                         elevation: 10, overflow: 'hidden'}}>
+                            <Image source={require('../../assets/not-found.png')}
+                            style={{
+                                width: 80, height: 80, alignSelf: 'center', margin: 15
+                            }}/>
+
                             <Text style={{
-                                fontWeight: '700', fontSize: 18, textAlign: 'center',
-                                alignSelf: 'center', marginHorizontal: 15
+                                fontWeight: '700', fontSize: 18, marginHorizontal: 15, alignSelf: 'center'
                             }}>
                                 {Constants.NO_DRIVER_FOUND_T}
                             </Text>
+                            
                             <Text style={{
-                                textAlign: 'center', alignSelf: 'center', marginTop: 15,
+                                textAlign: 'center', alignSelf: 'center', marginTop: 5,
                                 opacity: 0.3, marginHorizontal: 15
                             }}>
-                                {Constants.NO_DRIVER_FOUND_D}
+                                {this.state.noDrivAvailModalMessage == ''?
+                                Constants.NO_DRIVER_FOUND_D : this.state.noDrivAvailModalMessage}
                             </Text>
 
-                            <TouchableHighlight
-                                underlayColor={ACCENT_DARK}
-                                onPress={() => {
-                                    this.cancelBooking()
-                                }}
-                                style={{
-                                    paddingVertical: 15, alignItems: 'center', justifyContent: 'center',
-                                    backgroundColor: ACCENT, marginTop: 15
-                                }}>
-                                    <Text style={{color: 'white'}}>CANCEL</Text>
-                            </TouchableHighlight>
+                            <View style={{flexDirection: 'row', marginTop: 20, justifyContent: 'space-between'}}>
+                                <TouchableHighlight
+                                    underlayColor={ACCENT_DARK}
+                                    onPress={() => {
+                                        this.showWaitDialog(true)
+                                    }}
+                                    style={{
+                                        paddingVertical: 15, alignItems: 'center', justifyContent: 'center',
+                                        backgroundColor: ACCENT, flex: 1, marginEnd: 1
+                                    }}>
+                                        <Text style={{color: 'white'}}>WAIT</Text>
+                                </TouchableHighlight>
+                                <TouchableHighlight
+                                    underlayColor={ACCENT_DARK}
+                                    onPress={() => {
+                                        this.cancelBooking()
+                                    }}
+                                    style={{
+                                        paddingVertical: 15, alignItems: 'center', justifyContent: 'center',
+                                        backgroundColor: ACCENT, flex: 1, marginStart: 1
+                                    }}>
+                                        <Text style={{color: 'white'}}>CANCEL</Text>
+                                </TouchableHighlight>
+                            </View>
+                        </View>
+                    </View>
+                </Modal>
+
+                <Modal
+                animationType="fade"
+                transparent={true}
+                visible={this.state.showWaitModal}
+                onRequestClose={() => {
+                    return;
+                }}>
+                    <View style={{
+                    backgroundColor: 'rgba(0, 0, 0, 0.7)',
+                    height: '100%',
+                    alignItems: "center",
+                    justifyContent: 'center'
+                    }}>
+                        <View
+                        style={{backgroundColor: 'white', width: '80%',
+                        paddingTop: 20, borderRadius: 3,
+                        elevation: 10, overflow: 'hidden'}}>
+                            <Text style={{
+                                fontWeight: '700', fontSize: 18, marginHorizontal: 15, alignSelf: 'center'
+                            }}>
+                                Select Waiting Time
+                            </Text>
+                            
+                            <Text style={{
+                                textAlign: 'center', alignSelf: 'center', marginTop: 5,
+                                opacity: 0.3, marginHorizontal: 15
+                            }}>
+                                How long do you want us to look for a driver?
+                            </Text>
+
+                            <ScrollView horizontal={true} showsHorizontalScrollIndicator={false}>
+                                <View style={{flexDirection: 'row', marginTop: 15}}>
+                                    {
+                                        this.state.waitingArray != null && this.state.waitingArray.map((value, index, arr) => {
+                                            return(
+                                            <TouchableHighlight key={index} underlayColor='white'
+                                            onPress={() => {
+                                                this.setState(prevState => {
+                                                    prevState.selectedWaitingTime = value;
+                                                    return prevState;
+                                                })
+                                            }}
+                                            style={{
+                                                borderRadius: 100, padding: 10, margin: 5,
+                                                borderColor: 'black', borderWidth: 1, opacity: this.state.selectedWaitingTime == value? 1 : 0.3
+                                            }}>
+                                                <Text>
+                                                    {value}hrs
+                                                </Text>
+                                            </TouchableHighlight>)
+                                        })
+                                    }
+                                </View>
+                            </ScrollView>
+
+                            <View style={{flexDirection: 'row', marginTop: 20, justifyContent: 'space-between'}}>
+                                <TouchableHighlight
+                                    underlayColor={ACCENT_DARK}
+                                    onPress={() => {
+                                        this.saveBookingResponse();
+                                    }}
+                                    style={{
+                                        paddingVertical: 15, alignItems: 'center', justifyContent: 'center',
+                                        backgroundColor: ACCENT, flex: 1, marginEnd: 1
+                                    }}>
+                                        <Text style={{color: 'white'}}>DONE</Text>
+                                </TouchableHighlight>
+                                <TouchableHighlight
+                                    underlayColor={ACCENT_DARK}
+                                    onPress={() => {
+                                        this.showNoDriverAvailableDialog(true, this.state.noDrivAvailModalMessage);
+                                        this.showWaitDialog(false);
+                                    }}
+                                    style={{
+                                        paddingVertical: 15, alignItems: 'center', justifyContent: 'center',
+                                        backgroundColor: ACCENT, flex: 1, marginStart: 1
+                                    }}>
+                                        <Text style={{color: 'white'}}>CANCEL</Text>
+                                </TouchableHighlight>
+                            </View>
                         </View>
                     </View>
                 </Modal>
             
-                {/* Dialog to Find Driver */}
+                {/* Loading Dialog */}
                 <Modal
                 animationType="fade"
                 transparent={true}

@@ -70,14 +70,6 @@ export default class Home extends Component {
     this.mapView = null;
     this.freeDrivers = [];
 
-    this.netInfoSub = NetInfo.addEventListener((state) => {
-      ToastAndroid.show(`CONNECTED: ${state.isConnected} \nTYPE: ${state.type}`,
-      ToastAndroid.SHORT)
-
-      if(!state.isConnected)
-        props.navigation.navigate("NoNetworkModal");
-    })
-
     this.formatDate = formatDate
 
     this.state = {
@@ -381,6 +373,12 @@ export default class Home extends Component {
   }
 
   async componentDidMount() {
+    // Listener for Network change
+    this.netInfoSub = NetInfo.addEventListener((state) => {
+      if(!state.isConnected)
+        this.props.navigation.navigate("NoNetworkModal");
+    })
+
     // Listener to events emitted by Java(PaymentWebviewScreen.java)
     // Page Finished Loading
     const eventEmitter = new NativeEventEmitter();
@@ -435,11 +433,17 @@ export default class Home extends Component {
           this.showPaymentDialog();
         }
         else
-          ToastAndroid.show("Payment Transaction Data not found", ToastAndroid.SHORT);
+          console.log("Payment Transaction Data not found");
       })
       .catch(err => {
         ToastAndroid.show(err, ToastAndroid.SHORT);
       })
+    })
+
+    // On blurring/defocusing screen, unsubscribe to Network listener.
+    this.willFocusListener = this.props.navigation.
+    addListener('willBlur', () => {
+      this.netInfoSub();
     })
 
     this.getVehicleCategory()
@@ -481,7 +485,6 @@ export default class Home extends Component {
   }
 
   componentWillUnmount() {
-    this.netInfoSub();
     this.unsubscribeFCM();
   }
 

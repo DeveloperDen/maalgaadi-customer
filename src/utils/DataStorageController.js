@@ -26,6 +26,7 @@ export const COMPLETED_TRIP_DATA = "comp_trip_data"
 export const VEHICLE = "vehicle"
 export const PAYMENT_TRANS_DATA = "payment_trans"
 export const WALLET_BALANCE = "wallet_balance"
+export const BOOKING_ID = "booking_id"
 
 export const TUT_FAV_LOC = "tut_fav_loc"
 export const TUT_SET_DATETIME = "tut_set_date"

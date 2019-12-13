@@ -128,4 +128,3 @@ export default class Profile extends Component {
 const styles = StyleSheet.create({
 
 });
-

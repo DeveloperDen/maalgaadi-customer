@@ -3,12 +3,12 @@ import {
     View,
     Text,
     BackHandler,
-    ToastAndroid,
     StatusBar
 } from 'react-native'
 import { NO_NETWORK } from './utils/AppConstants';
 import { TouchableHighlight } from 'react-native-gesture-handler';
 import NetInfo from "@react-native-community/netinfo";
+import { NavigationActions } from 'react-navigation';
 
 export default class NoNetworkModal extends React.Component {
     constructor(props) {
@@ -18,13 +18,14 @@ export default class NoNetworkModal extends React.Component {
         this.backHandler = BackHandler.addEventListener("hardwareBackPress", () => {
             return true;
         })
+    }
 
+    componentDidMount() {
         this.netInfoSub = NetInfo.addEventListener((state) => {
-            ToastAndroid.show(`CONNECTED: ${state.isConnected} \nTYPE: ${state.type}`,
-            ToastAndroid.SHORT)
-      
             if(state.isConnected)
-              props.navigation.navigate("Splash")
+                this.props.navigation.reset([
+                    NavigationActions.navigate({routeName: "Home"})
+                ])
         })
     }
 

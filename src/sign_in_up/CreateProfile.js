@@ -135,6 +135,8 @@ export default class CreateProfile extends Component {
             dataToWrite.append(DataController.CUSTOMER_ID, value.data.id.toString())
             dataToWrite.append(DataController.CUSTOMER_MOBILE, value.data.cust_number)
             dataToWrite.append(DataController.BUFFER_TIME, value.data.configure_setting.buffered_schedule_time.toString())
+            dataToWrite.append(DataController.CONFIGURE_SETTING, JSON.stringify(value.data.configure_setting))
+            
             dataToWrite.append(DataController.CUSTOMER_NAME, this.state.name)
             dataToWrite.append(DataController.RATING, value.data.rating.toString())
             dataToWrite.append(DataController.EMAIL, value.data.cust_email)
@@ -165,7 +167,7 @@ export default class CreateProfile extends Component {
             prevState.isLoading = false
             return prevState
         })
-        this.props.navigation.replace("Main")
+        this.props.navigation.popToTop();
     }
 
     showPopover(compFieldText, comp) {

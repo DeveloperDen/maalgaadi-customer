@@ -79,9 +79,9 @@ export default class Login extends Component {
                 dataToWrite.append(DataController.CUSTOMER_ID, value.data.id.toString())
                 dataToWrite.append(DataController.CUSTOMER_MOBILE, value.data.cust_number)
                 dataToWrite.append(DataController.BUFFER_TIME, value.data.configure_setting.buffered_schedule_time.toString())
-
-                // TODO: Save configure settings.
-                // dataToWrite.append(DataController.CONFIGURE_SETTING, JSON.stringify(value.data.configure_setting))
+                
+                console.log("Configuration Settings: ", JSON.stringify(value.data.configure_setting));
+                dataToWrite.append(DataController.CONFIGURE_SETTING, JSON.stringify(value.data.configure_setting))
 
                 if(value.data.cust_name !== "") {
                     dataToWrite.append(DataController.IS_PROFILE_COMPLETED, "true")
@@ -311,4 +311,3 @@ export default class Login extends Component {
 const styles = StyleSheet.create({
 
 });
-

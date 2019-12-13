@@ -122,8 +122,8 @@ export const WALLET_EMPTY = "Looks like you have not booked any MaalGaadi yet. M
 export const WALLET_RECORD_EMPTY = "No record found for the specified Dates"
 export const FIND_DRIVER_TITLE = "Finding nearest driver"
 export const FIND_DRIVER_DESC = "We are finding the best of our drivers to take up your booking request"
-export const NO_DRIVER_FOUND_T = "Not Found"
-export const NO_DRIVER_FOUND_D = "No drivers are availbale to accept your booking"
+export const NO_DRIVER_FOUND_T = "No Driver available"
+export const NO_DRIVER_FOUND_D = "No drivers are available to accept your booking"
 export const CANCEL_EDIT_CONFIRM = "Cancellation charges may apply. Do you want to cancel or edit the trip?"
 export const NO_NETWORK = "Seems like you are Offline. Please connect to either a WiFi network or turn on your Cellular Data"
 export const NO_ACIVE_FLEET = "Currently, you do not have any favourite drivers in your list. Tap on Add button to manage driver on your fleet."
@@ -179,6 +179,8 @@ export const FIELDS = {
     CITY_ID_USER: "city_id",
     RANDOM_CODE: "random_code",
     BOOK_EVE_TYPE: "booking_event_type",
+    BOOK_EVE: "booking_event",
+    WAIT_TIME: "wait_time",
     BOOKING_ID: "booking_id",
     REASON: "reason",
     ISSUE_TYPE: "issues_type",
@@ -186,7 +188,8 @@ export const FIELDS = {
     DRIVER_ID: "driver_id",
     MG_CODE: "mg_code",
     STATUS_EXC: "status_exclusive",
-    BOOKING_TYPE: "booking_type"
+    BOOKING_TYPE: "booking_type",
+    FAV_DRIV_REQ: "fav_driver_required"
 }
 
 export const TRANS_PARAMS = {
