@@ -73,6 +73,7 @@ export default class Home extends Component {
     this.formatDate = formatDate
 
     this.state = {
+      showRatingModal: true,
       fromView: null,
       popOverText: '',
       tutCompFieldActive: null,
@@ -425,11 +426,13 @@ export default class Home extends Component {
         }, 500)
       }
 
+      this.getRatingResponse();
+
       // On focusing, check if any payment is pending, if so then, show the dialog.
       DataController.getItem(DataController.PAYMENT_TRANS_DATA)
       .then(value => {
         if(value != null){
-          this.paymentModel = value;
+          this.paymentModel = JSON.parse(value);
           this.showPaymentDialog();
         }
         else
@@ -438,12 +441,6 @@ export default class Home extends Component {
       .catch(err => {
         ToastAndroid.show(err, ToastAndroid.SHORT);
       })
-    })
-
-    // On blurring/defocusing screen, unsubscribe to Network listener.
-    this.willFocusListener = this.props.navigation.
-    addListener('willBlur', () => {
-      this.netInfoSub();
     })
 
     this.getVehicleCategory()
@@ -462,6 +459,7 @@ export default class Home extends Component {
 
         if(message.includes("Kindly pay")) {
           const messObj = JSON.parse(message);
+          console.log(messObj)
           const paymentModel = {
             [Constants.TRANS_PARAMS.BOOKING_ID]: messObj[Constants.TRANS_PARAMS.BOOKING_ID],
             [Constants.TRANS_PARAMS.AMOUNT]: messObj[Constants.TRANS_PARAMS.AMOUNT],
@@ -472,7 +470,7 @@ export default class Home extends Component {
             [Constants.TRANS_PARAMS.STATUS]: ''
           }
           this.paymentModel = paymentModel;
-          DataController.setItem(DataController.PAYMENT_TRANS_DATA, paymentModel);
+          await DataController.setItem(DataController.PAYMENT_TRANS_DATA, JSON.stringify(paymentModel));
           this.showPaymentDialog();
         }
       }
@@ -482,19 +480,69 @@ export default class Home extends Component {
           {text: "Ok", onPress: () => {return;}}
         ])
     })
+
+    this.getRatingResponse();
   }
 
   componentWillUnmount() {
     this.unsubscribeFCM();
+    this.netInfoSub();
+  }
+
+  async getRatingResponse() {
+    const reqBody = new FormData()
+    reqBody.append(Constants.FIELDS.CUSTOMER_ID, await DataController.getItem(DataController.CUSTOMER_ID));
+
+    console.log('Request Body: ', reqBody)
+
+    const request = await fetch(Constants.BASE_URL + Constants.GET_LAST_RATING, {
+        method: 'POST',
+        body: reqBody,
+        headers: {
+            key: "21db33e221e41d37e27094153b8a8a02"
+        }
+    })
+
+    await request.json().then(async value => {
+      console.log('Rating response Body: ', value);
+
+      if(value.success) {
+        this.ratingResponse = value;
+        this.showRatingDialog();
+      }
+      else {
+        console.log(value.message);
+      }
+    }).catch(err => {
+        console.log(err)
+        ToastAndroid.show(err, ToastAndroid.SHORT);
+    })  
+  }
+
+  showRatingDialog(visible = true) {
+    this.props.navigation.navigate("RatingDialog", {
+      [DataController.RATING_RESPONSE]: this.ratingResponse
+    });
+  }
+
+  async generateOrderID() {
+    const custID = await DataController.getItem(DataController.CUSTOMER_ID)
+    let timeStamp = new Date()
+    timeStamp = timeStamp.valueOf()
+
+    return(custID + timeStamp);
   }
 
   showPaymentDialog() {
     Alert.alert("Make Payment", "Please complete the payment to MaalGaadi driver",
     [
-      {text: "OK", style: "default", onPress: () => {
-        console.log("Completing booking payment..");
+      {text: "OK", style: "default", onPress: async () => {
+        const orderID = await this.generateOrderID();
+
+        console.log("Completing booking payment, order ID: ", orderID);
+
         this.props.navigation.navigate("PaymentWebview", {
-          [Constants.TRANS_PARAMS.ORDER_ID]: this.paymentModel[Constants.TRANS_PARAMS.ORDER_ID],
+          [Constants.TRANS_PARAMS.ORDER_ID]: orderID,
           [Constants.TRANS_PARAMS.AMOUNT]: this.paymentModel[Constants.TRANS_PARAMS.AMOUNT],
           [Constants.TRANS_PARAMS.PAY_NOW]: true,
           [Constants.FIELDS.CUSTOMER_ID]: this.paymentModel[Constants.FIELDS.CUSTOMER_ID],
@@ -502,8 +550,10 @@ export default class Home extends Component {
         })
       }},
       {
-        text: "Ask me later", style: "cancel", onPress: () => {
-          console.log("Skipping booking payment until next execution.");
+        text: "PAID", style: "cancel", onPress: () => {
+          console.log("Deleting transaction data.");
+          ToastAndroid.show("Deleting transaction data.", ToastAndroid.SHORT);
+          DataController.removeItem(DataController.PAYMENT_TRANS_DATA);
         }
       }
     ]);
@@ -693,10 +743,20 @@ export default class Home extends Component {
 
   bookNow = async (isBookNow = true) => {
     let bookingModel = BookingModel.bookingJSON
-    bookingModel.selected_vehicle_category = this.state.selectedVehicleID
-    bookingModel.selected_vehicle_category_name = this.state.selectedVehicle
-    bookingModel.vehicle = this.state.vehiclesList[this.state.selectedVehicleIndex]
-    
+    bookingModel.selected_vehicle_category = this.state.selectedVehicleID;
+    bookingModel.selected_vehicle_category_name = this.state.selectedVehicle;
+    bookingModel.vehicle = this.state.vehiclesList[this.state.selectedVehicleIndex];
+    bookingModel.vehicle.isSelected = true;
+    bookingModel.vehicle.eta = 0;
+    bookingModel.vehicle.etaCovered = 1;
+    bookingModel.vehicle.etaCoveredWithLoading = 9999;
+    bookingModel.vehicle.etaUncovered = 9999;
+    bookingModel.vehicle.etaUncoveredWithLoading = 9999;
+    bookingModel.vehicle.extra_km_rate = 0;
+    bookingModel.vehicle.extra_time_rate = 0;
+    bookingModel.vehicle.fare = 0;
+    bookingModel.vehicle.waiting_time_charge = 0;
+
     const cityId = 1 // TODO: Remove this line, uncomment next line.
     // const cityId = await DataController.getItem(DataController.CITY_ID)
     bookingModel.city_id = cityId
@@ -819,17 +879,15 @@ export default class Home extends Component {
           <View style={[styles.header]}>
             <TouchableHighlight 
             style={styles.iconHamMenu}
-            underlayColor='white'
+            underlayColor='rgba(255, 255, 255, 0.05)'
             onPress={() => {
               this.props.navigation.openDrawer()
             }}>
-              <View>
                 <Image style={{width:22, height:22}}
                 source={{
                   uri: 'https://cdn2.iconfinder.com/data/icons/ios-tab-bar/25/Hamburger_Round-512.png'
                 }}
                 tintColor='black'/>
-              </View>
             </TouchableHighlight>
             
             <Animated.View 
@@ -1003,6 +1061,7 @@ export default class Home extends Component {
                 if(status == 'true') {
                   this.setState(prevState => {
                     prevState.isCoveredVehicle = !prevState.isCoveredVehicle
+                    prevState.vehiclesList[prevState.selectedVehicleIndex].covered = !prevState.isCoveredVehicle
                     return prevState
                   })
                 }
@@ -1214,7 +1273,7 @@ export default class Home extends Component {
             </View>
           </View>
         </Modal>
-      
+
         {/* Date Time picker, shown only when, showDateTime is True. */}
         {this.state.showDateTime &&
         <DateTimePicker
@@ -1234,7 +1293,7 @@ export default class Home extends Component {
         closePopover={this.closePopover.bind(this)} text={this.state.popOverText}/>
       
         {/* Left side strip above map, to Open Navigation Drawer. */}
-        <View style={{height: '100%', width: 30, opacity: 0, position: 'absolute'}}/>
+        <View style={{height: '100%', width: 10, opacity: 0, position: 'absolute', backgroundColor: 'red'}}/>
       </View>
     )
   }
@@ -1341,9 +1400,9 @@ const styles = StyleSheet.create({
   },
   
   iconHamMenu: {
-    marginBottom: 12, 
+    padding: 25, 
     width:25,
-    height:25,
+    height:25, backgroundColor: 'transparent', alignItems:'center', justifyContent:'center'
   },
 
   dialogInputs: {

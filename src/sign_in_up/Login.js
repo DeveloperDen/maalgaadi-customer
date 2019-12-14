@@ -72,7 +72,7 @@ export default class Login extends Component {
             }
         })
 
-        const response = await request.json().then(async value => {
+        await request.json().then(async value => {
             if(value.success) {
                 const dataToWrite = new FormData()
                 dataToWrite.append(DataController.IS_LOGIN, "true")

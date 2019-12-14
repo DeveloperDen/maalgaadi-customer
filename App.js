@@ -37,6 +37,7 @@ import TrackDriver from './src/my_bookings/TrackDriver'
 import PaymentWebview from './src/wallet/PaymentWebview';
 import TransactionSuccess from './src/wallet/TransactionSuccess'
 import TransactionFailed from './src/wallet/TransactionFailed'
+import RatingDialog from './src/add_booking/RatingDialog'
 
 import { createAppContainer, createSwitchNavigator } from 'react-navigation'
 import { createDrawerNavigator } from 'react-navigation-drawer'
@@ -242,7 +243,12 @@ const HomeStackNavigator = createStackNavigator({
       navigationOptions: () => ({
         headerStyle: {display: 'none'},
       })
-    }
+    },
+    RatingDialog: {screen: RatingDialog,
+      navigationOptions: () => ({
+        headerStyle: {display: 'none'},
+      })
+    },
   }, {
     initialRouteName: "Home",
     mode: 'card',

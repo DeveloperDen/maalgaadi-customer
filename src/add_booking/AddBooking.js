@@ -184,8 +184,8 @@ export default class AddBooking extends Component {
             this.state.locations.forEach(loc => {
                 let dropModel = new LandmarkModel()
                 dropModel.setFavourite(false)  // TODO: Decide on the basis of Favourites' list
-                dropModel.setLat(loc.latitude.toString())
-                dropModel.setLng(loc.longitude.toString())
+                dropModel.setLat(loc.latitude)
+                dropModel.setLng(loc.longitude)
                 dropModel.setLandmark(loc.address)
                 list.push(dropModel.getModel())
             });
@@ -643,26 +643,28 @@ export default class AddBooking extends Component {
                             style={{
                                 padding: 10
                             }}>
-                                <View
-                                style={{
-                                    flexDirection: 'row', alignItems: 'center',
-                                    justifyContent: 'space-between'
-                                }}>
-                                    <Text style={{fontSize: 15}}>Type of Goods</Text>
-                                    <Image source={{uri: 'https://cdn2.iconfinder.com/data/icons/ios-7-icons/50/forward-512.png'}}
-                                    style={{width: 15, height: 15}}/>
+                                <View>
+                                    <View
+                                    style={{
+                                        flexDirection: 'row', alignItems: 'center',
+                                        justifyContent: 'space-between'
+                                    }}>
+                                        <Text style={{fontSize: 15}}>Type of Goods</Text>
+                                        <Image source={{uri: 'https://cdn2.iconfinder.com/data/icons/ios-7-icons/50/forward-512.png'}}
+                                        style={{width: 15, height: 15}}/>
+                                    </View>
+                                    <Text
+                                    style={{
+                                        paddingHorizontal: 20,
+                                        paddingVertical: 10,
+                                        fontSize: 15,
+                                        opacity: 0.4
+                                    }}>
+                                        {this.state.goodsType}
+                                    </Text>
                                 </View>
                                 
                             </TouchableHighlight>
-                            <Text
-                            style={{
-                                paddingHorizontal: 20,
-                                paddingBottom: 10,
-                                fontSize: 15,
-                                opacity: 0.4
-                            }}>
-                                {this.state.goodsType}
-                            </Text>
                         </View>
 
                         <View

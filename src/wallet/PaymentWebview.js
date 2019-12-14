@@ -36,7 +36,7 @@ export default class PaymentWebview extends Component {
     }
 
     getBillingInfo = async () => {
-        console.log("Getting billing info...")
+        console.log("Getting billing info...", this.props.navigation.getParam(FIELDS.CUSTOMER_ID))
         this.setState(prevState => {
             prevState.message = "Getting billing info..."
             return prevState
