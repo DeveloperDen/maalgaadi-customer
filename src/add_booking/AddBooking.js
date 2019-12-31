@@ -5,7 +5,6 @@ import {
   Text,
   TouchableHighlight, 
   Image,
-  ScrollView,
   Animated,
   Switch,
   TextInput,
@@ -203,7 +202,7 @@ export default class AddBooking extends Component {
               })
         }
         else {
-            ToastAndroid.show('Invalid!', ToastAndroid.SHORT)
+            ToastAndroid.show('Please complete the details', ToastAndroid.SHORT)
         }
     }
 
@@ -243,30 +242,68 @@ export default class AddBooking extends Component {
     }
 
     render() {
-        const headerHeight = this.state.scrollY.interpolate({
-            inputRange: [0, 180],
-            outputRange: [180, 0],
-            extrapolate: 'clamp',
-        });
-        const headerPadding = this.state.scrollY.interpolate({
-            inputRange: [20, 180],
-            outputRange: [20, 0],
+        const headerTransY = this.state.scrollY.interpolate({
+            inputRange: [0, 100],
+            outputRange: [0, -80],
             extrapolate: 'clamp',
         });
         const headerOpacity = this.state.scrollY.interpolate({
-            inputRange: [20, 130],
+            inputRange: [0, 100],
             outputRange: [1, 0],
             extrapolate: 'clamp',
         });
 
         return(
-            <View style={styles.fill}>
-                <ScrollView 
+            <View style={{
+                flex: 1,
+                backgroundColor: '#EEEEEE'
+            }}>
+                {/* Header with Vehicle type, Date and Time. */}
+                <Animated.View style={[styles.header, {opacity: headerOpacity, translateY: headerTransY}]}>
+                    <View style={[styles.bar, {paddingTop: 20, paddingBottom: 35}]}>
+                        <View>
+                            <TouchableHighlight
+                            underlayColor='white'
+                            onPress={() => {
+                                this.props.navigation.navigate('VehicleList', {setVehicle: this.setVehicle.bind(this)})
+                            }}>
+                                <Image source={vehicleIcon} style={{width: 50, height: 50}}/>
+                            </TouchableHighlight>
+                        </View>
+                        <Text style={{fontSize: 22, fontWeight: '700', marginTop: 10}}>
+                            {this.props.navigation.getParam('vehicle').vehicle_name}
+                        </Text>
+                        <Text style={{fontSize: 10, opacity: 0.4, marginTop: 5}}>
+                            {this.props.navigation.getParam('covered')}
+                        </Text>
+                    </View>
+
+                    <TouchableHighlight disabled={!this.state.dateTouchableEnabled}
+                        underlayColor='black'
+                        onPress={() => {
+                            this.showDateTimePicker(true, 'date')
+                        }}
+                        style={{
+                            borderRadius: 100,
+                            paddingVertical: 8,
+                            width: '75%',
+                            backgroundColor: this.state.dateTouchableEnabled? 'black' : 'gray',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            marginTop: -20, alignSelf: 'center',
+                        }}>
+                        <Text style={{color: 'white', opacity: this.state.dateTouchableEnabled? 1 : 0.4}}>
+                            {this.formatDate(this.state.selectedDateTime)}
+                        </Text>
+                    </TouchableHighlight>
+                </Animated.View>
+
+                <Animated.ScrollView 
                 showsVerticalScrollIndicator={false}
-                style={styles.fill}
-                scrollEventThrottle={16}
+                style={{flex: 1}}
                 onScroll={Animated.event(
                     [{nativeEvent: {contentOffset: {y: this.state.scrollY}}}],
+                    {useNativeDriver: true}
                 )}>
                     <View style={styles.scrollViewContent}>
                         <View 
@@ -680,7 +717,7 @@ export default class AddBooking extends Component {
                             style={{padding: 10, fontSize: 15, minHeight: 80,}}/>
                         </View>
                     </View>
-                </ScrollView>
+                </Animated.ScrollView>
                 
                 {/* Fare Estimate button. */}
                 <TouchableHighlight
@@ -695,46 +732,6 @@ export default class AddBooking extends Component {
                 }}>
                     <Text style={{fontSize: 18, fontWeight: '700', color: 'white'}}>Estimate Fare</Text>
                 </TouchableHighlight>
-
-                {/* Header with Vehicle type, Date and Time. */}
-                <Animated.View style={[styles.header, {height: headerHeight}]}>
-                    <Animated.View style={[styles.bar, {paddingTop: headerPadding, paddingBottom: 35}]}>
-                        <Animated.View style={{opacity: headerOpacity}}>
-                            <TouchableHighlight
-                            underlayColor='white'
-                            onPress={() => {
-                                this.props.navigation.navigate('VehicleList', {setVehicle: this.setVehicle.bind(this)})
-                            }}>
-                                <Image source={vehicleIcon} style={{width: 50, height: 50}}/>
-                            </TouchableHighlight>
-                        </Animated.View>
-                        <Animated.Text style={{fontSize: 22, fontWeight: '700', marginTop: 10, opacity: headerOpacity}}>
-                            {this.props.navigation.getParam('vehicle').vehicle_name}
-                        </Animated.Text>
-                        <Animated.Text style={{fontSize: 10, opacity: 0.4, marginTop: 5, opacity: headerOpacity}}>
-                            {this.props.navigation.getParam('covered')}
-                        </Animated.Text>
-                    </Animated.View>
-
-                    <TouchableHighlight disabled={!this.state.dateTouchableEnabled}
-                        underlayColor='black'
-                        onPress={() => {
-                            this.showDateTimePicker(true, 'date')
-                        }}
-                        style={{
-                            borderRadius: 100,
-                            paddingVertical: 8,
-                            width: '75%',
-                            backgroundColor: this.state.dateTouchableEnabled? 'black' : 'gray',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            marginTop: -20, alignSelf: 'center'
-                        }}>
-                        <Text style={{color: 'white', opacity: this.state.dateTouchableEnabled? 1 : 0.4}}>
-                            {this.formatDate(this.state.selectedDateTime)}
-                        </Text>
-                    </TouchableHighlight>
-                </Animated.View>
             
                 {/* Date Time picker, shown only when, showDateTime is True. */}
                 {this.state.showDateTime &&
@@ -759,10 +756,6 @@ export default class AddBooking extends Component {
 }
 
 const styles = StyleSheet.create({
-    fill: {
-        flex: 1,
-        backgroundColor: '#EEEEEE'
-    },
     row: {
         height: 40,
         margin: 16,
@@ -772,11 +765,12 @@ const styles = StyleSheet.create({
     },
     scrollViewContent: {
         marginTop: 180,
-        backgroundColor: '#EEEEEE',
         marginHorizontal: 10,
         paddingVertical: 20
     },
     header: {
+        height: 180,
+        zIndex: 100,
         position: 'absolute',
         top: 0,
         left: 0,

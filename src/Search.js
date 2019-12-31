@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import {Text, View, Image, ActivityIndicator, Modal} from 'react-native';
 import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete';
 import { getItem, CUSTOMER_ID } from './utils/DataStorageController';
-import { BASE_URL, VIEW_FAV_LOCATION_URL, FIELDS } from './utils/AppConstants';
+import { BASE_URL, VIEW_FAV_LOCATION_URL, FIELDS, KEY } from './utils/AppConstants';
 
 const GOOGLE_MAPS_APIKEY = 'AIzaSyCJYc7hsuiHCwUQWQ0NTk0TW0ne0y43NAE';
 const ACCENT = '#FFCB28' // 255, 203, 40
@@ -32,7 +32,7 @@ export default class Search extends Component {
         const request = await fetch(reqURL, {
             method: 'GET',
             headers: {
-                key: "21db33e221e41d37e27094153b8a8a02"
+                key: KEY
             }
         })
 

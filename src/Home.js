@@ -265,7 +265,7 @@ export default class Home extends Component {
         method: 'POST',
         body: reqBody,
         headers: {
-            key: "21db33e221e41d37e27094153b8a8a02"
+            key: Constants.KEY
         }
     })
     const response = await request.json().then(async value => {
@@ -448,18 +448,20 @@ export default class Home extends Component {
 
     // Subscribe to FCM Message listener
     this.unsubscribeFCM = messaging().onMessage(async message => {
-      showNotification(message.data.message, "MaalGaadi");
+      let notifMessage = message.data.message;
+      const title = message.data.title;
+
       console.log("Got message: ", message.data);
 
       const data = message.data;
       const type = data.type;
       if(type == "booking_notification") {
-        const title = data.title;
         const message = data.message;
 
         if(message.includes("Kindly pay")) {
           const messObj = JSON.parse(message);
-          console.log(messObj)
+          notifMessage = messObj.text;
+          
           const paymentModel = {
             [Constants.TRANS_PARAMS.BOOKING_ID]: messObj[Constants.TRANS_PARAMS.BOOKING_ID],
             [Constants.TRANS_PARAMS.AMOUNT]: messObj[Constants.TRANS_PARAMS.AMOUNT],
@@ -475,7 +477,9 @@ export default class Home extends Component {
         }
       }
 
-      Alert.alert(data.title, data.message,
+      showNotification(notifMessage, title != null? title : "MaalGaadi");
+
+      Alert.alert(data.title, notifMessage,
         [
           {text: "Ok", onPress: () => {return;}}
         ])
@@ -499,7 +503,7 @@ export default class Home extends Component {
         method: 'POST',
         body: reqBody,
         headers: {
-            key: "21db33e221e41d37e27094153b8a8a02"
+            key: Constants.KEY
         }
     })
 
@@ -571,7 +575,7 @@ export default class Home extends Component {
     const request = await fetch(reqURL, {
         method: 'GET',
         headers: {
-            key: "21db33e221e41d37e27094153b8a8a02"
+            key: Constants.KEY
         }
     })
 
@@ -605,7 +609,7 @@ export default class Home extends Component {
     const request = await fetch(reqURL, {
         method: 'GET',
         headers: {
-            key: "21db33e221e41d37e27094153b8a8a02"
+            key: Constants.KEY
         }
     })
 

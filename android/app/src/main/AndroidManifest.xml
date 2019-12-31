@@ -18,7 +18,7 @@
       <meta-data  android:name="com.dieam.reactnativepushnotification.notification_channel_description"
                   android:value="MaalGaadi Notifications"/>
       <meta-data  android:name="com.dieam.reactnativepushnotification.notification_color"
-                  android:resource="@color/accent"/>
+                  android:resource="@color/colorAccent"/>
 
       <meta-data
       android:name="com.google.android.geo.API_KEY"

@@ -21,6 +21,8 @@ export const unFormatDate = (dateStr) => {
 }
 
 export const showNotification = (notMessage, notTitle) => {
+  PushNotification.cancelAllLocalNotifications();
+
   PushNotification.localNotification({
       /* Android Only Properties */
       largeIcon: "ic_launcher", // (optional) default: "ic_launcher"

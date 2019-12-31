@@ -13,7 +13,7 @@ import {
 import { RATING_RESPONSE, CUSTOMER_ID, BOOKING_ID, RATING, getItem, DESCRIPTION} from '../utils/DataStorageController';
 import { AirbnbRating } from 'react-native-ratings';
 import { TouchableHighlight, TextInput} from 'react-native-gesture-handler';
-import { GET_CUSTOMER_RATING, BASE_URL } from './../utils/AppConstants';
+import { GET_CUSTOMER_RATING, BASE_URL, KEY } from './../utils/AppConstants';
 
 const ACCENT = '#FFCB28' // 255, 203, 40
 const ACCENT_DARK = '#F1B800'
@@ -123,7 +123,7 @@ export default class RatingDialog extends Component {
         const request = await fetch(reqURL, {
             method: 'GET',
             headers: {
-                key: "21db33e221e41d37e27094153b8a8a02"
+                key: KEY
             }
         })
     

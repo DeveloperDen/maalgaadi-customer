@@ -8,7 +8,7 @@ import {
 } from 'react-native';
 import MapView, { PROVIDER_GOOGLE, Marker } from 'react-native-maps';
 import MapViewDirections from 'react-native-maps-directions';
-import { BASE_URL, TRIP_ROUTE, FIELDS } from '../utils/AppConstants';
+import { BASE_URL, TRIP_ROUTE, FIELDS, KEY } from '../utils/AppConstants';
 
 const ACCENT = '#FFCB28' // 255, 203, 40
 const ACCENT_DARK = '#F1B800'
@@ -56,7 +56,7 @@ export default class Notifications extends Component {
         const request = await fetch(reqURL, {
             method: 'GET',
             headers: {
-                key: "21db33e221e41d37e27094153b8a8a02"
+                key: KEY
             }
         })
 

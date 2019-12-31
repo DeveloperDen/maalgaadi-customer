@@ -14,7 +14,7 @@ import {
   Alert
 } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
-import { NO_ACIVE_FLEET, GET_ACTIVE_DRIVER_LIST, ERROR_GET_DETAILS, BASE_URL, FIELDS, DELETE_ACTIVE_DRIVERS, ERR_ACTIVE_FLEET, GET_DRIVER_DATA_BY_MGCODE, ADD_FAVORITE_DRIVER }
+import { NO_ACIVE_FLEET, GET_ACTIVE_DRIVER_LIST, ERROR_GET_DETAILS, BASE_URL, FIELDS, DELETE_ACTIVE_DRIVERS, ERR_ACTIVE_FLEET, GET_DRIVER_DATA_BY_MGCODE, ADD_FAVORITE_DRIVER, KEY }
 from '../utils/AppConstants';
 import * as DataController from '../utils/DataStorageController'
 
@@ -65,7 +65,7 @@ export default class RunningMyBookings extends Component {
         const request = await fetch(reqURL, {
             method: 'GET',
             headers: {
-                key: "21db33e221e41d37e27094153b8a8a02"
+                key: KEY
             }
         })
 
@@ -110,7 +110,7 @@ export default class RunningMyBookings extends Component {
             method: 'POST',
             body: reqBody,
             headers: {
-                key: "21db33e221e41d37e27094153b8a8a02"
+                key: KEY
             }
         })
         const response = await request.json().then(async value => {
@@ -158,7 +158,7 @@ export default class RunningMyBookings extends Component {
         const request = await fetch(reqURL, {
             method: 'GET',
             headers: {
-                key: "21db33e221e41d37e27094153b8a8a02"
+                key: KEY
             }
         })
 
@@ -204,7 +204,7 @@ export default class RunningMyBookings extends Component {
         const request = await fetch(reqURL, {
             method: 'GET',
             headers: {
-                key: "21db33e221e41d37e27094153b8a8a02"
+                key: KEY
             }
         })
 

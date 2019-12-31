@@ -5,7 +5,7 @@ import {
   ToastAndroid,
   ActivityIndicator
 } from 'react-native';
-import { FIELDS, BASE_URL, GET_NOTIFICATION_LIST, ERROR_GET_DETAILS} from './utils/AppConstants';
+import { FIELDS, BASE_URL, GET_NOTIFICATION_LIST, ERROR_GET_DETAILS, KEY} from './utils/AppConstants';
 import { getItem, CUSTOMER_ID } from './utils/DataStorageController';
 
 const ACCENT = '#FFCB28' // 255, 203, 40
@@ -40,7 +40,7 @@ export default class Notifications extends Component {
             method: 'POST',
             body: reqBody,
             headers: {
-                key: "21db33e221e41d37e27094153b8a8a02"
+                key: KEY
             }
         })
 

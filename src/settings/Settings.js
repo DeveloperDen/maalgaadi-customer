@@ -72,7 +72,7 @@ export default class Settings extends Component {
             method: 'POST',
             body: reqBody,
             headers: {
-                key: "21db33e221e41d37e27094153b8a8a02"
+                key: Constants.KEY
             }
         })
         const response = await request.json().then(async value => {
@@ -106,7 +106,7 @@ export default class Settings extends Component {
             method: 'POST',
             body: JSON.stringify(settings),
             headers: {
-                key: "21db33e221e41d37e27094153b8a8a02"
+                key: Constants.KEY
             }
         })
         const response = await request.json().then(async value => {

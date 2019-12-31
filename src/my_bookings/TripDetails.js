@@ -13,6 +13,7 @@ import {
     StatusBar
 } from 'react-native';
 import { ScrollView, } from 'react-native-gesture-handler';
+import messaging from '@react-native-firebase/messaging';
 const DataController = require('../utils/DataStorageController')
 const Constants = require('../utils/AppConstants')
 const ACCENT = '#FFCB28' // 255, 203, 40
@@ -28,8 +29,11 @@ export default class TripDetails extends Component {
             headerTitle: 'Trip Details',
             headerRight:
                 <Text style={{
-                    backgroundColor: navigation.getParam('status', '-') == "Pending" ? ACCENT : navigation.getParam('status', '-') == "Cancelled"? 'red' : GREEN,
-                    paddingHorizontal: 12, paddingVertical: 6, marginEnd: 16, borderRadius: 3, color: 'white'
+                    backgroundColor: navigation.getParam('status', '-') == "Pending" ? ACCENT :
+                    navigation.getParam('status', '-') == "Cancelled"? 'red' : 
+                    navigation.getParam('status', '-') == "Unknown"? 'gray' : GREEN,
+                    paddingHorizontal: 12, paddingVertical: 6, marginEnd: 16, borderRadius: 3,
+                    color: navigation.getParam('status', '-') == "Unknown"? 'rgba(255, 255, 255, 0.4)' : 'white'
                 }}>
                     {navigation.getParam('status', '-')}
                 </Text>
@@ -92,8 +96,8 @@ export default class TripDetails extends Component {
     }
 
     componentDidMount() {
-        this.props.navigation.getParam(DataController.RUNNING_TRIP_DATA)?
-        DataController.getItem(DataController.RUNNING_TRIP_DATA)
+        if(this.props.navigation.getParam(DataController.RUNNING_TRIP_DATA)) {
+            DataController.getItem(DataController.RUNNING_TRIP_DATA)
             .then(res => {
                 const value = JSON.parse(res)
                 this.tripData = value
@@ -129,8 +133,46 @@ export default class TripDetails extends Component {
                     return prevState
                 })
             })
-        :
-        DataController.getItem(DataController.COMPLETED_TRIP_DATA)
+
+            // Subscribe to FCM Message listener
+            this.unsubscribeFCM = messaging().onMessage(async message => {
+                console.log("Got message: ", message.data);
+        
+                const data = message.data;
+                const type = data.type;
+                if(type == "booking_notification") {
+                    let bookStatus = '';
+                    const message = data.message;
+                    
+                    if(message.includes("cancelled")) {
+                        bookStatus = "Cancelled";
+                    }
+                    else if(message.includes("unloaded")) {
+                        bookStatus = "Unoading";
+                    }
+                    else if(message.includes("to delivery point")) {
+                        bookStatus = "Reaching Destination";
+                    }
+                    else if(message.includes("loaded")) {
+                        bookStatus = "Loading";
+                    }
+                    else if(message.includes("Kindly pay")) {
+                        bookStatus = "Billing";
+                    }
+                    else {
+                        bookStatus = "Unknown";
+                    }
+
+                    this.props.navigation.setParams({ status: bookStatus })
+                    this.setState(prevState => {
+                        prevState.status = bookStatus
+                        return prevState
+                    })
+                }
+            })
+        }
+        else {
+            DataController.getItem(DataController.COMPLETED_TRIP_DATA)
             .then(res => {
                 const value = JSON.parse(res)
                 this.tripData = value
@@ -166,6 +208,13 @@ export default class TripDetails extends Component {
                     return prevState
                 })
             })
+        }
+    }
+
+    componentWillUnmount() {
+        if(this.props.navigation.getParam(DataController.RUNNING_TRIP_DATA)) {
+            this.unsubscribeFCM();
+        }
     }
 
     showCancelModal(visible) {
@@ -196,7 +245,7 @@ export default class TripDetails extends Component {
             method: 'POST',
             body: reqBody,
             headers: {
-                key: "21db33e221e41d37e27094153b8a8a02"
+                key: Constants.KEY
             }
         })
         const response = await request.json().then(async value => {

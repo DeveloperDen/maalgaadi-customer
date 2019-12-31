@@ -8,6 +8,7 @@ import {
   TouchableHighlight,
 } from 'react-native';
 import { BookingEventType } from '../models/bookings_model';
+import { KEY } from '../utils/AppConstants';
 
 const ACCENT = '#FFCB28' // 255, 203, 40
 const GREEN = '#24C800' // 36, 200, 0
@@ -43,7 +44,7 @@ export default class PastMyBookings extends Component {
         method: 'POST',
         body: reqBody,
         headers: {
-            key: "21db33e221e41d37e27094153b8a8a02"
+            key: KEY
         }
     })
     const response = await request.json().then(async value => {
@@ -81,7 +82,7 @@ export default class PastMyBookings extends Component {
     const request = await fetch(reqURL, {
         method: 'GET',
         headers: {
-            key: "21db33e221e41d37e27094153b8a8a02"
+            key: KEY
         }
     })
 

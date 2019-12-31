@@ -50,7 +50,7 @@ export default class Splash extends Component {
     }
 
     async updateFCMToken(token = '') {
-        if(!token == '')
+        if(token == '')
             token = await firebase.messaging().getToken();
         DataController.setItem(DataController.FCM_TOKEN, token);
 
@@ -63,7 +63,7 @@ export default class Splash extends Component {
         const request = await fetch(reqURL, {
             method: 'GET',
             headers: {
-                key: "21db33e221e41d37e27094153b8a8a02"
+                key: Constants.KEY
             }
         })
 

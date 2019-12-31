@@ -43,7 +43,7 @@ export default class FareEstimation extends Component {
             payDriver: 0,
             mgMoney: 0,
             inValidPrice: false,
-            findDrivTime: 0,
+            findDrivTime: 100,
             timer: 0,
             showWaitModal: false,
             waitingArray: null,
@@ -94,7 +94,7 @@ export default class FareEstimation extends Component {
         const request = await fetch(reqURL, {
             method: 'GET',
             headers: {
-                key: "21db33e221e41d37e27094153b8a8a02"
+                key: Constants.KEY
             }
         })
     
@@ -115,7 +115,7 @@ export default class FareEstimation extends Component {
         const request = await fetch(reqURL, {
             method: 'POST',
             headers: {
-                key: "21db33e221e41d37e27094153b8a8a02",
+                key: Constants.KEY,
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify(this.bookingModel)
@@ -193,7 +193,7 @@ export default class FareEstimation extends Component {
         const request = await fetch(reqURL, {
             method: 'POST',
             headers: {
-                key: "21db33e221e41d37e27094153b8a8a02",
+                key: Constants.KEY,
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify(this.bookingModel)
@@ -235,7 +235,7 @@ export default class FareEstimation extends Component {
         const request = await fetch(reqURL, {
             method: 'POST',
             headers: {
-                key: "21db33e221e41d37e27094153b8a8a02",
+                key: Constants.KEY,
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify(this.bookingModel)
@@ -312,7 +312,7 @@ export default class FareEstimation extends Component {
             method: 'POST',
             body: reqBody,
             headers: {
-                key: "21db33e221e41d37e27094153b8a8a02"
+                key: Constants.KEY
             }
         })
 
@@ -345,7 +345,7 @@ export default class FareEstimation extends Component {
         // Set an interval to increase progress value after every second. It returns an Interval number.
         this.findDrivInterval = setInterval(() => {
             this.setState(prevState => {
-                prevState.findDrivTime += 1.66 // As the progress circle gets percentage input from 0 to 100
+                prevState.findDrivTime -= 1.66 // Each percent is 100% / 60secs = 1.66
                 prevState.timer += 1
                 return prevState
             })
@@ -379,7 +379,7 @@ export default class FareEstimation extends Component {
             method: 'POST',
             body: reqBody,
             headers: {
-                key: "21db33e221e41d37e27094153b8a8a02"
+                key: Constants.KEY
             }
         })
         

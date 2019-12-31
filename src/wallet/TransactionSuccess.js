@@ -9,7 +9,7 @@ import {
   ActivityIndicator
 } from 'react-native';
 import { getItem, PAYMENT_TRANS_DATA, setItem, WALLET_BALANCE, CUSTOMER_ID, removeItem } from '../utils/DataStorageController';
-import { BASE_URL, SEND_TRANSACTION_STATUS } from '../utils/AppConstants';
+import { BASE_URL, SEND_TRANSACTION_STATUS, KEY } from '../utils/AppConstants';
 
 const ACCENT = '#FFCB28' // 255, 203, 40
 const ACCENT_DARK = '#F1B800'
@@ -82,7 +82,7 @@ export default class TransactionStatus extends Component {
         const request = await fetch(reqURL, {
             method: 'POST',
             headers: {
-                key: "21db33e221e41d37e27094153b8a8a02",
+                key: KEY,
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify(this.transData)

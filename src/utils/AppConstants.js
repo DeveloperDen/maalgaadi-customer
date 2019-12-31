@@ -18,6 +18,7 @@ export const OTP_DELIMITER = ":";
 export const CCAVENUE = CCAVENUE_IP_LIVE;
 export const BASE_URL = BASE_URL_IP_DEMO;
 export const IMAGE_BASE_URL = BASE_URL_DEMO;
+export const KEY = "21db33e221e41d37e27094153b8a8a02";
 
 export const PAYMENT_GATEWAY_URL = "https://secure.ccavenue.com/transaction/initTrans";
 export const PAYMENT_GATEWAY_ACCESS_CODE = "AVHR74EK06AD66RHDA";
