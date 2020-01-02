@@ -146,8 +146,7 @@ export default class ChangePassword extends Component {
                         })
                     }}>
                         <Image source={{uri: 
-                        this.state.showPass_New? 'https://cdn3.iconfinder.com/data/icons/google-material-design-icons/48/ic_remove_red_eye_48px-512.png' :
-                        'https://cdn3.iconfinder.com/data/icons/google-material-design-icons/48/ic_visibility_off_48px-512.png'}}
+                        this.state.showPass_New? Constants.ICONS.show_pass : Constants.ICONS.hide_pass}}
                     style={{width: 25, height: 25, opacity: 0.3}}/>
                     </TouchableOpacity>
                     
@@ -178,8 +177,7 @@ export default class ChangePassword extends Component {
                         })
                     }}>
                         <Image source={{uri: 
-                        this.state.showPass_NewConf? 'https://cdn3.iconfinder.com/data/icons/google-material-design-icons/48/ic_remove_red_eye_48px-512.png' :
-                        'https://cdn3.iconfinder.com/data/icons/google-material-design-icons/48/ic_visibility_off_48px-512.png'}}
+                        this.state.showPass_NewConf? Constants.ICONS.show_pass : Constants.ICONS.hide_pass}}
                     style={{width: 25, height: 25, opacity: 0.3}}/>
                     </TouchableOpacity>
                     
@@ -213,7 +211,7 @@ export default class ChangePassword extends Component {
                     height: 100, flexDirection: 'row',
                     alignItems: 'center', paddingHorizontal: 20
                 }}>
-                    <Image source={{uri: 'https://cdn3.iconfinder.com/data/icons/google-material-design-icons/48/ic_warning_48px-512.png'}}
+                    <Image source={Constants.ICONS.warning}
                     tintColor='white' style={{width: 30, height: 30, marginEnd: 20}}/>
                     <Text style={{fontSize: 15, color: 'white', flex: 1}}>{this.state.message}</Text>
                 </Animated.View>

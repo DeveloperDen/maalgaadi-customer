@@ -233,7 +233,7 @@ export default class FavouriteLocations extends Component {
                                 <View 
                                 style={{flexDirection: 'row', alignItems: 'center', marginVertical: 10}}>
                                     <Image
-                                    source={{uri: 'https://cdn2.iconfinder.com/data/icons/pittogrammi/142/94-512.png'}}
+                                    source={Constants.ICONS.location}
                                     style={{width: 20, height:20, margin: 15, opacity: 0.3}}/>
 
                                     <View style={{flex: 1}}>
@@ -252,14 +252,14 @@ export default class FavouriteLocations extends Component {
                                     onPress={() => {
                                         this.setModalVisible(true, index, null, 'edit')
                                     }}>
-                                        <Image source={{uri: 'https://cdn3.iconfinder.com/data/icons/google-material-design-icons/48/ic_mode_edit_48px-512.png'}}
+                                        <Image source={Constants.ICONS.edit}
                                         style={{width: 20, height:20, margin: 10, opacity: 0.3}}/>
                                     </TouchableOpacity>
                                     <TouchableOpacity
                                     onPress={() => {
                                         this.setModalVisible(true, index, null, 'del')
                                     }}>
-                                        <Image source={{uri: 'https://cdn3.iconfinder.com/data/icons/google-material-design-icons/48/ic_delete_48px-512.png'}}
+                                        <Image source={Constants.ICONS.delete}
                                         style={{width: 20, height:20, margin: 10, opacity: 0.3}}/>
                                     </TouchableOpacity>
                                 </View> 
@@ -412,7 +412,7 @@ export default class FavouriteLocations extends Component {
                                     onPress={() => {
                                         this.setModalVisible(false, 0, null, 'del')
                                     }}>
-                                        <Image source={{uri: 'https://cdn3.iconfinder.com/data/icons/virtual-notebook/16/button_close-512.png'}}
+                                        <Image source={Constants.ICONS.close}
                                         style={{width: 15, height: 15, margin: 20}}/>
                                     </TouchableOpacity>
                                 </View>

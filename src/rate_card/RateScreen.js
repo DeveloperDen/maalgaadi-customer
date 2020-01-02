@@ -96,7 +96,7 @@ export default class RateCard extends Component {
             }
         })
     
-        const response = await request.json().then(value => {
+        response = await request.json().then(value => {
             console.log(value)
     
             if(!value.success){

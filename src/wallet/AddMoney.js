@@ -10,7 +10,7 @@ import {
 } from 'react-native';
 import { NavigationEvents, StackActions } from 'react-navigation';
 import { getItem,  CUSTOMER_ID} from '../utils/DataStorageController'
-import { TRANS_PARAMS, FIELDS } from './../utils/AppConstants';
+import { TRANS_PARAMS, FIELDS, ICONS } from './../utils/AppConstants';
 
 const rupee = require('../../assets/rupee_outline.png')
 
@@ -82,7 +82,7 @@ export default class AddMoney extends Component {
                         justifyContent: 'center', alignItems: 'center', flexDirection: 'row',
                     }}>
                         <Image
-                        source={{uri: 'https://cdn0.iconfinder.com/data/icons/finance-android-l-lollipop-icon-pack/24/wallet-512.png'}}
+                        source={ICONS.my_wallet}
                         tintColor={BLUE}
                         style={{width: 30, height: 30}}/>
 

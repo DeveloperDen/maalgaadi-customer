@@ -130,7 +130,7 @@ export default class MGWallet extends Component {
                 }}>
                     <View style={{ backgroundColor: ACCENT_DARK, borderRadius: 100, padding: 15, margin: 10}}>
                         <Image
-                        source={{uri: 'https://cdn0.iconfinder.com/data/icons/finance-android-l-lollipop-icon-pack/24/wallet-512.png'}}
+                        source={Constants.ICONS.my_wallet}
                         tintColor='white'
                         style={{width: 50, height: 50}}/>
                     </View>
@@ -222,7 +222,7 @@ export default class MGWallet extends Component {
                             flexDirection: 'row', paddingVertical: 12, paddingHorizontal: 35,
                             justifyContent: 'center',  elevation: 3 
                         }}>
-                            <Image source={{uri: 'https://cdn1.iconfinder.com/data/icons/gradak-music/32/music-38-512.png'}}
+                            <Image source={Constants.ICONS.filter}
                             style={{width: 20, height: 20, marginEnd: 10}}
                             tintColor='white'/>
                             <Text style={{color: 'white'}}>FILTER</Text>

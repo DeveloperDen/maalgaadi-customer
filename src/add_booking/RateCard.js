@@ -7,6 +7,7 @@ import {
   Image,
 } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
+import { ICONS } from '../utils/AppConstants';
 
 
 const ACCENT = '#FFCB28' // 255, 203, 40 
@@ -22,7 +23,7 @@ export default class RateCard extends Component {
             }}
             underlayColor='white'>
                 <Image
-                source={{uri: 'https://cdn3.iconfinder.com/data/icons/google-material-design-icons/48/ic_close_48px-512.png'}}
+                source={ICONS.close}
                 tintColor='black'
                 style={{width: 24, height: 24, marginStart: 16}}/>
             </TouchableHighlight>
@@ -33,59 +34,18 @@ export default class RateCard extends Component {
         super(props)
         this.state = {
         }
-        this.rates = [
-            {
-                type: 'Base Fare',
-                value: `${String.fromCharCode(8377)} 200`,
-                extras: ['Upto 4 Kms']
-            },
-            {
-                type: 'Charges',
-                value: `${String.fromCharCode(8377)} 18`,
-                extras: ['Post 4 Kms']
-            },
-            {
-                type: '*Loading',
-                value: `${String.fromCharCode(8377)} 60`,
-                extras: []
-            },
-            {
-                type: '*Unloading',
-                value: `${String.fromCharCode(8377)} 60`,
-                extras: []
-            },
-            {
-                type: 'Free Time',
-                value: '45 mins',
-                extras: ['Loading + Unloading']
-            },
-            {
-                type: 'Waiting Charges',
-                value: `${String.fromCharCode(8377)} 1.00`,
-                extras: ['For waiting time', 'Per Minute'] 
-            },
-            {
-                type: 'Drop Point Charges',
-                value: `${String.fromCharCode(8377)} 30`,
-                extras: ['After 2 drop points', 'Per Point'] 
-            },
-            {
-                type: 'Hourly Charges',
-                value: `${String.fromCharCode(8377)} 125`,
-                extras: [] 
-            },
-        ]
+        this.rates = this.props.navigation.getParam('vehicle')
     }
 
     render() {
         return(
             <View style={{flex: 1, backgroundColor: 'white'}}>
-                <ScrollView>
+                <ScrollView style={{display: this.state.rates === ''? "none" : "flex"}}>
                     {this.rates.map((value, index) => {
                         return(
                             <View key={index}>
                                 <View style={{
-                                    flexDirection: 'row', paddingVertical: 15, paddingHorizontal: 15,
+                                    flexDirection: 'row', paddingVertical: 15, paddingHorizontal: 20,
                                     justifyContent: 'space-between'
                                 }}>
                                     <View>
@@ -96,20 +56,22 @@ export default class RateCard extends Component {
                                         <Text style={{fontSize: 10, opacity: 0.4, marginTop: 10}}>{value.extras[0]}</Text> 
                                         : null}
                                     </View>
-                                    <View>
+                                    <View style={{alignItems: 'flex-end'}}>
                                         <Text style={{fontSize: 15, fontWeight: '700'}}>
-                                            {value.value}
+                                            {this.state.rates[value.field]}
                                         </Text>
                                         {value.extras.length > 1?
                                         <Text style={{fontSize: 10, opacity: 0.4, marginTop: 10}}>{value.extras[1]}</Text> 
                                         : null}
                                     </View>
                                 </View>
+
                                 <View 
-                                    style={{
+                                style={{
                                     marginHorizontal: 15,
                                     borderTopColor:'rgba(0, 0, 0, 0.1)',
-                                    borderTopWidth: 1}}/>
+                                    borderTopWidth: 1
+                                }}/>
                             </View> 
                         )
                     })}

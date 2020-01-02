@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import {Text, View, Image, ActivityIndicator, Modal} from 'react-native';
 import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete';
 import { getItem, CUSTOMER_ID } from './utils/DataStorageController';
-import { BASE_URL, VIEW_FAV_LOCATION_URL, FIELDS, KEY } from './utils/AppConstants';
+import { BASE_URL, VIEW_FAV_LOCATION_URL, FIELDS, KEY, ICONS } from './utils/AppConstants';
 
 const GOOGLE_MAPS_APIKEY = 'AIzaSyCJYc7hsuiHCwUQWQ0NTk0TW0ne0y43NAE';
 const ACCENT = '#FFCB28' // 255, 203, 40
@@ -144,7 +144,7 @@ export default class Search extends Component {
 
                     renderLeftButton={() => {
                         return(
-                            <Image source={{uri: 'https://cdn4.iconfinder.com/data/icons/ionicons/512/icon-search-512.png'}}
+                            <Image source={ICONS.search}
                             style={{width: 25, height: 25, opacity: 0.3,
                             alignSelf: 'center', margin: 10}}/>
                         )

@@ -73,7 +73,7 @@ export default class TripDetails extends Component {
                     style={{ opacity: (this.state.status != PENDING && this.state.status != CANCELLED) ? 1 : 0.3 }}
                     onPress={() => this.trackDriver()}>
                     <View style={{ alignItems: 'center', marginHorizontal: 30, marginVertical: 10 }}>
-                        <Image source={{ uri: 'https://cdn3.iconfinder.com/data/icons/google-material-design-icons/48/ic_my_location_48px-512.png' }}
+                        <Image source={Constants.ICONS.curr_location}
                             style={{ width: 40, height: 40 }} />
                         <Text style={{ fontSize: 12, marginTop: 5 }}>TRACK</Text>
                     </View>
@@ -86,7 +86,7 @@ export default class TripDetails extends Component {
                         this.showCancelModal(true)
                     }}>
                     <View style={{ alignItems: 'center', marginHorizontal: 30, marginVertical: 10 }}>
-                        <Image source={{ uri: 'https://cdn3.iconfinder.com/data/icons/google-material-design-icons/48/ic_highlight_remove_48px-512.png' }}
+                        <Image source={Constants.ICONS.cancel_outline}
                             style={{ width: 40, height: 40 }} />
                         <Text style={{ fontSize: 12, marginTop: 5 }}>CANCEL</Text>
                     </View>
@@ -359,7 +359,7 @@ export default class TripDetails extends Component {
                                         flexDirection: 'row', justifyContent: 'space-between',
                                         alignItems: 'center', paddingHorizontal: 15
                                     }}>
-                                    <Image source={{ uri: 'https://cdn3.iconfinder.com/data/icons/google-material-design-icons/48/ic_local_phone_48px-512.png' }}
+                                    <Image source={Constants.ICONS.call}
                                         style={{ width: 18, height: 18, marginEnd: 15 }} tintColor='white' />
                                     <Text style={{ color: 'white', fontWeight: '700' }}>Call</Text>
                                 </View>
@@ -452,7 +452,7 @@ export default class TripDetails extends Component {
                                     onPress={() => {
                                         this.showCancelModal(false)
                                     }}>
-                                    <Image source={{ uri: 'https://cdn3.iconfinder.com/data/icons/virtual-notebook/16/button_close-512.png' }}
+                                    <Image source={Constants.ICONS.close}
                                         style={{ width: 15, height: 15, marginEnd: 20 }} />
                                 </TouchableOpacity>
                             </View>

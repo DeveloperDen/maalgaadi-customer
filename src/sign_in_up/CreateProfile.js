@@ -194,7 +194,7 @@ export default class CreateProfile extends Component {
                     backgroundColor: 'rgba(0, 0, 0, 0.04)', padding: 20, overflow: 'visible',
                     position: 'absolute', width: '100%', top: 0
                 }}>
-                    <Image source={{uri: 'https://cdn3.iconfinder.com/data/icons/google-material-design-icons/48/ic_account_circle_48px-512.png'}}
+                    <Image source={Constants.ICONS.driver_search}
                     style={{width: 100, height: 100, opacity: 0.5, alignSelf: 'center', }}/>
                 </View>
                 
@@ -287,7 +287,7 @@ export default class CreateProfile extends Component {
                                     justifyContent: 'space-between'
                                 }}>
                                     <Text style={{fontSize: 15}}>TYPE OF GOODS</Text>
-                                    <Image source={{uri: 'https://cdn2.iconfinder.com/data/icons/ios-7-icons/50/forward-512.png'}}
+                                    <Image source={Constants.ICONS.forward}
                                     style={{width: 15, height: 15}}/>
                                 </View>
                                 

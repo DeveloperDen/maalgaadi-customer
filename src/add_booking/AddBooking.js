@@ -34,11 +34,13 @@ export default class AddBooking extends Component {
             headerRight: 
             <TouchableHighlight
             onPress={() => {
-                navigation.navigate('RateCard')
+                navigation.navigate('RateCard', {
+                    vehicle: navigation.getParam('vehicle')
+                })
             }}
             underlayColor='white'>
                 <Image
-                source={{uri: 'https://cdn4.iconfinder.com/data/icons/ionicons/512/icon-information-circled-512.png'}}
+                source={Constants.ICONS.info}
                 tintColor='black'
                 style={{width: 22, height: 22, marginEnd: 22}}/>
             </TouchableHighlight>
@@ -381,7 +383,7 @@ export default class AddBooking extends Component {
                                                     }}>
                                                         <Image
                                                         resizeMode="contain"
-                                                        source={{uri: 'https://cdn1.iconfinder.com/data/icons/material-core/20/cancel-512.png'}}
+                                                        source={Constants.ICONS.cancel}
                                                         style={{width: 15, height: 15,}}/>
                                                     </TouchableOpacity>
                                             </View>
@@ -414,7 +416,7 @@ export default class AddBooking extends Component {
                                             height: 15,
                                             transform: [{ rotate: '45deg'}]
                                             }}
-                                            source={{uri: 'https://cdn1.iconfinder.com/data/icons/material-core/20/cancel-512.png'}}
+                                            source={Constants.ICONS.cancel}
                                             tintColor='#0041BB'/>
                                         <Text numberOfLines={1} ellipsizeMode='tail'
                                         style={{flex: 1, marginStart: 15, fontSize: 15}}>
@@ -495,7 +497,7 @@ export default class AddBooking extends Component {
                                             <Text style={{fontSize: 18, fontWeight: "700"}}> Loading </Text>
                                             <Text style={{fontSize: 10, opacity: 0.4}}> Driver to load vehicle </Text>
                                         </View>
-                                        <Image source={{uri: 'https://cdn4.iconfinder.com/data/icons/free-ui/64/v-10-512.png'}}
+                                        <Image source={Constants.ICONS.tick}
                                         style={{width: 20, height: 20, margin: 10}}
                                         tintColor={this.state.isLoadingSelected? '#00CF35' : 'rgba(0, 0, 0, 0.1)'}
                                         />
@@ -525,7 +527,7 @@ export default class AddBooking extends Component {
                                             <Text style={{fontSize: 18, fontWeight: "700"}}> Unloading </Text>
                                             <Text style={{fontSize: 10, opacity: 0.4}}> Driver to unload vehicle </Text>
                                         </View>
-                                        <Image source={{uri: 'https://cdn4.iconfinder.com/data/icons/free-ui/64/v-10-512.png'}}
+                                        <Image source={Constants.ICONS.tick}
                                         style={{width: 20, height: 20, margin: 10}}
                                         tintColor={this.state.isUnLoadingSelected? '#00CF35' : 'rgba(0, 0, 0, 0.1)'}
                                         />
@@ -578,7 +580,7 @@ export default class AddBooking extends Component {
                                         </View>
                                         
                                         <View>
-                                            <Image source={{uri: 'https://cdn4.iconfinder.com/data/icons/free-ui/64/v-10-512.png'}}
+                                            <Image source={Constants.ICONS.tick}
                                             style={{width: 20, height: 20, margin: 5}}
                                             tintColor={this.state.isPhysicalSelected? '#00CF35' : 'rgba(0, 0, 0, 0.1)'}
                                             />
@@ -687,7 +689,7 @@ export default class AddBooking extends Component {
                                         justifyContent: 'space-between'
                                     }}>
                                         <Text style={{fontSize: 15}}>Type of Goods</Text>
-                                        <Image source={{uri: 'https://cdn2.iconfinder.com/data/icons/ios-7-icons/50/forward-512.png'}}
+                                        <Image source={Constants.ICONS.forward}
                                         style={{width: 15, height: 15}}/>
                                     </View>
                                     <Text

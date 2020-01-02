@@ -316,7 +316,7 @@ export default class GetOTP extends Component {
                     height: 100, flexDirection: 'row',
                     alignItems: 'center', paddingHorizontal: 20
                 }}>
-                    <Image source={{uri: 'https://cdn3.iconfinder.com/data/icons/google-material-design-icons/48/ic_warning_48px-512.png'}}
+                    <Image source={Constants.ICONS.warning}
                     tintColor='white' style={{width: 30, height: 30, marginEnd: 20}}/>
                     <Text style={{fontSize: 15, color: 'white', flex: 1}}>{this.state.message}</Text>
                 </Animated.View>

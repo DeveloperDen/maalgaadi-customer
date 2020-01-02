@@ -30,7 +30,7 @@ export default class Profile extends Component {
             }}
             underlayColor='white'>
                 <Image
-                source={{uri: 'https://cdn3.iconfinder.com/data/icons/google-material-design-icons/48/ic_mode_edit_48px-512.png'}}
+                source={Constants.ICONS.edit}
                 tintColor='black'
                 style={{width: 24, height: 24, marginEnd: 16}}/>
             </TouchableHighlight>
@@ -43,15 +43,15 @@ export default class Profile extends Component {
             name: '',
             number: '',
             data: [
-                [{uri: 'https://cdn3.iconfinder.com/data/icons/google-material-design-icons/48/ic_markunread_48px-512.png'},
+                [Constants.ICONS.email,
                 EMAIL, EMAIL],
-                [{uri: 'https://cdn3.iconfinder.com/data/icons/google-material-design-icons/48/ic_work_48px-512.png'},
+                [Constants.ICONS.work,
                 ORG, ORG],
-                [{uri: 'https://cdn3.iconfinder.com/data/icons/google-material-design-icons/48/ic_home_48px-512.png'},
+                [Constants.ICONS.home,
                 ADDRESS, ADDRESS],
-                [{uri: 'https://cdn3.iconfinder.com/data/icons/google-material-design-icons/48/ic_now_widgets_48px-512.png'},
+                [Constants.ICONS.goods,
                 GOODS, GOODS],
-                [{uri: 'https://cdn3.iconfinder.com/data/icons/google-material-design-icons/48/ic_local_shipping_48px-512.png'},
+                [Constants.ICONS.shipping,
                 TRIP_FREQ, TRIP_FREQ]
             ]
         }
@@ -91,7 +91,7 @@ export default class Profile extends Component {
                 style={{
                     backgroundColor: ACCENT, padding: 20, overflow: 'visible', alignItems: 'center'
                 }}>
-                    <Image source={{uri: 'https://cdn3.iconfinder.com/data/icons/google-material-design-icons/48/ic_account_circle_48px-512.png'}}
+                    <Image source={Constants.ICONS.driver_search}
                     style={{width: 80, height: 80, opacity: 0.8, alignSelf: 'center', }}
                     tintColor='white'/>
                     <Text style={{fontSize: 18, fontWeight: '700', color: 'white', marginTop: 15}}>{this.state.name}</Text>

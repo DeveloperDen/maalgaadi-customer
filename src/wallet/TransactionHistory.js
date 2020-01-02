@@ -188,7 +188,7 @@ export default class TransactionHistory extends Component {
                         this.showDateDialog(true)
                     }}>
                         <View style={{flexDirection: 'row', alignItems: 'center'}}>
-                            <Image source={{uri: 'https://cdn3.iconfinder.com/data/icons/google-material-design-icons/48/ic_insert_invitation_48px-512.png'}}
+                            <Image source={Constants.ICONS.calendar_today}
                             style={{width: 20, height: 20,}}/>
                             <Text style={{marginStart: 5, fontSize: 15}}>
                                 {this.state.startDate.str}
@@ -205,7 +205,7 @@ export default class TransactionHistory extends Component {
                         this.showDateDialog(true)
                     }}>
                         <View style={{flexDirection: 'row', alignItems: 'center'}}>
-                            <Image source={{uri: 'https://cdn3.iconfinder.com/data/icons/google-material-design-icons/48/ic_insert_invitation_48px-512.png'}}
+                            <Image source={Constants.ICONS.calendar_today}
                             style={{width: 20, height: 20,}}/>
                             <Text style={{marginStart: 5, fontSize: 15}}>
                                 {this.state.endDate.str}
@@ -218,7 +218,7 @@ export default class TransactionHistory extends Component {
                         this.getDataList()
                     }}
                     style={{padding: 5, borderRadius: 100, backgroundColor: ACCENT}}>
-                        <Image source={{uri: 'https://cdn3.iconfinder.com/data/icons/google-material-design-icons/48/ic_arrow_forward_48px-512.png'}}
+                        <Image source={Constants.ICONS.forward_arrow}
                         style={{width: 25, height: 25}} tintColor='white'/>
                     </TouchableHighlight>
                 </View>

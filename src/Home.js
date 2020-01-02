@@ -888,9 +888,7 @@ export default class Home extends Component {
               this.props.navigation.openDrawer()
             }}>
                 <Image style={{width:22, height:22}}
-                source={{
-                  uri: 'https://cdn2.iconfinder.com/data/icons/ios-tab-bar/25/Hamburger_Round-512.png'
-                }}
+                source={Constants.ICONS.ham_menu}
                 tintColor='black'/>
             </TouchableHighlight>
             
@@ -951,9 +949,7 @@ export default class Home extends Component {
                       .catch(err => {console.log(err)})
                     }}>
                     <View>
-                      <Image source={{
-                        uri: 'https://cdn1.iconfinder.com/data/icons/jumpicon-basic-ui-line-1/32/-_Love-Heart-Romantic-512.png'
-                      }}
+                      <Image source={Constants.ICONS.favourite}
                       style={[styles.icon,
                         this.state.isActiveInput === ORIGIN?
                         this.state.activeInput.icons : this.state.inactiveInput.icons]}
@@ -1020,9 +1016,7 @@ export default class Home extends Component {
                         .catch(err => {console.log(err)})
                       }}>
                       <View>
-                        <Image source={{
-                          uri: 'https://cdn1.iconfinder.com/data/icons/jumpicon-basic-ui-line-1/32/-_Love-Heart-Romantic-512.png'
-                        }}
+                        <Image source={Constants.ICONS.favourite}
                         style={[styles.icon,
                           this.state.isActiveInput === DESTINATION?
                           this.state.activeInput.icons : this.state.inactiveInput.icons]}
@@ -1039,9 +1033,7 @@ export default class Home extends Component {
             style={styles.fab} onPress={()=>{
                 this.requestLocationPermission()
               }}>
-                <Image source={{
-                  uri: "https://cdn1.iconfinder.com/data/icons/material-device/22/gps-fixed-512.png"
-                }}
+                <Image source={Constants.ICONS.curr_location}
                 style={[styles.icon, {alignSelf: 'flex-end'}]}
                 tintColor='#0092FE'/>
             </TouchableHighlight>
@@ -1084,7 +1076,7 @@ export default class Home extends Component {
                   Covered Vehicle
                 </Text>
                 
-                <Image source={{uri: 'https://cdn4.iconfinder.com/data/icons/free-ui/64/v-10-512.png'}}
+                <Image source={Constants.ICONS.tick}
                   style={{width: 15, height: 15,}}
                   tintColor={this.state.isCoveredVehicle? 'white' : 'black'}
                   />
@@ -1163,7 +1155,7 @@ export default class Home extends Component {
                 backgroundColor: ACCENT, width: '15%', marginRight: '1%',
                 borderRadius: 5, alignItems: "center", justifyContent: "center"
               }}>
-                <Image style={styles.icon} source={{uri: 'https://cdn2.iconfinder.com/data/icons/pittogrammi/142/10-512.png'}} tintColor='white'/>
+                <Image style={styles.icon} source={Constants.ICONS.clock} tintColor='white'/>
               </TouchableHighlight>
 
               <TouchableHighlight

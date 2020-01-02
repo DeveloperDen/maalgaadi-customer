@@ -14,7 +14,7 @@ import {
   Alert
 } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
-import { NO_ACIVE_FLEET, GET_ACTIVE_DRIVER_LIST, ERROR_GET_DETAILS, BASE_URL, FIELDS, DELETE_ACTIVE_DRIVERS, ERR_ACTIVE_FLEET, GET_DRIVER_DATA_BY_MGCODE, ADD_FAVORITE_DRIVER, KEY }
+import { NO_ACIVE_FLEET, GET_ACTIVE_DRIVER_LIST, ERROR_GET_DETAILS, BASE_URL, FIELDS, DELETE_ACTIVE_DRIVERS, ERR_ACTIVE_FLEET, GET_DRIVER_DATA_BY_MGCODE, ADD_FAVORITE_DRIVER, KEY, ICONS }
 from '../utils/AppConstants';
 import * as DataController from '../utils/DataStorageController'
 
@@ -236,7 +236,7 @@ export default class RunningMyBookings extends Component {
                     return(
                         <View key={index}>
                             <View style={{flexDirection: 'row', alignItems: 'center', marginVertical: 10}}>
-                                <Image source={{uri: 'https://cdn1.iconfinder.com/data/icons/user-pictures/100/boy-512.png'}}
+                                <Image source={ICONS.driver_fleet}
                                 style={{
                                     width: 45, height: 45, margin: 15
                                 }}/>
@@ -255,7 +255,7 @@ export default class RunningMyBookings extends Component {
                                     });
                                     this.setModalVisible(true, false);
                                 }}>
-                                    <Image source={{uri: 'https://cdn3.iconfinder.com/data/icons/google-material-design-icons/48/ic_delete_48px-512.png'}}
+                                    <Image source={ICONS.delete}
                                     style={{width: 25, height: 25, opacity: 0.3, margin: 15}}/>
                                 </TouchableOpacity>
                             </View>
@@ -343,7 +343,7 @@ export default class RunningMyBookings extends Component {
                                     backgroundColor: (this.state.drivCode == '' || this.state.isLoading)? 'gray' : ACCENT,
                                     alignItems: 'center', justifyContent: 'center',
                                 }}>
-                                    <Image source={{uri: 'https://cdn3.iconfinder.com/data/icons/google-material-design-icons/48/ic_done_48px-512.png'}}
+                                    <Image source={ICONS.tick}
                                     tintColor='white'
                                     style={{
                                         width: 20, height: 20,
@@ -358,7 +358,7 @@ export default class RunningMyBookings extends Component {
                                     paddingHorizontal: 20, paddingVertical: 10,
                                     backgroundColor: 'rgba(0, 0, 0, 0.04)'
                                 }}>
-                                    <Image source={{uri: 'https://cdn3.iconfinder.com/data/icons/google-material-design-icons/48/ic_account_circle_48px-512.png'}}
+                                    <Image source={ICONS.driver_search}
                                     style={{
                                         width: 45, height: 45, marginEnd: 30
                                     }}/>
@@ -432,7 +432,7 @@ export default class RunningMyBookings extends Component {
                 borderRadius: 100, elevation: 4, alignItems: 'center',
                 justifyContent: 'center', alignSelf: 'flex-end', bottom: 20, end: 20, 
             }}>
-                <Image source={{uri: 'https://cdn3.iconfinder.com/data/icons/google-material-design-icons/48/ic_add_48px-512.png'}}
+                <Image source={ICONS.add}
                 tintColor='white'
                 style={{width: 20, height: 20}}/>
             </TouchableHighlight>
@@ -469,7 +469,7 @@ export default class RunningMyBookings extends Component {
                                 onPress={() => {
                                     this.setModalVisible(false, false)
                                 }}>
-                                    <Image source={{uri: 'https://cdn3.iconfinder.com/data/icons/virtual-notebook/16/button_close-512.png'}}
+                                    <Image source={ICONS.close}
                                     style={{width: 15, height: 15, margin: 20}}/>
                                 </TouchableOpacity>
                             </View>

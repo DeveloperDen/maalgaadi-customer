@@ -125,7 +125,7 @@ export default class Signup extends Component {
                     borderBottomWidth: 1, width: '80%', paddingHorizontal: 5, alignSelf: 'center',
                     opacity: this.state.isLoading? 0.3 : 1
                 }}>
-                    <Image source={{uri: 'https://cdn3.iconfinder.com/data/icons/google-material-design-icons/48/ic_stay_primary_portrait_48px-512.png'}}
+                    <Image source={Constants.ICONS.device}
                     style={{width: 25, height: 25, opacity: 0.3}}/>
                     <TextInput
                     editable={!this.state.isLoading}
@@ -145,7 +145,7 @@ export default class Signup extends Component {
                     borderBottomWidth: 1, width: '80%', marginTop: 10, paddingHorizontal: 5, alignSelf: 'center',
                     opacity: this.state.isLoading? 0.3 : 1
                 }}>
-                    <Image source={{uri: 'https://cdn3.iconfinder.com/data/icons/google-material-design-icons/48/ic_vpn_key_48px-512.png'}}
+                    <Image source={Constants.ICONS.key}
                     style={{width: 25, height: 25, opacity: 0.3}}/>
 
                     <TextInput 
@@ -169,8 +169,7 @@ export default class Signup extends Component {
                         })
                     }}>
                         <Image source={{uri: 
-                        this.state.showPass? 'https://cdn3.iconfinder.com/data/icons/google-material-design-icons/48/ic_remove_red_eye_48px-512.png' :
-                        'https://cdn3.iconfinder.com/data/icons/google-material-design-icons/48/ic_visibility_off_48px-512.png'}}
+                        this.state.showPass? Constants.ICONS.show_pass : Constants.ICONS.hide_pass}}
                     style={{width: 25, height: 25, opacity: 0.3}}/>
                     </TouchableOpacity>
                     
@@ -203,7 +202,7 @@ export default class Signup extends Component {
                                 return prevState
                             })
                         }}>
-                            <Image source={{uri: 'https://cdn3.iconfinder.com/data/icons/google-material-design-icons/48/ic_cancel_48px-512.png'}}
+                            <Image source={Constants.ICONS.cancel}
                         style={{width: 25, height: 25, opacity: 0.3}}/>
                         </TouchableOpacity>
                         
@@ -248,7 +247,7 @@ export default class Signup extends Component {
                     height: 100, flexDirection: 'row',
                     alignItems: 'center', paddingHorizontal: 20
                 }}>
-                    <Image source={{uri: 'https://cdn3.iconfinder.com/data/icons/google-material-design-icons/48/ic_warning_48px-512.png'}}
+                    <Image source={Constants.ICONS.warning}
                     tintColor='white' style={{width: 30, height: 30, marginEnd: 20}}/>
                     <Text style={{fontSize: 15, color: 'white', flex: 1}}>{this.state.message}</Text>
                 </Animated.View>

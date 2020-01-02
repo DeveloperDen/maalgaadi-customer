@@ -20,7 +20,7 @@ const OTHERS = 'Others'
 const settings = [
     {
         title: SMS,
-        icon: {uri: 'https://cdn0.iconfinder.com/data/icons/google-material-design-3-0/48/ic_message_48px-512.png'}
+        icon: Constants.ICONS.message
     },
     {
         title: APP_NOTIF,
@@ -28,15 +28,15 @@ const settings = [
     },
     {
         title: POD_INV,
-        icon: {uri: 'https://cdn3.iconfinder.com/data/icons/google-material-design-icons/48/ic_markunread_48px-512.png'}
+        icon: Constants.ICONS.email
     },
     {
         title: POD_MAIL,
-        icon: {uri: 'https://cdn1.iconfinder.com/data/icons/free-98-icons/32/invoice-512.png'}
+        icon: Constants.ICONS.invoice
     },
     {
         title: OTHERS,
-        icon: {uri: 'https://cdn4.iconfinder.com/data/icons/essential-app-1/16/dot-more-menu-hide-512.png'}
+        icon: Constants.ICONS.more_dots
     },
 ]
 
@@ -156,7 +156,7 @@ export default class Settings extends Component {
                                         <Text style={{flex: 1, fontSize: 15, marginStart: 20}}>
                                             {value.title}
                                         </Text>
-                                        <Image source={{uri: 'https://cdn4.iconfinder.com/data/icons/ionicons/512/icon-ios7-arrow-forward-512.png'}}
+                                        <Image source={Constants.ICONS.forward}
                                         style={{width: 25, height: 25}}/>
                                     </View>
                                     <View 

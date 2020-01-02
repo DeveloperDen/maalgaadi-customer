@@ -9,7 +9,7 @@ import {
   ActivityIndicator
 } from 'react-native';
 import { getItem, PAYMENT_TRANS_DATA, setItem, WALLET_BALANCE, CUSTOMER_ID, removeItem } from '../utils/DataStorageController';
-import { BASE_URL, SEND_TRANSACTION_STATUS, KEY } from '../utils/AppConstants';
+import { BASE_URL, SEND_TRANSACTION_STATUS, KEY, ICONS } from '../utils/AppConstants';
 
 const ACCENT = '#FFCB28' // 255, 203, 40
 const ACCENT_DARK = '#F1B800'
@@ -127,7 +127,7 @@ export default class TransactionStatus extends Component {
                     }}
                     underlayColor='white'>
                         <Image
-                        source={{uri: 'https://cdn3.iconfinder.com/data/icons/google-material-design-icons/48/ic_close_48px-512.png'}}
+                        source={ICONS.close}
                         tintColor='white'
                         style={{width: 30, height: 30}}/>
                     </TouchableHighlight>
@@ -136,7 +136,7 @@ export default class TransactionStatus extends Component {
                 <View style={{flex: 1, justifyContent: 'space-between'}}>
                     <Animated.View style={{backgroundColor: ACCENT_DARK, borderRadius: 100, padding: 50, alignSelf: 'center', opacity: this.state.opacity, scaleX: this.state.scale, scaleY: this.state.scale}}>
                         <Image
-                        source={{uri: 'https://cdn0.iconfinder.com/data/icons/finance-android-l-lollipop-icon-pack/24/wallet-512.png'}}
+                        source={ICONS.my_wallet}
                         tintColor='white'
                         style={{width: 100, height: 100}}/>
                     </Animated.View>

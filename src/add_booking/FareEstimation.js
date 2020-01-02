@@ -718,7 +718,7 @@ export default class FareEstimation extends Component {
                             onPress={() => {this.setModalVisible(false)}}
                             underlayColor='white'>
                                 <Image
-                                source={{uri: 'https://cdn3.iconfinder.com/data/icons/google-material-design-icons/48/ic_close_48px-512.png'}}
+                                source={Constants.ICONS.close}
                                 tintColor='black'
                                 style={{width: 22, height: 22}}/>
                             </TouchableHighlight>

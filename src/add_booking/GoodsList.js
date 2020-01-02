@@ -149,7 +149,7 @@ export default class GoodsList extends Component {
                                     onPress={() => {
                                         this.setModalVisible(false, 0)
                                     }}>
-                                        <Image source={{uri: 'https://cdn3.iconfinder.com/data/icons/virtual-notebook/16/button_close-512.png'}}
+                                        <Image source={Constants.ICONS.close}
                                         style={{width: 15, height: 15, margin: 20}}/>
                                     </TouchableOpacity>
                                 </View>

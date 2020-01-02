@@ -31,7 +31,7 @@ const screens = [
 
     {
         name: "My Bookings",
-        icon: {uri: "https://cdn3.iconfinder.com/data/icons/wpzoom-developer-icon-set/500/78-512.png"},
+        icon: Constants.ICONS.my_booking,
         screen: "MyBookings"
     },
 
@@ -43,13 +43,13 @@ const screens = [
 
     {
         name: "Manage My Fleet",
-        icon: {uri: "https://cdn2.iconfinder.com/data/icons/picol-vector/32/group_half_edit-512.png"},
+        icon: Constants.ICONS.my_fleet,
         screen: "ManageFleet"
     },
 
     {
         name: "MG Wallet",
-        icon: {uri: "https://cdn0.iconfinder.com/data/icons/finance-android-l-lollipop-icon-pack/24/wallet-512.png"},
+        icon: Constants.ICONS.my_wallet,
         screen: "MGWallet"
     },
 
@@ -61,7 +61,7 @@ const screens = [
 
     {
         name: "POD",
-        icon: {uri: "https://cdn4.iconfinder.com/data/icons/glyphs/24/icons_user2-512.png"},
+        icon: Constants.ICONS.user_pod,
         screen: "PendingPOD"
     },
 
@@ -73,13 +73,13 @@ const screens = [
 
     {
         name: "Settings",
-        icon: {uri: "https://cdn1.iconfinder.com/data/icons/material-core/20/settings-512.png"},
+        icon: Constants.ICONS.settings,
         screen: "Settings"
     },
 
     {
         name: "Terms & Conditions",
-        icon: {uri: "https://cdn3.iconfinder.com/data/icons/wpzoom-developer-icon-set/500/99-512.png"},
+        icon: Constants.ICONS.t_and_c,
         screen: "TermsConditions"
     },
 
