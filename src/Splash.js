@@ -29,7 +29,7 @@ export default class Splash extends Component {
     async componentDidMount() {
         // Register for iOS remote message.
         if (!firebase.messaging().isRegisteredForRemoteNotifications) {
-            console.log("Not registered for Remote Notifications.")
+            console.log("Registering for Remote Notifications.")
             await firebase.messaging().registerForRemoteNotifications();
             console.log("Now registered for remtote Notifications.")
         }
@@ -38,15 +38,17 @@ export default class Splash extends Component {
         firebase.messaging().hasPermission()
         .then(enabled => {
             if(enabled) {
-                console.log("Firebase Permission: Granted");
+                console.log("Firebase Permission checked: Granted");
             }
             else {
+                console.log("Firebase Permission checked: Not Granted ==> Requesting");
                 this.requestFirebasePermission();
             }
         })
 
         // FCM token subscriber
         this.unsubscribeFCMRefresh = firebase.messaging().onTokenRefresh((token) => {
+            console.log("FCM Token refreshed. Updating...");
             this.updateFCMToken(token);
         })
         this.updateFCMToken();
@@ -59,8 +61,10 @@ export default class Splash extends Component {
     }
 
     async updateFCMToken(token = '') {
-        if(token == '')
+        if(token == ''){
+            console.log("No token provided, getting token now...");
             token = await firebase.messaging().getToken();
+        }
         DataController.setItem(DataController.FCM_TOKEN, token);
 
         const reqURL = Constants.BASE_URL + Constants.APP_DOWNLOAD + '?' + 
@@ -87,12 +91,17 @@ export default class Splash extends Component {
     // Permission specifically for iOS.
     requestFirebasePermission() {
         firebase.messaging().requestPermission()
-        .then(() => {
-            console.log("Firebase Permission: Granted");
+        .then((granted) => {
+            if(granted) {
+                console.log("Firebase Permission requested: Granted");
+            }
+            else {
+                console.log("Firebase Permission requested: Not Granted");
+                this.requestFirebasePermission();
+            }
         })
         .catch(error => {
-            console.log("Firebase Permission Error: ", error);
-            this.requestFirebasePermission();
+            console.log("Firebase Permission requested Error: ", error);
         })
     }
 

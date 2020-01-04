@@ -150,8 +150,8 @@ export default class Signup extends Component {
 
                     <TextInput 
                     editable={!this.state.isLoading}
-                    placeholder="Password" secureTextEntry={true}
-                    keyboardType={this.state.showPass? 'visible-password' : 'default'}
+                    placeholder="Password" secureTextEntry={this.state.showPass? false : true}
+                    // keyboardType={this.state.showPass? 'visible-password' : 'default'}
                     style={{flex: 1, marginHorizontal: 10}}
                     onChangeText={(text) => {
                         this.setState(prevState => {
