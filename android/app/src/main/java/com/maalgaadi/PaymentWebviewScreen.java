@@ -1,6 +1,6 @@
-package com.maalgaadi;
+package avpstransort.maalgaadicustomerapp;
 
-import com.maalgaadi.RSAUtility;
+import avpstransort.maalgaadicustomerapp.RSAUtility;
 
 import android.content.Intent;
 import android.os.AsyncTask;

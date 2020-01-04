@@ -14,17 +14,21 @@ const DataController = require('./src/utils/DataStorageController')
 messaging().setBackgroundMessageHandler(async (message) => {
     console.log('Message recieved in background');
     console.log(message)
-    showNotification(message.data.message, "MaalGaadi")
 
     const data = message.data;
     const type = data.type;
+    let notifMessage = message.data.message;
+    const title = message.data.title;
+
     if(type == "booking_notification") {
-        const title = data.title;
         const message = data.message;
 
         if(message.includes("Kindly pay")) {
             const messObj = JSON.parse(message);
+            notifMessage = messObj.text;
+
             console.log(messObj)
+
             const paymentModel = {
             [Constants.TRANS_PARAMS.BOOKING_ID]: messObj[Constants.TRANS_PARAMS.BOOKING_ID],
             [Constants.TRANS_PARAMS.AMOUNT]: messObj[Constants.TRANS_PARAMS.AMOUNT],
@@ -34,9 +38,10 @@ messaging().setBackgroundMessageHandler(async (message) => {
             [Constants.TRANS_PARAMS.ORDER_ID]: '',
             [Constants.TRANS_PARAMS.STATUS]: ''
             }
-            this.paymentModel = paymentModel;
             await DataController.setItem(DataController.PAYMENT_TRANS_DATA, JSON.stringify(paymentModel));
         }
     }
+
+    showNotification(notifMessage, title != null? title : "MaalGaadi");
 });
 AppRegistry.registerComponent(appName, () => App);

@@ -1,4 +1,4 @@
-package com.maalgaadi;
+package avpstransort.maalgaadicustomerapp;
 
 import android.util.Base64;
 

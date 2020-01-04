@@ -1,11 +1,13 @@
 var PushNotification = require("react-native-push-notification");
 
 export const formatDate = (date = new Date()) => {
-    const dateArr = date.toLocaleString().split(" ");  // [Sat, Nov, 30, 16:45:44, 2019] 
-    const yyyy = dateArr[4]
+    const dateArr = date.toLocaleString().split(" ");  
+    // ["Wed", "Jan", "15", "11:14:13", "2020"] or ["Sat", "Jan", "", "4", "11:13:48", "2020"]
+
+    const yyyy = dateArr[2] == ""? dateArr[5] : dateArr[4];
     const MMM = dateArr[1]
-    const dd = dateArr[2]
-    const hhmmss = dateArr[3].split(":")
+    const dd = dateArr[2] == ""? dateArr[3] : dateArr[2];
+    const hhmmss = dateArr[2] == ""? dateArr[4].split(":") : dateArr[3].split(":")
     const hhmm = hhmmss[0] + ':' + hhmmss[1]
     const ampm = Number.parseInt(hhmmss[0]) >= 12? 'PM' : 'AM'
 

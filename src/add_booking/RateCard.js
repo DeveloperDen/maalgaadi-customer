@@ -33,15 +33,63 @@ export default class RateCard extends Component {
     constructor(props) {
         super(props)
         this.state = {
+            rates: this.props.navigation.getParam('vehicle', ''),
         }
-        this.rates = this.props.navigation.getParam('vehicle')
+        this.ratesFields = [
+            {
+                type: 'Base Fare',
+                field: 'base_fare',
+                extras: ['Upto 4 Kms']
+            },
+            {
+                type: 'Charges',
+                field: 'rate',
+                extras: ['Post 4 Kms']
+            },
+            {
+                type: '*Loading',
+                field: 'loading_charge',
+                extras: []
+            },
+            {
+                type: '*Unloading',
+                field: 'unloading_charge',
+                extras: []
+            },
+            {
+                type: 'Free Time',
+                field: 'loading_unloading_time_allowed',
+                extras: ['Loading + Unloading']
+            },
+            {
+                type: 'Waiting Charges',
+                field: 'waiting_charge',
+                extras: ['For waiting time', 'Per Minute'] 
+            },
+            {
+                type: 'Drop Point Charges',
+                field: 'rate_per_drop_point',
+                extras: ['After 2 drop points', 'Per Point'] 
+            },
+            {
+                type: 'Hourly Charges',
+                field: 'hourly_rate',
+                extras: [] 
+            },
+
+            {
+                type: 'Overloading Charges',
+                field: 'overload_charge',
+                extras: []
+            },
+        ]
     }
 
     render() {
         return(
             <View style={{flex: 1, backgroundColor: 'white'}}>
                 <ScrollView style={{display: this.state.rates === ''? "none" : "flex"}}>
-                    {this.rates.map((value, index) => {
+                    {this.ratesFields.map((value, index) => {
                         return(
                             <View key={index}>
                                 <View style={{

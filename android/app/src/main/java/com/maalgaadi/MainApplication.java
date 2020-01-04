@@ -1,4 +1,4 @@
-package com.maalgaadi;
+package avpstransort.maalgaadicustomerapp;
 
 import android.app.Application;
 import android.content.Context;
@@ -10,7 +10,7 @@ import com.facebook.soloader.SoLoader;
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 import com.reactcommunity.rndatetimepicker.RNDateTimePickerPackage;
-import com.maalgaadi.CustomNatTestPackage;
+import avpstransort.maalgaadicustomerapp.CustomNatTestPackage;
 
 public class MainApplication extends Application implements ReactApplication {
 

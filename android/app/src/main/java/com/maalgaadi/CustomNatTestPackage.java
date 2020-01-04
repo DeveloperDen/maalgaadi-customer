@@ -1,4 +1,4 @@
-package com.maalgaadi;
+package avpstransort.maalgaadicustomerapp;
 
 import com.facebook.react.ReactPackage;
 import com.facebook.react.bridge.NativeModule;
