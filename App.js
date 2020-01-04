@@ -1,6 +1,6 @@
 import 'react-navigation'
 import {createStackNavigator} from 'react-navigation-stack'
-
+// Test Comment
 import Home from './src/Home'
 import Search from './src/Search'
 import RunningMyBookings from './src/my_bookings/RunningMyBookings'
@@ -294,30 +294,6 @@ const RegistrationNavigator = createStackNavigator({
     })}
   },
   {initialRouteName: 'Login',
-  transitionConfig: () => ({
-    transitionSpec: {
-      duration: 300,
-      easing: Easing.out(Easing.poly(4)),
-      timing: Animated.timing,
-    },
-    screenInterpolator: sceneProps => {
-      const { layout, position, scene } = sceneProps;
-      const { index } = scene;
-
-      const width = layout.initWidth;
-      const translateX = position.interpolate({
-        inputRange: [index - 1, index, index + 1],
-        outputRange: [width, 0, 0],
-      });
-
-      const opacity = position.interpolate({
-        inputRange: [index - 1, index - 0.99, index],
-        outputRange: [0, 1, 1],
-      });
-
-      return { opacity, transform: [{ translateX }] };
-    },
-  }),
 })
 
 const MainSwitchNavigator = createSwitchNavigator({
@@ -331,30 +307,6 @@ const MainSwitchNavigator = createSwitchNavigator({
   Splash: {screen: Splash},
   },
   {initialRouteName: 'Splash',
-  transitionConfig: () => ({
-    transitionSpec: {
-      duration: 300,
-      easing: Easing.out(Easing.poly(4)),
-      timing: Animated.timing,
-    },
-    screenInterpolator: sceneProps => {
-      const { layout, position, scene } = sceneProps;
-      const { index } = scene;
-
-      const width = layout.initWidth;
-      const translateX = position.interpolate({
-        inputRange: [index - 1, index, index + 1],
-        outputRange: [width, 0, 0],
-      });
-
-      const opacity = position.interpolate({
-        inputRange: [index - 1, index - 0.99, index],
-        outputRange: [0, 1, 1],
-      });
-
-      return { opacity, transform: [{ translateX }] };
-    },
-  }),
 })
 
 const App = createAppContainer(MainSwitchNavigator)

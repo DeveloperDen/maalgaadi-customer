@@ -26,7 +26,15 @@ export default class Splash extends Component {
         this.state = {}
     }
 
-    componentDidMount() {
+    async componentDidMount() {
+        // Register for iOS remote message.
+        if (!firebase.messaging().isRegisteredForRemoteNotifications) {
+            console.log("Not registered for Remote Notifications.")
+            await firebase.messaging().registerForRemoteNotifications();
+            console.log("Now registered for remtote Notifications.")
+        }
+
+        // Check for the permission and if not enabled, get the permission.
         firebase.messaging().hasPermission()
         .then(enabled => {
             if(enabled) {
@@ -37,6 +45,7 @@ export default class Splash extends Component {
             }
         })
 
+        // FCM token subscriber
         this.unsubscribeFCMRefresh = firebase.messaging().onTokenRefresh((token) => {
             this.updateFCMToken(token);
         })
@@ -67,7 +76,7 @@ export default class Splash extends Component {
             }
         })
 
-        const response = await request.json().then(value => {
+        await request.json().then(value => {
             console.log("FCM update response: ", value)
         }).catch(err => {
             console.log(err)
@@ -75,6 +84,7 @@ export default class Splash extends Component {
         })
     }
 
+    // Permission specifically for iOS.
     requestFirebasePermission() {
         firebase.messaging().requestPermission()
         .then(() => {

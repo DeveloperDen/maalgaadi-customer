@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CLIENT_ID</key>
+	<string>820057099779-clqci5uc806hbi37ro56kk98j5uuoanu.apps.googleusercontent.com</string>
+	<key>REVERSED_CLIENT_ID</key>
+	<string>com.googleusercontent.apps.820057099779-clqci5uc806hbi37ro56kk98j5uuoanu</string>
+	<key>ANDROID_CLIENT_ID</key>
+	<string>820057099779-vo2fjrf8d5p7g9u95t4ku93l1v8ukbg2.apps.googleusercontent.com</string>
+	<key>API_KEY</key>
+	<string>AIzaSyAlXNEaJtPf7o61Kby_DdlTvWZGqr8CZKQ</string>
+	<key>GCM_SENDER_ID</key>
+	<string>820057099779</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>avpstransort.maalgaadicustomerapp</string>
+	<key>PROJECT_ID</key>
+	<string>maalgaadi-customer-application</string>
+	<key>STORAGE_BUCKET</key>
+	<string>maalgaadi-customer-application.appspot.com</string>
+	<key>IS_ADS_ENABLED</key>
+	<false></false>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true></true>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:820057099779:ios:2a75c106b5592709558836</string>
+	<key>DATABASE_URL</key>
+	<string>https://maalgaadi-customer-application.firebaseio.com</string>
+</dict>
+</plist>
