@@ -4,6 +4,7 @@ import {
   View,
   StatusBar,
   Image,
+  Platform,
 } from 'react-native';
 import {firebase} from '@react-native-firebase/messaging'
 import { getDeviceId } from 'react-native-device-info';
@@ -27,31 +28,33 @@ export default class Splash extends Component {
     }
 
     async componentDidMount() {
+        // Check for the permission and if not enabled, get the permission.
+        await firebase.messaging().hasPermission()
+        .then(enabled => {
+            console.log("Firebase Permission checked: ", enabled);
+            if(!enabled) {
+                console.log("Requesting...");
+                this.requestFirebasePermission();
+            }
+        })
+        
         // Register for iOS remote message.
         if (!firebase.messaging().isRegisteredForRemoteNotifications) {
             console.log("Registering for Remote Notifications.")
             await firebase.messaging().registerForRemoteNotifications();
             console.log("Now registered for remtote Notifications.")
         }
+        else {
+            console.log("Registered for Remote Notification.");
+        }
 
-        // Check for the permission and if not enabled, get the permission.
-        firebase.messaging().hasPermission()
-        .then(enabled => {
-            if(enabled) {
-                console.log("Firebase Permission checked: Granted");
-            }
-            else {
-                console.log("Firebase Permission checked: Not Granted ==> Requesting");
-                this.requestFirebasePermission();
-            }
-        })
+        this.updateFCMToken();
 
         // FCM token subscriber
         this.unsubscribeFCMRefresh = firebase.messaging().onTokenRefresh((token) => {
             console.log("FCM Token refreshed. Updating...");
             this.updateFCMToken(token);
         })
-        this.updateFCMToken();
 
         setTimeout(async () => {
             const screen = (await DataController.getItem(DataController.IS_LOGIN) === "true")? 
@@ -60,6 +63,7 @@ export default class Splash extends Component {
         }, Constants.SPLASH_TIMEOUT)
     }
 
+    // Update FCM token on the server.
     async updateFCMToken(token = '') {
         if(token == ''){
             console.log("No token provided, getting token now...");
@@ -106,7 +110,7 @@ export default class Splash extends Component {
     }
 
     componentWillUnmount() {
-        this.unsubscribeFCMRefresh();
+        // this.unsubscribeFCMRefresh();
     }
 
     render() {
@@ -126,4 +130,3 @@ export default class Splash extends Component {
 const styles = StyleSheet.create({
 
 });
-

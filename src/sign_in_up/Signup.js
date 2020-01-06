@@ -4,11 +4,9 @@ import {
   View,
   Text,
   Image,
-  Animated,
-  Easing,
-  ToastAndroid
 } from 'react-native';
 import { TextInput, TouchableHighlight, TouchableOpacity } from 'react-native-gesture-handler';
+import ToastProp from '../utils/ToastComp'
 
 const Constants = require('../utils/AppConstants')
 
@@ -31,7 +29,6 @@ export default class Signup extends Component {
             pass: '',
             refCode: '',
             isLoading: false,
-            messageTop: new Animated.Value(-100),
             message: ''
         }
     }
@@ -61,7 +58,7 @@ export default class Signup extends Component {
                     prevState.message = value.message
                     return prevState
                 })
-                this.animTop()
+                this.showToast()
             }
             else {
                 this.setState(prevState => {
@@ -79,41 +76,16 @@ export default class Signup extends Component {
         }).catch(err => {
             console.log(err)
             this.setState(prevState => {
-                prevState.isLoading = false
+                prevState.isLoading = false;
+                prevState.message = Constants.ERROR_SIGNUP;
                 return prevState
             })
-            ToastAndroid.show(Constants.ERROR_SIGNUP, ToastAndroid.SHORT);
+            this.showToast();
         }) 
     }
 
-    animTop = () => {
-        Animated.sequence([
-            Animated.timing(
-                this.state.messageTop,
-                {
-                    toValue: -100,
-                    easing: Easing.ease,
-                    duration: 200,
-                }
-            ),
-            Animated.timing(
-                this.state.messageTop,
-                {
-                    toValue: 0,
-                    easing: Easing.ease,
-                    duration: 200
-                }
-            ),
-            Animated.timing(
-                this.state.messageTop,
-                {
-                    toValue: -100,
-                    easing: Easing.ease,
-                    duration: 200,
-                    delay: Constants.MESSAGE_DURATION
-                }
-            )
-        ]).start()
+    showToast = () => {
+        this.toast.show(this.state.message);
     }
 
     render() {
@@ -240,17 +212,8 @@ export default class Signup extends Component {
                     </Text>
                 </TouchableHighlight>
             
-                {/* Message box */}
-                <Animated.View
-                style={{
-                    backgroundColor: ACCENT, left: 0, right: 0, position: 'absolute', top: this.state.messageTop,
-                    height: 100, flexDirection: 'row',
-                    alignItems: 'center', paddingHorizontal: 20
-                }}>
-                    <Image source={Constants.ICONS.warning}
-                    tintColor='white' style={{width: 30, height: 30, marginEnd: 20}}/>
-                    <Text style={{fontSize: 15, color: 'white', flex: 1}}>{this.state.message}</Text>
-                </Animated.View>
+                {/* Toast box */}
+                <ToastProp ref={toast => this.toast = toast}/>
             </View>
         )
     }
