@@ -1,5 +1,6 @@
 import AsyncStorage from '@react-native-community/async-storage';
 
+export const FCM_TOKEN = 'fcm_token'
 export const IS_LOGIN = 'isLogin'
 export const CUSTOMER_ID = "customer_id"
 export const CUSTOMER_MOBILE = "number"

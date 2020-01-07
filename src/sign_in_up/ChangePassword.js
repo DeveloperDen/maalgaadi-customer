@@ -5,10 +5,10 @@ import {
   Text,
   Image,
   StatusBar,
-  Animated, Easing,
   ToastAndroid
 } from 'react-native';
 import { TextInput, TouchableHighlight, TouchableOpacity } from 'react-native-gesture-handler';
+import ToastComp from '../utils/ToastComp';
 
 const Constants = require('../utils/AppConstants')
 
@@ -31,7 +31,7 @@ export default class ChangePassword extends Component {
             pass: '',
             confPass: '',
             message: '',
-            messageTop: new Animated.Value(-100),
+            invalidText: true
         }
 
         this.number = this.props.navigation.getParam("number");
@@ -76,34 +76,11 @@ export default class ChangePassword extends Component {
         })
     }
 
-    animTop = () => {
-        Animated.sequence([
-            Animated.timing(
-                this.state.messageTop,
-                {
-                    toValue: -100,
-                    easing: Easing.ease,
-                    duration: 200,
-                }
-            ),
-            Animated.timing(
-                this.state.messageTop,
-                {
-                    toValue: 0,
-                    easing: Easing.ease,
-                    duration: 200
-                }
-            ),
-            Animated.timing(
-                this.state.messageTop,
-                {
-                    toValue: -100,
-                    easing: Easing.ease,
-                    duration: 200,
-                    delay: Constants.MESSAGE_DURATION
-                }
-            )
-        ]).start()
+    showToast = (text = '') => {
+        if(text !== '')
+            this.toast.show(text);
+        else
+            this.toast.show(this.state.message);
     }
 
     render() {
@@ -117,7 +94,7 @@ export default class ChangePassword extends Component {
                     textAlign: "center", marginTop: 50, marginHorizontal: 40, fontSize: 15,
                     opacity: 0.3
                 }}>
-                    Please enter a new Password
+                    Please enter a new Password of length more than 6 characters
                 </Text>
 
                 <View
@@ -128,12 +105,20 @@ export default class ChangePassword extends Component {
                 }}>
                     <TextInput
                     editable={!this.state.isLoading}
-                    placeholder="New Password" secureTextEntry={true}
-                    keyboardType={this.state.showPass_New? 'visible-password' : 'default'}
+                    placeholder="New Password" secureTextEntry={this.state.showPass_New? false : true}
                     style={{flex: 1, marginHorizontal: 10}}
                     onChangeText={text => {
                         this.setState(prevState => {
-                            prevState.pass = text
+                            prevState.pass = text;
+
+                            if(text.length >= 6 && (text == prevState.confPass)) {
+                                prevState.invalidText = false;
+                            }
+                            else {
+                                prevState.invalidText = true;
+                            }
+
+                            return prevState;
                         })
                     }}/>
 
@@ -159,12 +144,19 @@ export default class ChangePassword extends Component {
                     opacity: this.state.isLoading? 0.3 : 1
                 }}>
                     <TextInput editable={!this.state.isLoading}
-                    placeholder="Confirm Password" secureTextEntry={true}
-                    keyboardType={this.state.showPass_NewConf? 'visible-password' : 'default'}
+                    placeholder="Confirm Password" secureTextEntry={this.state.showPass_NewConf? false : true}
                     style={{flex: 1, marginHorizontal: 10}}
                     onChangeText={text => {
                         this.setState(prevState => {
-                            prevState.confPass = text
+                            prevState.confPass = text;
+
+                            if(text.length >= 6 && (text == prevState.pass)) {
+                                prevState.invalidText = false;
+                            }
+                            else
+                                prevState.invalidText = true;
+                            
+                            return prevState;
                         })
                     }}/>
 
@@ -184,37 +176,26 @@ export default class ChangePassword extends Component {
                 </View>
 
                 <TouchableHighlight underlayColor={ACCENT_DARK}
+                disabled={this.state.isLoading || this.state.invalidText}
                 onPress={() => {
-                    if(this.state.confPass !== this.state.pass) {
-                        this.setState(prevState => {
-                            prevState.message = Constants.PASS_MISMATCH
-                            return prevState
-                        })
-                        this.animTop()
-                    }
+                    if(this.state.confPass == '' || this.state.pass == '')
+                        this.showToast("Please fill the fields");
+                    else if(this.state.confPass !== this.state.pass)
+                        this.showToast(Constants.PASS_MISMATCH);
                     else this.changePassword();
                 }}
                 style={{
                     justifyContent:'center', alignItems: 'center',
                     borderRadius: 4, width: '80%', alignSelf: 'center', paddingVertical: 15, marginTop: 25,
-                    backgroundColor: this.state.isLoading? 'gray' : ACCENT
+                    backgroundColor: (this.state.isLoading || this.state.invalidText)? 'gray' : ACCENT
                 }}>
-                    <Text style={{color: 'white', fontSize: 14, fontWeight: '700', opacity: this.state.isLoading? 0.3 : 1}}>
-                        {this.state.isLoading? "Processing..." : "Confirm"}
+                    <Text style={{color: 'white', fontSize: 14, fontWeight: '700', opacity: (this.state.isLoading || this.invalidText)? 0.3 : 1}}>
+                        {this.state.invalidText? "Confirm" : this.state.isLoading? "Processing..." : "Confirm"}
                     </Text>
                 </TouchableHighlight>
             
-                {/* Message box */}
-                <Animated.View
-                style={{
-                    backgroundColor: ACCENT, left: 0, right: 0, position: 'absolute', top: this.state.messageTop,
-                    height: 100, flexDirection: 'row',
-                    alignItems: 'center', paddingHorizontal: 20
-                }}>
-                    <Image source={Constants.ICONS.warning}
-                    tintColor='white' style={{width: 30, height: 30, marginEnd: 20}}/>
-                    <Text style={{fontSize: 15, color: 'white', flex: 1}}>{this.state.message}</Text>
-                </Animated.View>
+                {/* Toast box */}
+                <ToastComp ref={t => this.toast = t}/>
             </View>
         )
     }

@@ -17,7 +17,7 @@
 		2D02E4BF1E0B4AB3006451C7 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
 		2DCD954D1E0B4F2C00145EB5 /* MaalGaadiTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 00E356F21AD99517003FC87E /* MaalGaadiTests.m */; };
 		6E1B2E91AF53286604EA60E5 /* libPods-MaalGaadiTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F82B636BD187268C29B3A93B /* libPods-MaalGaadiTests.a */; };
-		C0DF364123C0AE84002C3BA9 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = C0DF364023C0AE84002C3BA9 /* GoogleService-Info.plist */; };
+		C0E759E423C4A16D001F363E /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = C0E759E323C4A16D001F363E /* GoogleService-Info.plist */; };
 		CDE8F7A054A4E8EF1E32D149 /* libPods-MaalGaadi-tvOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 83F80BEECDA4FCEB866FF992 /* libPods-MaalGaadi-tvOS.a */; };
 		DB514DF4A691373AAAF783EF /* libPods-MaalGaadi.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 83302627268DDB1F41CACEF8 /* libPods-MaalGaadi.a */; };
 		E1D113D0471B159EFBDB27CA /* libPods-MaalGaadi-tvOSTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 35D5DEAC2CDE92984EC7F1C7 /* libPods-MaalGaadi-tvOSTests.a */; };
@@ -63,8 +63,8 @@
 		83F80BEECDA4FCEB866FF992 /* libPods-MaalGaadi-tvOS.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-MaalGaadi-tvOS.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		A2A49874CDA094DF79F9A79A /* Pods-MaalGaadi.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MaalGaadi.release.xcconfig"; path = "Target Support Files/Pods-MaalGaadi/Pods-MaalGaadi.release.xcconfig"; sourceTree = "<group>"; };
 		B2661FF34538FF86312A725B /* Pods-MaalGaadi-tvOSTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MaalGaadi-tvOSTests.debug.xcconfig"; path = "Target Support Files/Pods-MaalGaadi-tvOSTests/Pods-MaalGaadi-tvOSTests.debug.xcconfig"; sourceTree = "<group>"; };
-		C0DF364023C0AE84002C3BA9 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = "GoogleService-Info.plist"; path = "MaalGaadi/GoogleService-Info.plist"; sourceTree = "<group>"; };
 		C0DF364223C0AEEA002C3BA9 /* MaalGaadi.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; name = MaalGaadi.entitlements; path = MaalGaadi/MaalGaadi.entitlements; sourceTree = "<group>"; };
+		C0E759E323C4A16D001F363E /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		D6080C0392C4D4290C572F96 /* Pods-MaalGaadiTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MaalGaadiTests.debug.xcconfig"; path = "Target Support Files/Pods-MaalGaadiTests/Pods-MaalGaadiTests.debug.xcconfig"; sourceTree = "<group>"; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
 		ED2971642150620600B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = Platforms/AppleTVOS.platform/Developer/SDKs/AppleTVOS12.0.sdk/System/Library/Frameworks/JavaScriptCore.framework; sourceTree = DEVELOPER_DIR; };
@@ -128,8 +128,8 @@
 		13B07FAE1A68108700A75B9A /* MaalGaadi */ = {
 			isa = PBXGroup;
 			children = (
+				C0E759E323C4A16D001F363E /* GoogleService-Info.plist */,
 				C0DF364223C0AEEA002C3BA9 /* MaalGaadi.entitlements */,
-				C0DF364023C0AE84002C3BA9 /* GoogleService-Info.plist */,
 				008F07F21AC5B25A0029DE68 /* main.jsbundle */,
 				13B07FAF1A68108700A75B9A /* AppDelegate.h */,
 				13B07FB01A68108700A75B9A /* AppDelegate.m */,
@@ -304,6 +304,9 @@
 							com.apple.BackgroundModes = {
 								enabled = 1;
 							};
+							com.apple.Keychain = {
+								enabled = 0;
+							};
 							com.apple.Push = {
 								enabled = 1;
 							};
@@ -355,7 +358,7 @@
 			files = (
 				13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */,
 				13B07FBD1A68108700A75B9A /* LaunchScreen.xib in Resources */,
-				C0DF364123C0AE84002C3BA9 /* GoogleService-Info.plist in Resources */,
+				C0E759E423C4A16D001F363E /* GoogleService-Info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

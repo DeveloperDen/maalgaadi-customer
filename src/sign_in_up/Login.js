@@ -27,6 +27,8 @@ export default class Login extends Component {
             showPass: false,
             modalVisible: false,
             message: '',
+            pass: '',
+            phone: '',
         }
 
         this.FCM_TOKEN = ''
@@ -38,12 +40,7 @@ export default class Login extends Component {
         if(this.props.navigation.getParam("status", "") === Constants.LOGOUT_API) {
             console.log(Constants.LOGOUT_SUCCESS);
 
-            this.setState(prevState => {
-                prevState.message = Constants.LOGOUT_SUCCESS
-                return prevState
-            })
-
-            this.showToast()
+            this.showToast(Constants.LOGOUT_SUCCESS)
         }
     }
 
@@ -131,8 +128,12 @@ export default class Login extends Component {
         })  
     }
 
-    showToast = () => {
-        this.toast.show(this.state.message)
+    showToast = (text = '') => {
+        if(text !== '') {
+            this.toast.show(text);
+        }
+        else
+            this.toast.show(this.state.message)
     }
 
     render() {
@@ -188,7 +189,6 @@ export default class Login extends Component {
                     <TextInput 
                     editable={!this.state.isLoading}
                     placeholder="Password" secureTextEntry={this.state.showPass? false : true}
-                    // keyboardType= {this.state.showPass? 'visible-password' : 'default'}
                     onChangeText={(text) => {
                         this.setState(prevState => {
                             prevState.pass = text
@@ -212,10 +212,16 @@ export default class Login extends Component {
                     
                 </View>
 
+                {/* Login Button */}
                 <TouchableHighlight
                 disabled={this.state.isLoading}
                 underlayColor={ACCENT_DARK}
-                onPress={this.callLoginAPI}
+                onPress={() => {
+                    if(this.state.phone == '' || this.state.pass == '')
+                        this.showToast("Please fill all the fields");
+                    else
+                        this.callLoginAPI
+                }}
                 style={{
                     justifyContent:'center', alignItems: 'center', borderRadius: 4, width: '80%',
                     alignSelf: 'center', paddingVertical: 15, marginTop: 25,
@@ -258,12 +264,7 @@ export default class Login extends Component {
                     if(this.props.navigation.getParam("status", "") === Constants.FORGET_PASSWORD_URL) {
                         console.log(Constants.PASS_CHANGE_SUCCESS);
         
-                        this.setState(prevState => {
-                            prevState.message = Constants.PASS_CHANGE_SUCCESS
-                            return prevState
-                        })
-        
-                        this.showToast()
+                        this.showToast(Constants.PASS_CHANGE_SUCCESS)
                     }
                 }}/>
             </View>

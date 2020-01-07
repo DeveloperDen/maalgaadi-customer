@@ -110,7 +110,7 @@ export default class Splash extends Component {
     }
 
     componentWillUnmount() {
-        // this.unsubscribeFCMRefresh();
+        this.unsubscribeFCMRefresh();
     }
 
     render() {

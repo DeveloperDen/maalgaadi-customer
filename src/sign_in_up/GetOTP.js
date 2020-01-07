@@ -5,14 +5,12 @@ import {
   Text,
   Image,
   StatusBar,
-  ToastAndroid,
-  Animated,
-  Easing
 } from 'react-native';
 import { TextInput, TouchableHighlight, TouchableOpacity } from 'react-native-gesture-handler';
 import {getDeviceId} from 'react-native-device-info';
 import {firebase} from '@react-native-firebase/messaging'
-import { StackActions} from 'react-navigation';
+import ToastComp from '../utils/ToastComp';
+
 
 const Constants = require('../utils/AppConstants')
 const DataController = require('../utils/DataStorageController')
@@ -31,18 +29,18 @@ export default class GetOTP extends Component {
     constructor(props) {
         super(props)
         this.state = {
-            messageTop: new Animated.Value(-100),
             otp: '',
             message: '',
             isLoading: false
-        } 
+        }
+
+        this.number = this.props.navigation.getParam("number")
     }
 
     async componentDidMount() {
         this.FCM_TOKEN = await firebase.messaging().getToken();
         this.parent = this.props.navigation.getParam("parent")
         this.otp = this.props.navigation.getParam("otp").toString()
-        this.number = this.props.navigation.getParam("number")
         this.refCode = this.props.navigation.getParam("refCode")
         this.pass = this.props.navigation.getParam("pass")
     }
@@ -94,7 +92,7 @@ export default class GetOTP extends Component {
             
         }).catch(err => {
             console.log(err)
-            ToastAndroid.show(Constants.ERROR_SIGNUP, ToastAndroid.SHORT);
+            this.showToast(Constants.ERROR_SIGNUP);
 
             this.setState(prevState => {
                 prevState.isLoading = true
@@ -110,34 +108,11 @@ export default class GetOTP extends Component {
         })
     }
 
-    animTop = () => {
-        Animated.sequence([
-            Animated.timing(
-                this.state.messageTop,
-                {
-                    toValue: -100,
-                    easing: Easing.ease,
-                    duration: 200,
-                }
-            ),
-            Animated.timing(
-                this.state.messageTop,
-                {
-                    toValue: 0,
-                    easing: Easing.ease,
-                    duration: 200
-                }
-            ),
-            Animated.timing(
-                this.state.messageTop,
-                {
-                    toValue: -100,
-                    easing: Easing.ease,
-                    duration: 200,
-                    delay: Constants.MESSAGE_DURATION
-                }
-            )
-        ]).start()
+    showToast = (text = '') => {
+        if(text !== '')
+            this.toast.show(text);
+        else
+            this.toast.show(this.state.message);
     }
 
     // API call to get OTP for Signup
@@ -166,14 +141,14 @@ export default class GetOTP extends Component {
                 prevState.message = value.message
                 return prevState
             })
-            this.animTop()
+            this.showToast()
         }).catch(err => {
             this.setState(prevState => {
                 prevState.isLoading = false
                 return prevState
             })
             console.log(err)
-            ToastAndroid.show(Constants.ERROR_OTP, ToastAndroid.SHORT);
+            this.showToast(Constants.ERROR_OTP);
         })
         
     }
@@ -206,7 +181,7 @@ export default class GetOTP extends Component {
                     prevState.message = value.message
                     return prevState
                 })
-                this.animTop()
+                this.showToast()
             }
             else {
                 this.otp = value.data.otp.toString()
@@ -223,7 +198,7 @@ export default class GetOTP extends Component {
                 return prevState
             })
             console.log(err)
-            ToastAndroid.show(Constants.ERROR_OTP, ToastAndroid.SHORT);
+            this.showToast(Constants.ERROR_OTP);
         })
     }
 
@@ -286,11 +261,7 @@ export default class GetOTP extends Component {
                 underlayColor={ACCENT_DARK}
                 onPress={() => {
                     if(this.state.otp !== this.otp) {
-                        this.setState(prevState => {
-                            prevState.message = Constants.OTP_MISMATCH
-                            return prevState
-                        })
-                        this.animTop()
+                        this.showToast(Constants.OTP_MISMATCH)
                     }
                     else {
                         this.parent === Constants.ADD_CUSTOMER_SIGNUP?
@@ -309,17 +280,8 @@ export default class GetOTP extends Component {
                     </Text>
                 </TouchableHighlight>
             
-                {/* Message box */}
-                <Animated.View
-                style={{
-                    backgroundColor: ACCENT, left: 0, right: 0, position: 'absolute', top: this.state.messageTop,
-                    height: 100, flexDirection: 'row',
-                    alignItems: 'center', paddingHorizontal: 20
-                }}>
-                    <Image source={Constants.ICONS.warning}
-                    tintColor='white' style={{width: 30, height: 30, marginEnd: 20}}/>
-                    <Text style={{fontSize: 15, color: 'white', flex: 1}}>{this.state.message}</Text>
-                </Animated.View>
+                {/* Toast box */}
+                <ToastComp ref={t => this.toast = t}/>
             </View>
         )
     }

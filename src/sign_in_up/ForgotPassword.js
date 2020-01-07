@@ -82,8 +82,11 @@ export default class ForgotPassword extends Component {
         
     }
 
-    showToast = () => {
-        this.toast.show(this.state.message);
+    showToast = (text = '') => {
+        if(text !== '')
+            this.toast.show(text)
+        else
+            this.toast.show(this.state.message);
     }
 
     render() {
@@ -120,10 +123,14 @@ export default class ForgotPassword extends Component {
                     }}/>
                 </View>
 
+                {/* Get OTP Button */}
                 <TouchableHighlight underlayColor={ACCENT_DARK}
                 disabled={this.state.isLoading}
                 onPress={() => {
-                    this.setPasswordByNumber()
+                    if(this.state.number == '')
+                        this.showToast("Please enter the Mobile Number");
+                    else
+                        this.setPasswordByNumber()
                 }}
                 style={{
                     justifyContent:'center', alignItems: 'center',

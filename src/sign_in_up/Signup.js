@@ -84,8 +84,12 @@ export default class Signup extends Component {
         }) 
     }
 
-    showToast = () => {
-        this.toast.show(this.state.message);
+    showToast = (text = '') => {
+        if(text !== '') {
+            this.toast.show(text);
+        }
+        else
+            this.toast.show(this.state.message);
     }
 
     render() {
@@ -195,10 +199,14 @@ export default class Signup extends Component {
                     </TouchableOpacity>
                 }
 
+                {/* Signup Button */}
                 <TouchableHighlight underlayColor={ACCENT_DARK}
                 disabled={this.state.isLoading}
                 onPress={() => {
-                    this.registerCustomer()
+                    if(this.state.pass == '' || this.state.phone == '')
+                        this.showToast("Please fill all the fields");
+                    else
+                        this.registerCustomer()
                 }}
                 style={{
                     justifyContent:'center', alignItems: 'center',
