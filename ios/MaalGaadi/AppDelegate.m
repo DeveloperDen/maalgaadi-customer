@@ -12,13 +12,15 @@
 #import <React/RCTRootView.h>//'
 #import <Firebase.h>
 #import <RNCPushNotificationIOS.h>
+#import <GoogleMaps/GoogleMaps.h>
 
 @implementation AppDelegate
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
+  [GMSServices provideAPIKey:@"AIzaSyCJYc7hsuiHCwUQWQ0NTk0TW0ne0y43NAE"];
   [FIRApp configure];
-
+  
   RCTBridge *bridge = [[RCTBridge alloc] initWithDelegate:self launchOptions:launchOptions];
   RCTRootView *rootView = [[RCTRootView alloc] initWithBridge:bridge
                                                    moduleName:@"MaalGaadi"

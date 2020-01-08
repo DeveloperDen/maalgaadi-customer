@@ -39,6 +39,9 @@ export default class Login extends Component {
 
         if(this.props.navigation.getParam("status", "") === Constants.LOGOUT_API) {
             console.log(Constants.LOGOUT_SUCCESS);
+            this.props.navigation.setParams({
+                status: "",
+            });
 
             this.showToast(Constants.LOGOUT_SUCCESS)
         }
@@ -220,7 +223,7 @@ export default class Login extends Component {
                     if(this.state.phone == '' || this.state.pass == '')
                         this.showToast("Please fill all the fields");
                     else
-                        this.callLoginAPI
+                        this.callLoginAPI();
                 }}
                 style={{
                     justifyContent:'center', alignItems: 'center', borderRadius: 4, width: '80%',
@@ -263,6 +266,9 @@ export default class Login extends Component {
                 <NavigationEvents onDidFocus={() => {
                     if(this.props.navigation.getParam("status", "") === Constants.FORGET_PASSWORD_URL) {
                         console.log(Constants.PASS_CHANGE_SUCCESS);
+                        this.props.navigation.setParams({
+                            status: "",
+                        });
         
                         this.showToast(Constants.PASS_CHANGE_SUCCESS)
                     }

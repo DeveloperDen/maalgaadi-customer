@@ -13,7 +13,7 @@ import {
   Animated,
   Modal,
   NativeEventEmitter,
-  PermissionsAndroid, Alert
+  PermissionsAndroid, Alert, Platform,
 } from 'react-native';
 import MapView, {PROVIDER_GOOGLE, Marker } from 'react-native-maps';
 import Geolocation from 'react-native-geolocation-service';
@@ -41,7 +41,6 @@ const ASPECT_RATIO = width / height;
 const LATITUDE_DELTA = 0.0030;
 const LONGITUDE_DELTA = LATITUDE_DELTA * ASPECT_RATIO;
 const GOOGLE_MAPS_APIKEY = 'AIzaSyCJYc7hsuiHCwUQWQ0NTk0TW0ne0y43NAE';
-const DRIVE = 'DRIVING'
 const YOUR_LOCATION = 'Your location'
 const CHO_DEST = 'Choose destination'
 const DESTINATION = 'destination'
@@ -298,39 +297,41 @@ export default class Home extends Component {
 
   async requestLocationPermission() {
     try {
-      const granted = await PermissionsAndroid.request(
-        PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
-        {
-          title: 'MapsGo',
-          message:
-            'MapsGo wants to access your location',
-          buttonNeutral: 'Ask Me Later',
-          buttonNegative: 'Cancel',
-          buttonPositive: 'OK',
-        },
-      );
-      if (granted === PermissionsAndroid.RESULTS.GRANTED) {
-        console.log('Location permission granted.');
-        Geolocation.getCurrentPosition(
-          (position) => {
-              console.log(position);
-              this.mapView.animateToRegion({
-                latitude: position.coords.latitude,
-                longitude: position.coords.longitude,
-                latitudeDelta: LATITUDE_DELTA,
-                longitudeDelta: LONGITUDE_DELTA
-              }, 500)
+      if(Platform.OS == "android") {
+        const granted = await PermissionsAndroid.request(
+          PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
+          {
+            title: 'MapsGo',
+            message:
+              'MaalGaadi will access your location to locate drivers near you and provide you an amazing transportation experience. Tap OK to allow us.',
+            buttonNeutral: 'Ask Me Later',
+            buttonNegative: 'Cancel',
+            buttonPositive: 'OK',
           },
-          (error) => {
-            console.log(error.code, error.message);
-          },
-          { enableHighAccuracy: true, timeout: 15000, maximumAge: 10000 }
         );
-  
-      } else {
-        console.log('Location permission denied');
-        alert('Allow location access for better working of the application.');
-        requestLocationPermission()
+        if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+          console.log('Location permission granted.');
+          Geolocation.getCurrentPosition(
+            (position) => {
+                console.log(position);
+                this.mapView.animateToRegion({
+                  latitude: position.coords.latitude,
+                  longitude: position.coords.longitude,
+                  latitudeDelta: LATITUDE_DELTA,
+                  longitudeDelta: LONGITUDE_DELTA
+                }, 500)
+            },
+            (error) => {
+              console.log(error.code, error.message);
+            },
+            { enableHighAccuracy: true, timeout: 15000, maximumAge: 10000 }
+          );
+    
+        } else {
+          console.log('Location permission denied');
+          alert('Allow location access for better working of the application.');
+          requestLocationPermission()
+        }
       }
     } catch (err) {
       console.log(err);
@@ -380,31 +381,32 @@ export default class Home extends Component {
         this.props.navigation.navigate("NoNetworkModal");
     })
 
-    // Listener to events emitted by Java(PaymentWebviewScreen.java)
-    // Page Finished Loading
-    const eventEmitter = new NativeEventEmitter();
-    eventEmitter.addListener('PageFinished', (event) => {
-      console.log("URL: ", event.url)
-      ToastAndroid.show("URL: " + event.url, ToastAndroid.SHORT)
-    })
-    // Transaction finished
-    eventEmitter.addListener('TransFinished', (event) => {
-      const params = event.transParams
-      console.log("Transaction Params: ", params);
-      DataController.setItem(DataController.PAYMENT_TRANS_DATA, JSON.stringify(params))
-      .then(() => {
-        if(params.success) {
-          this.props.navigation.navigate({
-            routeName: "TransactionSuccess"
-          })
-        }
-        else {
-          this.props.navigation.navigate({
-            routeName: "TransactionFailed"
-          })
-        }
-      })
-   })
+    // TODO: Remove the comments below, after adding Native Modules(in iOS, works for Android).
+  //   // Listener to events emitted by PaymentWebviewScreen
+  //   // Page Finished Loading
+  //   const eventEmitter = new NativeEventEmitter();
+  //   eventEmitter.addListener('PageFinished', (event) => {
+  //     console.log("URL: ", event.url)
+  //     ToastAndroid.show("URL: " + event.url, ToastAndroid.SHORT)
+  //   })
+  //   // Transaction finished
+  //   eventEmitter.addListener('TransFinished', (event) => {
+  //     const params = event.transParams
+  //     console.log("Transaction Params: ", params);
+  //     DataController.setItem(DataController.PAYMENT_TRANS_DATA, JSON.stringify(params))
+  //     .then(() => {
+  //       if(params.success) {
+  //         this.props.navigation.navigate({
+  //           routeName: "TransactionSuccess"
+  //         })
+  //       }
+  //       else {
+  //         this.props.navigation.navigate({
+  //           routeName: "TransactionFailed"
+  //         })
+  //       }
+  //     })
+  //  })
 
     const isProfileCompleted = await DataController.getItem(DataController.IS_PROFILE_COMPLETED)
     isProfileCompleted === "false" ? this.props.navigation.navigate("CreateProfile", {

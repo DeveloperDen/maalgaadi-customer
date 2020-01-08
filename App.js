@@ -222,7 +222,7 @@ const DrawerNavigator = createDrawerNavigator({
 {
   initialRouteName: 'AppStack',
   drawerBackgroundColor: 'white',
-  drawerType: "front",
+  drawerType: "slide",
   drawerWidth: '80%',
   drawerPosition: "left",
   contentComponent: DrawerContentComponent,

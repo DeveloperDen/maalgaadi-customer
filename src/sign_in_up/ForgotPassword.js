@@ -26,6 +26,7 @@ export default class ForgotPassword extends Component {
         super(props)
         this.state = {
             number: '',
+            invalidText: true,
         }
     }
 
@@ -117,6 +118,12 @@ export default class ForgotPassword extends Component {
                     style={{flex: 1, marginHorizontal: 10}}
                     onChangeText={(text) => {
                         this.setState(prevState => {
+                            if(text.length == 10) {
+                                prevState.invalidText = false;
+                            }
+                            else {
+                                prevState.invalidText = true;
+                            }
                             prevState.number = text
                             return prevState
                         })
@@ -125,20 +132,20 @@ export default class ForgotPassword extends Component {
 
                 {/* Get OTP Button */}
                 <TouchableHighlight underlayColor={ACCENT_DARK}
-                disabled={this.state.isLoading}
+                disabled={this.state.isLoading || this.state.invalidText}
                 onPress={() => {
-                    if(this.state.number == '')
-                        this.showToast("Please enter the Mobile Number");
+                    if(this.state.number == '' || this.state.number.length <10)
+                        this.showToast("Please enter valid the Mobile Number");
                     else
                         this.setPasswordByNumber()
                 }}
                 style={{
                     justifyContent:'center', alignItems: 'center',
                     borderRadius: 4, width: '80%', alignSelf: 'center', paddingVertical: 15, marginTop: 50,
-                    backgroundColor: this.state.isLoading? 'gray' : ACCENT
+                    backgroundColor: (this.state.isLoading || this.state.invalidText)? 'gray' : ACCENT
                 }}>
                     <Text style={{color: 'white', fontSize: 14, fontWeight: '700', opacity: this.state.isLoading? 0.3 : 1}}>
-                        {this.state.isLoading? "Processing..." : "Get OTP"}
+                        {this.state.invalidText? "Get OTP" : this.state.isLoading? "Processing..." : "Get OTP"}
                     </Text>
                 </TouchableHighlight>
             
