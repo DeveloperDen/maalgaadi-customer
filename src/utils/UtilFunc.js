@@ -1,18 +1,35 @@
+import { Platform } from "react-native";
+
 var PushNotification = require("react-native-push-notification");
 
 export const formatDate = (date = new Date()) => {
-    const dateArr = date.toLocaleString().split(" ");  
-    // ["Wed", "Jan", "15", "11:14:13", "2020"] or ["Sat", "Jan", "", "4", "11:13:48", "2020"]
+  const months = ['Jan', 'Feb', 'Mar', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+  let dateTimeStr;
 
+  const dateArr = date.toLocaleString().split(" ");
+  // ["Wed", "Jan", "15", "11:14:13", "2020"] or ["Sat", "Jan", "", "4", "11:13:48", "2020"] <-- Android
+  // ["1/9/2020,", "5:41:18", "PM"] <-- iOS (MM/DD/YYYY)
+
+  if(Platform.OS == "android") {
     const yyyy = dateArr[2] == ""? dateArr[5] : dateArr[4];
     const MMM = dateArr[1]
     const dd = dateArr[2] == ""? dateArr[3] : dateArr[2];
     const hhmmss = dateArr[2] == ""? dateArr[4].split(":") : dateArr[3].split(":")
     const hhmm = hhmmss[0] + ':' + hhmmss[1]
     const ampm = Number.parseInt(hhmmss[0]) >= 12? 'PM' : 'AM'
-
-    const dateTimeStr = dd + ' ' + MMM + ' ' + yyyy + ' ' + hhmm + ' ' + ampm
-    return(dateTimeStr)
+    dateTimeStr = dd + ' ' + MMM + ' ' + yyyy + ' ' + hhmm + ' ' + ampm
+  }
+  else { // iOS
+    const date = dateArr[0].split('/');
+    const yyyy = date[2];
+    const MMM = months[parseInt(date[0]) - 1];
+    const dd = date[1];
+    const hhmmss = dateArr[1].split(':');
+    const hhmm = hhmmss[0] + ':' + hhmmss[1];
+    const ampm = dateArr[2];
+    dateTimeStr = dd + ' ' + MMM + ' ' + yyyy + ' ' + hhmm + ' ' + ampm
+  }
+  return(dateTimeStr)
 }
 
 export const unFormatDate = (dateStr) => {

@@ -19,13 +19,14 @@ import MapView, {PROVIDER_GOOGLE, Marker } from 'react-native-maps';
 import Geolocation from 'react-native-geolocation-service';
 import Geocoder from 'react-native-geocoding';
 import { TextInput } from 'react-native-gesture-handler';
-import DateTimePicker from '@react-native-community/datetimepicker';
+import DateTimePickerComp from './utils/DateTimePicker';
 import NetInfo from "@react-native-community/netinfo";
 import {LandmarkModel} from './models/landmark_model'
 import DotLoader from './home/components/DotLoader';
 import {formatDate, showNotification} from './utils/UtilFunc'
 import { PopOverComp } from './utils/PopOverComp';
 import messaging from '@react-native-firebase/messaging';
+import {check, request, PERMISSIONS, RESULTS} from 'react-native-permissions';
 
 const BookingModel = require('./models/bookings_model')
 const Constants = require('./utils/AppConstants')
@@ -40,7 +41,7 @@ const { width, height } = Dimensions.get('window');
 const ASPECT_RATIO = width / height;
 const LATITUDE_DELTA = 0.0030;
 const LONGITUDE_DELTA = LATITUDE_DELTA * ASPECT_RATIO;
-const GOOGLE_MAPS_APIKEY = 'AIzaSyCJYc7hsuiHCwUQWQ0NTk0TW0ne0y43NAE';
+const GOOGLE_MAPS_APIKEY = 'AIzaSyD3ZGOuuW3NDUNLPcJoBkAR0kpjP2dT4lA';
 const YOUR_LOCATION = 'Your location'
 const CHO_DEST = 'Choose destination'
 const DESTINATION = 'destination'
@@ -62,9 +63,10 @@ export default class Home extends Component {
 
     Geocoder.init(GOOGLE_MAPS_APIKEY)
 
-    this.requestLocationPermission = this.requestLocationPermission.bind(this)
-    this.getCurrentLocation = this.getCurrentLocation.bind(this)
-    this.stopTrackingViewChanges = this.stopTrackingViewChanges.bind(this)
+    this.requestLocationPermission = this.requestLocationPermission.bind(this);
+    this.checkLocationPermission = this.checkLocationPermission.bind(this);
+    this.getCurrentLocation = this.getCurrentLocation.bind(this);
+    this.stopTrackingViewChanges = this.stopTrackingViewChanges.bind(this);
 
     this.mapView = null;
     this.freeDrivers = [];
@@ -100,6 +102,10 @@ export default class Home extends Component {
       inactiveInput: {
         container:  {
             elevation: 2,
+            shadowColor: 'rgb(0, 0, 0)',
+            shadowOffset: {width: 0, height: 2},
+            shadowOpacity: 0.25,
+            shadowRadius: 2,
             backgroundColor: '#F7F7F7',
           },
         text: {
@@ -112,6 +118,10 @@ export default class Home extends Component {
       activeInput: {
         container: {
             elevation: 5,
+            shadowColor: 'rgb(0, 0, 0)',
+            shadowOffset: {width: 0, height: 3},
+            shadowOpacity: 0.4,
+            shadowRadius: 5,
             backgroundColor: 'white',
           },
         text: {
@@ -295,7 +305,7 @@ export default class Home extends Component {
     })
   }
 
-  async requestLocationPermission() {
+  async checkLocationPermission() {
     try {
       if(Platform.OS == "android") {
         const granted = await PermissionsAndroid.request(
@@ -309,7 +319,7 @@ export default class Home extends Component {
             buttonPositive: 'OK',
           },
         );
-        if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+        if (!granted === PermissionsAndroid.RESULTS.GRANTED) {
           console.log('Location permission granted.');
           Geolocation.getCurrentPosition(
             (position) => {
@@ -329,13 +339,77 @@ export default class Home extends Component {
     
         } else {
           console.log('Location permission denied');
-          alert('Allow location access for better working of the application.');
-          requestLocationPermission()
+          Alert.alert('MaalGaadi', 'Allow location access for better working of the application.',
+          [{text: 'OK', onPress: () => {console.log("Getting location permission again..")}}]);
+          this.checkLocationPermission()
         }
+      }
+      else { // Else for iOS
+        check(PERMISSIONS.IOS.LOCATION_WHEN_IN_USE).then(result => {
+          console.log("iOS Location Permission results: ");
+
+          switch (result) {
+            case RESULTS.UNAVAILABLE:
+              this.showLocationAlert('Sorry, location feature is not available on your device. MaalGaadi may not work as expected.')
+              break;
+
+            case RESULTS.DENIED:
+              this.showLocationAlert('MaalGaadi uses location to get the drivers around you and provide an amazing transportation experience.', true);
+              break;
+
+            case RESULTS.GRANTED:
+              console.log('The permission is granted');
+              Geolocation.getCurrentPosition(
+                (position) => {
+                    console.log(position);
+                    this.mapView.animateToRegion({
+                      latitude: position.coords.latitude,
+                      longitude: position.coords.longitude,
+                      latitudeDelta: LATITUDE_DELTA,
+                      longitudeDelta: LONGITUDE_DELTA
+                    }, 500)
+                },
+                (error) => {
+                  console.log(error.code, error.message);
+                },
+                { enableHighAccuracy: true, timeout: 15000, maximumAge: 10000 }
+              );
+              break;
+
+            case RESULTS.BLOCKED:
+              console.log('The permission is denied and not requestable anymore');
+              this.showLocationAlert('MaalGaadi is unable to request for the location permission to work. Please try restarting the application or reinstalling it.');
+              break;
+          }
+        })
       }
     } catch (err) {
       console.log(err);
     }
+  }
+
+  // For iOS
+  showLocationAlert(message, toRequest = false) {
+    Alert.alert("MaalGaadi", message,
+    [{
+      text: "OK",
+      onPress: () => {
+        toRequest? this.requestLocationPermission() : null
+      }
+    }])
+  }
+
+  // For iOS
+  requestLocationPermission() {
+    console.log("Requesting location permission...");
+
+    request(PERMISSIONS.IOS.LOCATION_WHEN_IN_USE)
+    .then(() => {
+      this.checkLocationPermission();
+    })
+    .catch(err => {
+      console.log(err);
+    })
   }
 
   getCurrentLocation(input) {
@@ -414,7 +488,7 @@ export default class Home extends Component {
     }) 
     : null
 
-    this.requestLocationPermission()
+    this.checkLocationPermission()
     
     // Will Focus listener
     this.willFocusListener = this.props.navigation.
@@ -648,6 +722,7 @@ export default class Home extends Component {
     })
   }
 
+  // Not in use currently.
   calculateEta(distanceKm) {
     const peakDistance = 80; // km
     const timePerKm = 4; // min
@@ -732,19 +807,33 @@ export default class Home extends Component {
   }
 
   showDateTimePicker = (show, mode, date = new Date()) => {
+    if(Platform.OS == "ios") {
+      this.dateTimePicker.showToggle(show);
+    }
+    else {
+      this.setState(prevState => {
+        prevState.showDateTime = show
+        prevState.dateTimePickerMode = mode
+        if(mode === 'date') {
+          prevState.selectedDateTime.setHours(date.getHours())
+          prevState.selectedDateTime.setMinutes(date.getMinutes())
+        }
+        else prevState.selectedDateTime = date
+        return prevState
+      })
+
+      if(mode === 'date' && !show)  // When mode is 'date' and not 'show'ing the dialog, is when Time Dialog is closed.
+        this.bookNow(false)
+    }
+  }
+
+  setDateTime = (date) => {
     this.setState(prevState => {
-      prevState.showDateTime = show
-      prevState.dateTimePickerMode = mode
-      if(mode === 'date') {
-        prevState.selectedDateTime.setHours(date.getHours())
-        prevState.selectedDateTime.setMinutes(date.getMinutes())
-      }
-      else prevState.selectedDateTime = date
+      prevState.selectedDateTime = date
       return prevState
     })
 
-    if(mode === 'date' && !show)  // When mode is 'date' and not 'show'ing the dialog, is when Time Dialog is closed.
-      this.bookNow(false)
+    this.bookNow(false)
   }
 
   bookNow = async (isBookNow = true) => {
@@ -848,6 +937,7 @@ export default class Home extends Component {
         <StatusBar backgroundColor='white' 
         barStyle="dark-content"/>
 
+        {/* TODO: Position it on iOS to make it scollable and touchable */}
         <View style={styles.map}>
           <MapView
             showsMyLocationButton={false}
@@ -1033,18 +1123,17 @@ export default class Home extends Component {
           <View style={{flex:1, alignItems: "flex-end", justifyContent:"flex-end"}}>
             <TouchableHighlight underlayColor='white'
             style={styles.fab} onPress={()=>{
-                this.requestLocationPermission()
+                this.checkLocationPermission();
               }}>
                 <Image source={Constants.ICONS.curr_location}
-                style={[styles.icon, {alignSelf: 'flex-end'}]}
-                tintColor='#0092FE'/>
+                style={[styles.icon, {alignSelf: 'flex-end', tintColor: '#0092FE'}]}/>
             </TouchableHighlight>
           </View>          
 
           <View style={[styles.footer]}>  
             <TouchableHighlight
             ref={covVeh => {this.covVehSwitch = covVeh}}
-            underlayColor="#E7E7E7"
+            underlayColor={this.state.isCoveredVehicle? ACCENT : 'transparent'}
             style={{
               borderWidth: 2, 
               borderColor: this.state.isCoveredVehicle? ACCENT : 'black',
@@ -1079,8 +1168,7 @@ export default class Home extends Component {
                 </Text>
                 
                 <Image source={Constants.ICONS.tick}
-                  style={{width: 15, height: 15,}}
-                  tintColor={this.state.isCoveredVehicle? 'white' : 'black'}
+                  style={{width: 15, height: 15, tintColor: this.state.isCoveredVehicle? 'white' : 'black'}}
                   />
               </View>
             </TouchableHighlight>
@@ -1157,7 +1245,7 @@ export default class Home extends Component {
                 backgroundColor: ACCENT, width: '15%', marginRight: '1%',
                 borderRadius: 5, alignItems: "center", justifyContent: "center"
               }}>
-                <Image style={styles.icon} source={Constants.ICONS.clock} tintColor='white'/>
+                <Image style={styles.icon} source={Constants.ICONS.clock}/>
               </TouchableHighlight>
 
               <TouchableHighlight
@@ -1179,7 +1267,7 @@ export default class Home extends Component {
               style={{
                 backgroundColor: ACCENT, width: '15%', borderRadius: 5, alignItems: "center", justifyContent: "center"
               }}>
-                <Image style={styles.icon} source={instantIcon} tintColor='white'/>
+                <Image style={styles.icon} source={instantIcon}/>
               </TouchableHighlight>
             </View>
           </View>
@@ -1189,7 +1277,7 @@ export default class Home extends Component {
         <View style={{top: '50%', bottom: '50%', marginTop: -50, position: 'absolute', 
           alignSelf: "center", }}>
             <Image source={this.state.isActiveInput === ORIGIN? greenPin : redPin}
-            style={{width: 40, height: 40,}}/>
+            style={{width: 45, height: 45,}}/>
         </View>
       
         {/* Dialog box to save locations. */}
@@ -1272,19 +1360,8 @@ export default class Home extends Component {
           </View>
         </Modal>
 
-        {/* Date Time picker, shown only when, showDateTime is True. */}
-        {this.state.showDateTime &&
-        <DateTimePicker
-        value={new Date()}
-        mode={this.state.dateTimePickerMode}
-        minimumDate={new Date()}
-        onChange={(event, date) => {
-          if(this.state.dateTimePickerMode === 'date' && event.type === 'set')
-            this.showDateTimePicker(true, 'time', date)
-          else
-            this.showDateTimePicker(false, 'date', date)
-        }}
-        />}
+        {/* Date Time picker*/}
+        <DateTimePickerComp setDateTime={(date) => this.setDateTime(date)} ref={p => this.dateTimePicker = p}/>
 
         {/* Tutorials popover */}
         <PopOverComp isVisible={this.state.isVisible} fromView={this.state.fromView}
@@ -1301,6 +1378,7 @@ const styles = StyleSheet.create({
   headerfootercont: {
     flex: 1,
     justifyContent:"space-between",
+    // backgroundColor: 'red'
   },
 
   map: {
@@ -1309,7 +1387,7 @@ const styles = StyleSheet.create({
     width: '100%',
     flex: 1,
     alignItems: "center",
-    backgroundColor: 'white'
+    backgroundColor: 'white',
   },
 
   mapReg: {
@@ -1325,7 +1403,11 @@ const styles = StyleSheet.create({
   footer: {
     backgroundColor: 'white',
     padding: 5,
-    elevation: 20
+    elevation: 20,
+    shadowColor: 'rgb(0, 0, 0)',
+    shadowOffset: {width: 0, height: -2},
+    shadowOpacity: 0.25,
+    shadowRadius: 2,
   },
 
   inputs: {
@@ -1333,7 +1415,7 @@ const styles = StyleSheet.create({
     flex: 1
   },
 
-  icon: {margin: 10, width:18, height:18, },
+  icon: {margin: 10, width:18, height:18, tintColor: 'white'},
   iconsVehicle: {
     width: 28, height: 28,
   },
@@ -1351,12 +1433,16 @@ const styles = StyleSheet.create({
     color: 'black',
     opacity: 0.4
   },
-  fab: {
+  fab: { // My Location button
     backgroundColor: 'white',
     borderRadius: 100,
-    padding: 5,
+    padding: 10,
     margin: 10,
-    elevation: 4
+    elevation: 4,
+    shadowColor: 'rgb(0, 0, 0)',
+    shadowOffset: {width: 0, height: 2},
+    shadowOpacity: 0.4,
+    shadowRadius: 5,
   },
 
   modes: {

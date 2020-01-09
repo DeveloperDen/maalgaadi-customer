@@ -9,13 +9,13 @@ import {
   Switch,
   TextInput,
   TouchableOpacity,
-  ToastAndroid
 } from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { LandmarkModel } from '../models/landmark_model';
 import { formatDate } from './../utils/UtilFunc';
 import { BookingEventType } from '../models/bookings_model';
 import { PopOverComp } from '../utils/PopOverComp';
+import ToastComp from '../utils/ToastComp';
 
 const DataController = require('../utils/DataStorageController')
 const Constants = require('../utils/AppConstants')
@@ -204,7 +204,7 @@ export default class AddBooking extends Component {
               })
         }
         else {
-            ToastAndroid.show('Please complete the details', ToastAndroid.SHORT)
+            this.toast.show("Please complete the details to get fare estimation");
         }
     }
 
@@ -261,7 +261,7 @@ export default class AddBooking extends Component {
                 backgroundColor: '#EEEEEE'
             }}>
                 {/* Header with Vehicle type, Date and Time. */}
-                <Animated.View style={[styles.header, {opacity: headerOpacity, translateY: headerTransY}]}>
+                <Animated.View style={[styles.header, {opacity: headerOpacity, transform: [{translateY: headerTransY}]}]}>
                     <View style={[styles.bar, {paddingTop: 20, paddingBottom: 35}]}>
                         <View>
                             <TouchableHighlight
@@ -440,7 +440,7 @@ export default class AddBooking extends Component {
                                 keyboardType="number-pad"
                                 style={{
                                     flex: 1, backgroundColor: 'white',
-                                    paddingHorizontal: 15
+                                    paddingHorizontal: 15, height: '100%'
                                 }}
                                 defaultValue={this.state.number}
                                 placeholder="Contact Person's mobile number"/>
@@ -457,7 +457,7 @@ export default class AddBooking extends Component {
                                 keyboardType="number-pad"
                                 style={{
                                     flex: 1, backgroundColor: 'white',
-                                    paddingHorizontal: 15
+                                    paddingHorizontal: 15, height: '100%'
                                 }}
                                 placeholder="Drop off mobile number"/>
                             </View>
@@ -481,7 +481,7 @@ export default class AddBooking extends Component {
                                 <TouchableHighlight disabled={!this.state.loadEnabled}
                                 underlayColor='white'
                                 style={{
-                                    justifyContent: 'center',
+                                    justifyContent: 'center'
                                 }}
                                 onPress={() => {
                                     this.setState(prevState => {
@@ -498,8 +498,7 @@ export default class AddBooking extends Component {
                                             <Text style={{fontSize: 10, opacity: 0.4}}> Driver to load vehicle </Text>
                                         </View>
                                         <Image source={Constants.ICONS.tick}
-                                        style={{width: 20, height: 20, margin: 10}}
-                                        tintColor={this.state.isLoadingSelected? '#00CF35' : 'rgba(0, 0, 0, 0.1)'}
+                                        style={{width: 20, height: 20, margin: 10, tintColor: this.state.isLoadingSelected? '#00CF35' : 'rgba(0, 0, 0, 0.1)'}}
                                         />
                                     </View>
                                 </TouchableHighlight>
@@ -512,7 +511,7 @@ export default class AddBooking extends Component {
                                 <TouchableHighlight disabled={!this.state.loadEnabled}
                                 underlayColor='white'
                                 style={{
-                                    justifyContent: 'center',
+                                    justifyContent: 'center'
                                 }}
                                 onPress={() => {
                                     this.setState(prevState => {
@@ -528,8 +527,7 @@ export default class AddBooking extends Component {
                                             <Text style={{fontSize: 10, opacity: 0.4}}> Driver to unload vehicle </Text>
                                         </View>
                                         <Image source={Constants.ICONS.tick}
-                                        style={{width: 20, height: 20, margin: 10}}
-                                        tintColor={this.state.isUnLoadingSelected? '#00CF35' : 'rgba(0, 0, 0, 0.1)'}
+                                        style={{width: 20, height: 20, margin: 10, tintColor: this.state.isUnLoadingSelected? '#00CF35' : 'rgba(0, 0, 0, 0.1)'}}
                                         />
                                     </View>
                                 </TouchableHighlight>
@@ -616,7 +614,7 @@ export default class AddBooking extends Component {
                             <Switch disabled={!this.state.favDrivEnabled}
                             trackColor= {{false: 'rgba(0, 0, 0, 0.3', true: 'rgba(255, 203, 40, 0.5)'}}
                             thumbColor= {this.state.favDriverSelected? ACCENT : '#F0F0F0'}
-                            style={{padding: 10}}
+                            style={{padding: 10, marginEnd: 10}}
                             value={this.state.favDriverSelected? true : false}
                             onChange={() => {
                                 this.setState(prevState => {
@@ -648,7 +646,7 @@ export default class AddBooking extends Component {
                             <Switch disabled={!this.state.excDrivEnabled}
                             trackColor= {{false: 'rgba(0, 0, 0, 0.3', true: 'rgba(255, 203, 40, 0.5)'}}
                             thumbColor= {this.state.excDriverSelected? ACCENT : '#F0F0F0'}
-                            style={{padding: 10}}
+                            style={{padding: 10, marginEnd: 10}}
                             value={this.state.excDriverSelected? true : false}
                             onChange={() => {
                                 this.setState(prevState => {
@@ -730,7 +728,11 @@ export default class AddBooking extends Component {
                     paddingVertical: 15,
                     justifyContent: 'center',
                     alignItems: 'center',
-                    elevation: 10
+                    elevation: 10,
+                    shadowColor: 'rgb(0, 0, 0)',
+                    shadowOffset: {width: 0, height: -2},
+                    shadowOpacity: 0.22,
+                    shadowRadius: 4,
                 }}>
                     <Text style={{fontSize: 18, fontWeight: '700', color: 'white'}}>Estimate Fare</Text>
                 </TouchableHighlight>
@@ -748,6 +750,8 @@ export default class AddBooking extends Component {
                     this.showDateTimePicker(false, 'date', date)
                 }}
                 />}
+
+                <ToastComp ref={t => this.toast = t}/>
 
                 {/* Tutorials popover */}
                 <PopOverComp isVisible={this.state.isVisible} fromView={this.state.fromView}
@@ -792,4 +796,3 @@ const styles = StyleSheet.create({
         fontSize: 18,
     },
 });
-

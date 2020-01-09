@@ -90,8 +90,8 @@ export default class Search extends Component {
                     autoFocus={true}
                     returnKeyType={'search'}
                     fetchDetails={true}
-                    renderDescription={row => 
-                        <View onTouchEnd={(eve) => {
+                    renderDescription={row =>
+                        <View onTouchEnd={() => {
                             this.showLoadingModal();
                         }}
                         style={{flexDirection: 'row',alignItems: 'center', marginEnd: 10}}>
@@ -100,10 +100,10 @@ export default class Search extends Component {
                                 row.favourite? 'https://cdn3.iconfinder.com/data/icons/google-material-design-icons/48/ic_favorite_48px-512.png' : 'https://cdn2.iconfinder.com/data/icons/pittogrammi/142/94-512.png'}}
                             style={{width: 15, height:15, margin: 10, opacity: 0.3}}/>
                             <View>
-                                <Text style={{fontWeight: "700", fontSize: 15, ellipsisMode: "tail"}} numberOfLines={1}>
-                                {row.favourite? row.description : row.structured_formatting.main_text}
-                            </Text>
-                                <Text style={{fontSize:10, ellipsisMode: "tail"}} numberOfLines={1}>
+                                <Text style={{fontWeight: "700", fontSize: 15, ellipsizeMode: "tail",}} numberOfLines={1}>
+                                    {row.favourite? row.description : row.structured_formatting.main_text}
+                                </Text>
+                                <Text style={{fontSize:10, ellipsizeMode: "tail",}} numberOfLines={1}>
                                     {row.favourite? row.landmark : row.structured_formatting.secondary_text}
                                 </Text>
                             </View>
@@ -160,6 +160,10 @@ export default class Search extends Component {
                         textInputContainer: {
                             backgroundColor: 'white',
                             elevation: 2,
+                            shadowColor: 'rgb(0, 0, 0)',
+                            shadowOffset: {width: 0, height: 2},
+                            shadowOpacity: 0.22,
+                            shadowRadius: 4,
                             borderRadius: 5
                         },
                         row: {
