@@ -5,10 +5,10 @@ import {
   Text,
   Image,
   ScrollView,
-  ToastAndroid
 } from 'react-native';
 import { TouchableHighlight, TouchableOpacity } from 'react-native-gesture-handler';
-import DateTimePicker from '@react-native-community/datetimepicker';
+import DateTimePickerComp from '../utils/DateTimePickerComp';
+import ToastComp from '../utils/ToastComp';
 
 const Constants = require('../utils/AppConstants')
 const DataController = require('../utils/DataStorageController')
@@ -36,7 +36,7 @@ export default class TransactionHistory extends Component {
             emptyMessage: "Select the Dates and tap on the button, to get the records",
             isLoading: false,
             history: [],
-            activeDate: '',
+            activeDate: START,
             showDateTime: false,
             startDate: {
                 date: '',
@@ -86,10 +86,7 @@ export default class TransactionHistory extends Component {
     }
 
     showDateDialog = (show) => {
-        this.setState(prevState => {
-            prevState.showDateTime = show
-            return prevState
-        })
+        this.dateTimePicker.showToggle(show);
     }
 
     getMinDate = (dateType) => {
@@ -145,7 +142,7 @@ export default class TransactionHistory extends Component {
                     prevState.isLoading = false
                     return prevState
                 })
-                ToastAndroid.show(value.message, ToastAndroid.SHORT);
+                this.showToast(value.message);
             }
             else {
                 this.setState(prevState => {
@@ -161,13 +158,20 @@ export default class TransactionHistory extends Component {
                 prevState.isLoading = false
                 return prevState
             })
-            ToastAndroid.show(Constants.ERROR_GET_DETAILS, ToastAndroid.SHORT);
+            this.showToast(Constants.ERROR_GET_DETAILS);
         })
         
         this.setState(prevState => {
             prevState.emptyMessage = Constants.WALLET_RECORD_EMPTY
             return prevState
         })
+    }
+
+    showToast = (text = '') => {
+        if(text !== '')
+            this.toast.show(text);
+        else
+            this.toast.show(this.state.message);
     }
 
     render() {
@@ -177,7 +181,9 @@ export default class TransactionHistory extends Component {
                 style={{
                     flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center',
                     margin: 10, paddingHorizontal: 10, paddingVertical: 10, elevation: 2,
-                    backgroundColor: 'white', borderRadius: 3
+                    backgroundColor: 'white', borderRadius: 4,
+                    shadowColor: 'rgb(0, 0, 0)', shadowOffset: {width: 0, height: 2},
+                    shadowOpacity: 0.25, shadowRadius: 2,
                 }}>
                     <TouchableOpacity
                     onPress={() => {
@@ -217,9 +223,9 @@ export default class TransactionHistory extends Component {
                     onPress={() => {
                         this.getDataList()
                     }}
-                    style={{padding: 5, borderRadius: 100, backgroundColor: ACCENT}}>
+                    style={{padding: 8, borderRadius: 100, backgroundColor: ACCENT}}>
                         <Image source={Constants.ICONS.forward_arrow}
-                        style={{width: 25, height: 25}} tintColor='white'/>
+                        style={{width: 25, height: 25, tintColor: 'white'}}/>
                     </TouchableHighlight>
                 </View>
             
@@ -277,14 +283,12 @@ export default class TransactionHistory extends Component {
                     })}
                 </ScrollView>
 
-                {/* Date Time picker, shown only when, showDateTime is True. */}
-                {this.state.showDateTime &&
-                <DateTimePicker
+                {/* Date Time picker*/}
+                <DateTimePickerComp ref={p => this.dateTimePicker = p}
                 minimumDate={this.getMinDate(this.state.activeDate)}
                 maximumDate={this.getMaxDate(this.state.activeDate)}
                 value={this.state.activeDate === END? this.state.endDate.date : this.state.startDate.date}
-                onChange={(event, date) => {
-                if(event.type === 'set')
+                dateTimeSetter={(date) => {
                     this.setState(prevState => {
                         if(prevState.activeDate === START){
                             prevState.startDate.date = date
@@ -294,13 +298,11 @@ export default class TransactionHistory extends Component {
                             prevState.endDate.str = this.formatDate(date)
                             prevState.endDate.date = date
                         }
-                        
-                        prevState.showDateTime = false
                         return prevState
                     })
-                }}
-                />}
+                }}/>
 
+                {/* Message text component */}
                 <View style={{flex: 1, textAlign: "center",
                 alignContent: 'center', justifyContent: 'center',
                 opacity: 0.3, marginHorizontal: 20, display: this.state.history.length > 0? 'none' : 'flex'}}>
@@ -308,6 +310,9 @@ export default class TransactionHistory extends Component {
                         {this.state.isLoading? "Getting Record..." : this.state.emptyMessage}
                     </Text>
                 </View>
+
+                {/* Toast box */}
+                <ToastComp ref={t => this.toast = t}/>
             </View>
         )
     }
@@ -316,4 +321,3 @@ export default class TransactionHistory extends Component {
 const styles = StyleSheet.create({
 
 });
-

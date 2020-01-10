@@ -27,7 +27,7 @@ export default class Notifications extends Component {
             <ScrollView style={{flex: 1}}>
                 {
                     Constants.T_C.map((value, index) => {return(
-                        <View style={{flexDirection: 'row', marginHorizontal: 30, marginTop: 20}}>
+                        <View style={{flexDirection: 'row', marginHorizontal: 30, marginTop: 20}} key={index}>
                             <Text style={{fontWeight: '700', fontSize: 16}}>{index + 1 + '. '}</Text>
                             <Text style={{fontSize: 16, textAlign: 'left'}}>{value}</Text>
                         </View>

@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import DateTimePicker from '@react-native-community/datetimepicker';
-import { View, Animated, Modal, TouchableOpacity, Image, Text } from 'react-native';
+import { View, Animated, Modal, TouchableOpacity, Image, Text, Easing } from 'react-native';
 import { ICONS } from './AppConstants';
 
 const ACCENT = '#FFCB28' // 255, 203, 40
@@ -14,7 +14,8 @@ export default class DateTimePickerComp extends Component {
             showDateTime: false,
             overlayOpacity: new Animated.Value(0),
             pickerTranslateY: new Animated.Value(200),
-            date: new Date,
+            boxOpacity: new Animated.Value(0),
+            date: this.props.value? this.props.value : new Date,
         }
     }
 
@@ -38,7 +39,15 @@ export default class DateTimePickerComp extends Component {
                 {
                     toValue: show? 0 : 200,
                     duration: show? 200 : 100,
-                    useNativeDriver: true
+                    useNativeDriver: true,
+                    easing: Easing.ease
+                }
+            ),
+            Animated.timing(this.state.boxOpacity,
+                {
+                    toValue: show? 1 : 0,
+                    duration: 100,
+                    useNativeDriver: true,
                 }
             )
         ])
@@ -46,7 +55,10 @@ export default class DateTimePickerComp extends Component {
         this.animation.start(() => {
             if(!show) {
                 this.setState(prevState => {
-                    prevState.showDateTime = false;
+                    prevState.overlayOpacity= new Animated.Value(0);
+                    prevState.pickerTranslateY= new Animated.Value(200);
+                    prevState.boxOpacity= new Animated.Value(0);
+                    prevState.showDateTime= false;
                     return prevState;
                 })
             }
@@ -60,13 +72,12 @@ export default class DateTimePickerComp extends Component {
 
         datePickerIOS =
         <Modal
-          animationType="none"
           transparent={true}
           visible={this.state.showDateTime}
           onRequestClose={() => {
             this.showToggle(false)
           }}>
-              <View style={{justifyContent: 'flex-end', height: '100%'}}>
+              <View style={{justifyContent: 'flex-end', height: '100%',}}>
                 <Animated.View style={{opacity: this.state.overlayOpacity, backgroundColor: 'black', height: '100%', width: '100%', position: 'absolute'}}/>
                 <Animated.View
                 style={{
@@ -76,6 +87,7 @@ export default class DateTimePickerComp extends Component {
                     shadowOffset: {width: 0, height: -4},
                     shadowOpacity: 0.3,
                     shadowRadius: 6,
+                    opacity: this.state.boxOpacity
                 }}>
                     <View style={{flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center'}}>
                         <TouchableOpacity
@@ -86,15 +98,18 @@ export default class DateTimePickerComp extends Component {
                         </TouchableOpacity>
                         <TouchableOpacity
                         onPress={() => {
-                            this.props.setDateTime.call(this.state.date);
+                            this.props.dateTimeSetter(this.state.date);
+                            this.showToggle(false);
                         }}>
                             <Text style={{fontSize: 18, fontWeight: '700', padding: 15, color: ACCENT_DARK}}>DONE</Text>
                         </TouchableOpacity>
                     </View>
+                    
                     <DateTimePicker
+                    minimumDate={this.props.minimumDate? this.props.minimumDate : new Date}
+                    maximumDate={this.props.maximumDate? this.props.maximumDate : null}
                     value={this.state.date}
                     mode="datetime"
-                    minimumDate={new Date()}
                     onChange={(event, date) => {
                         this.setState(prevState => {
                             prevState.date = date;

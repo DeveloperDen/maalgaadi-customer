@@ -9,7 +9,6 @@ import {
   TextInput,
   Modal,
   Switch,
-  ToastAndroid,
   Keyboard,
   Alert
 } from 'react-native';
@@ -17,6 +16,7 @@ import { ScrollView } from 'react-native-gesture-handler';
 import { NO_ACIVE_FLEET, GET_ACTIVE_DRIVER_LIST, ERROR_GET_DETAILS, BASE_URL, FIELDS, DELETE_ACTIVE_DRIVERS, ERR_ACTIVE_FLEET, GET_DRIVER_DATA_BY_MGCODE, ADD_FAVORITE_DRIVER, KEY, ICONS }
 from '../utils/AppConstants';
 import * as DataController from '../utils/DataStorageController'
+import ToastComp from '../utils/ToastComp';
 
 const ACCENT = '#FFCB28' // 255, 203, 40 
 
@@ -73,7 +73,7 @@ export default class RunningMyBookings extends Component {
             console.log(value)
 
             if(!value.success){
-                ToastAndroid.show(value.message, ToastAndroid.SHORT)
+                this.showToast(value.message)
             }
             else {
                 this.setState(prevState => {
@@ -84,7 +84,7 @@ export default class RunningMyBookings extends Component {
             
         }).catch(err => {
             console.log(err)
-            ToastAndroid.show(ERROR_GET_DETAILS, ToastAndroid.SHORT);
+            this.showToast(ERROR_GET_DETAILS);
         })
 
         this.setState(prevState => {
@@ -122,16 +122,16 @@ export default class RunningMyBookings extends Component {
                     prevState.activeIndex = 0
                     return prevState
                 })
-                ToastAndroid.show("Driver Removed", ToastAndroid.SHORT);
+                this.showToast("Driver Removed");
             }
             else{
-                ToastAndroid.show(value.message, ToastAndroid.SHORT);
+                this.showToast(value.message);
             }
             
         })
         .catch(err => {
             console.log(err);
-            ToastAndroid.show(ERR_ACTIVE_FLEET, ToastAndroid.SHORT);
+            this.showToast(ERR_ACTIVE_FLEET);
         })
 
         this.setState(prevState => {
@@ -166,7 +166,7 @@ export default class RunningMyBookings extends Component {
             console.log(value)
 
             if(!value.success){
-                ToastAndroid.show(value.message, ToastAndroid.SHORT)
+                this.showToast(value.message)
             }
             else {
                 this.setState(prevState => {
@@ -177,7 +177,7 @@ export default class RunningMyBookings extends Component {
             
         }).catch(err => {
             console.log(err)
-            ToastAndroid.show(ERR_ACTIVE_FLEET, ToastAndroid.SHORT);
+            this.showToast(ERR_ACTIVE_FLEET);
         })
 
         this.setState(prevState => {
@@ -208,16 +208,17 @@ export default class RunningMyBookings extends Component {
             }
         })
 
-        const response = await request.json().then(value => {
+        await request.json().then(value => {
             console.log(value)
             this.props.navigation.navigate("Main");
+
             Alert.alert("Add Driver", value.message, [
                 {text: "OK"}
             ])
             
         }).catch(err => {
             console.log(err)
-            ToastAndroid.show(ERR_ACTIVE_FLEET, ToastAndroid.SHORT);
+            this.showToast(ERR_ACTIVE_FLEET);
         })
 
         this.setState(prevState => {
@@ -226,6 +227,10 @@ export default class RunningMyBookings extends Component {
             return prevState
         })
         this.setModalVisible(false)
+    }
+
+    showToast(text) {
+        this.toast.show(text);
     }
 
     render() {
@@ -344,9 +349,8 @@ export default class RunningMyBookings extends Component {
                                     alignItems: 'center', justifyContent: 'center',
                                 }}>
                                     <Image source={ICONS.tick}
-                                    tintColor='white'
                                     style={{
-                                        width: 20, height: 20,
+                                        width: 20, height: 20, tintColor: 'white',
                                         opacity: (this.state.drivCode == '' || this.state.isLoading)? 0.5 : 1
                                     }}/>
                                 </TouchableOpacity>
@@ -385,7 +389,8 @@ export default class RunningMyBookings extends Component {
                                 style={{
                                     paddingVertical: 15, alignItems: 'center',
                                     flex: 1, marginEnd: 1,  justifyContent: 'center',
-                                    backgroundColor: this.state.driverDetail != ''? ACCENT : 'rgba(255, 203, 40, 0.7)',
+                                    backgroundColor: ACCENT,
+                                    display: this.state.driverDetail != ''? 'flex' : 'none',
                                 }}>
                                     <Text style={{color: 'white',}}>ADD</Text>
                                 </TouchableHighlight>
@@ -428,13 +433,14 @@ export default class RunningMyBookings extends Component {
             }}
             underlayColor='rgba(255, 203, 40, 0.8)'
             style={{
-                backgroundColor: ACCENT, position: 'absolute', width: 60, height: 60,
+                backgroundColor: ACCENT, position: 'absolute', width: 70, height: 70,
                 borderRadius: 100, elevation: 4, alignItems: 'center',
-                justifyContent: 'center', alignSelf: 'flex-end', bottom: 20, end: 20, 
+                justifyContent: 'center', alignSelf: 'flex-end', bottom: 20, end: 20,
+                shadowColor: 'rgb(0, 0, 0)', shadowOffset: {width: 0, height: 4},
+                shadowOpacity: 0.25, shadowRadius: 5,
             }}>
                 <Image source={ICONS.add}
-                tintColor='white'
-                style={{width: 20, height: 20}}/>
+                style={{width: 20, height: 20, tintColor: 'white'}}/>
             </TouchableHighlight>
         
             {/* Dialog box to remove driver. */}
@@ -519,10 +525,12 @@ export default class RunningMyBookings extends Component {
                         </View>
                     </View>
             </Modal>
+            
+            {/* Toast Box */}
+            <ToastComp ref={t => this.toast = t}/>
         </View>
     )
     }
 }
 
 const styles = StyleSheet.create({});
-

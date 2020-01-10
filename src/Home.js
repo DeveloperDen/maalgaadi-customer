@@ -6,7 +6,6 @@ import {
   Image,
   View,
   Text,
-  ToastAndroid,
   StatusBar,
   Dimensions,
   ScrollView,
@@ -19,7 +18,7 @@ import MapView, {PROVIDER_GOOGLE, Marker } from 'react-native-maps';
 import Geolocation from 'react-native-geolocation-service';
 import Geocoder from 'react-native-geocoding';
 import { TextInput } from 'react-native-gesture-handler';
-import DateTimePickerComp from './utils/DateTimePicker';
+import DateTimePickerComp from './utils/DateTimePickerComp';
 import NetInfo from "@react-native-community/netinfo";
 import {LandmarkModel} from './models/landmark_model'
 import DotLoader from './home/components/DotLoader';
@@ -27,6 +26,7 @@ import {formatDate, showNotification} from './utils/UtilFunc'
 import { PopOverComp } from './utils/PopOverComp';
 import messaging from '@react-native-firebase/messaging';
 import {check, request, PERMISSIONS, RESULTS} from 'react-native-permissions';
+import ToastComp from './utils/ToastComp';
 
 const BookingModel = require('./models/bookings_model')
 const Constants = require('./utils/AppConstants')
@@ -67,6 +67,7 @@ export default class Home extends Component {
     this.checkLocationPermission = this.checkLocationPermission.bind(this);
     this.getCurrentLocation = this.getCurrentLocation.bind(this);
     this.stopTrackingViewChanges = this.stopTrackingViewChanges.bind(this);
+    this.setDateTime = this.setDateTime.bind(this);
 
     this.mapView = null;
     this.freeDrivers = [];
@@ -286,16 +287,16 @@ export default class Home extends Component {
                 
                 return prevState
             })
-            ToastAndroid.show("Favourite Location Added", ToastAndroid.SHORT);
+            this.showToast("Favourite Location Added");
         }
         else{
-            ToastAndroid.show(value.message, ToastAndroid.SHORT);
+            this.showToast(value.message);
         }
         
     })
     .catch(err => {
         console.log(err);
-        ToastAndroid.show(Constants.ERROR_EDIT_LOC, ToastAndroid.SHORT);
+        this.showToast(Constants.ERROR_EDIT_LOC);
     })
 
     this.setState(prevState => {
@@ -461,7 +462,7 @@ export default class Home extends Component {
   //   const eventEmitter = new NativeEventEmitter();
   //   eventEmitter.addListener('PageFinished', (event) => {
   //     console.log("URL: ", event.url)
-  //     ToastAndroid.show("URL: " + event.url, ToastAndroid.SHORT)
+  //     this.showToast("URL: " + event.url)
   //   })
   //   // Transaction finished
   //   eventEmitter.addListener('TransFinished', (event) => {
@@ -515,7 +516,7 @@ export default class Home extends Component {
           console.log("Payment Transaction Data not found");
       })
       .catch(err => {
-        ToastAndroid.show(err, ToastAndroid.SHORT);
+        this.showToast(err);
       })
     })
 
@@ -595,7 +596,7 @@ export default class Home extends Component {
       }
     }).catch(err => {
         console.log(err)
-        ToastAndroid.show(err, ToastAndroid.SHORT);
+        this.showToast(err);
     })  
   }
 
@@ -632,7 +633,7 @@ export default class Home extends Component {
       {
         text: "PAID", style: "cancel", onPress: () => {
           console.log("Deleting transaction data.");
-          ToastAndroid.show("Deleting transaction data.", ToastAndroid.SHORT);
+          this.showToast("Deleting transaction data.");
           DataController.removeItem(DataController.PAYMENT_TRANS_DATA);
         }
       }
@@ -659,7 +660,7 @@ export default class Home extends Component {
         console.log(value)
 
         if(!value.success){
-            ToastAndroid.show(value.message, ToastAndroid.SHORT);
+            this.showToast(value.message);
         }
         else {
           await DataController.setItem(DataController.VEHICLE, JSON.stringify(value.data))
@@ -675,7 +676,7 @@ export default class Home extends Component {
         
     }).catch(err => {
         console.log(err)
-        ToastAndroid.show(Constants.ERROR_GET_DETAILS, ToastAndroid.SHORT);
+        this.showToast(Constants.ERROR_GET_DETAILS);
     })
   }
 
@@ -693,7 +694,7 @@ export default class Home extends Component {
         console.log(value)
 
         if(!value.success){
-          ToastAndroid.show(value.message, ToastAndroid.SHORT);
+          this.showToast(value.message);
         }
         else {
           this.freeDrivers = value.data
@@ -706,7 +707,7 @@ export default class Home extends Component {
         
     }).catch(err => {
         console.log(err)
-        ToastAndroid.show(Constants.ERROR_GET_DETAILS, ToastAndroid.SHORT);
+        this.showToast(Constants.ERROR_GET_DETAILS);
     })
   }
 
@@ -827,6 +828,7 @@ export default class Home extends Component {
     }
   }
 
+  // To set date time from the DateTimePicker component.
   setDateTime = (date) => {
     this.setState(prevState => {
       prevState.selectedDateTime = date
@@ -931,6 +933,627 @@ export default class Home extends Component {
     DataController.setItem(this.state.tutCompFieldActive, "true")
   }
 
+  // For Android
+  renderHeaderFooter() {
+    return(
+      <View style={styles.headerfootercont}>
+        <View style={[styles.header]}>
+          <TouchableHighlight 
+          style={styles.iconHamMenu}
+          underlayColor='rgba(255, 255, 255, 0.05)'
+          onPress={() => {
+            this.props.navigation.openDrawer()
+          }}>
+              <Image style={{width:22, height:22}}
+              source={Constants.ICONS.ham_menu}
+              tintColor='black'/>
+          </TouchableHighlight>
+          
+          <Animated.View 
+          style={{
+            transform: [
+              {translateY: this.state.translateYAnimOrig},
+              {scaleX: this.state.scaleXAnimOrig}
+            ], zIndex: this.state.isActiveInput === ORIGIN? 99 : 1}}>
+            <TouchableHighlight 
+            underlayColor='white'
+            style={[styles.locationInputsContainer, 
+              this.state.isActiveInput === ORIGIN? 
+              this.state.activeInput.container : this.state.inactiveInput.container,]}
+              onPress={() => {
+                requestAnimationFrame(() => {
+                  if(this.state.isActiveInput !== ORIGIN) {
+                    this.animStart(ORIGIN)
+
+                    if (this.state.preLoc !== '')
+                      this.mapView.animateToRegion({
+                        latitude: this.state.preLoc.latitude,
+                        longitude: this.state.preLoc.longitude,
+                        latitudeDelta: LATITUDE_DELTA,
+                        longitudeDelta: LONGITUDE_DELTA
+                      }, 500)
+                  }
+                  else this.props.navigation.navigate('Search', {screen: 'Home'})
+                })
+              }}>
+              <View style={styles.locationInputs}>
+                <View style={[styles.destOrigLocationDots, { backgroundColor: 'green'},
+                this.state.isActiveInput === ORIGIN?
+                this.state.activeInput.icons : this.state.inactiveInput.icons]}/>
+
+                <Text 
+                numberOfLines={1} 
+                ellipsizeMode="tail" 
+                style={[styles.inputs,
+                this.state.isActiveInput === ORIGIN?
+                this.state.activeInput.text : this.state.inactiveInput.text]}> 
+                  {this.state.preLoc === '' ? 'Pickup location' : this.state.preLoc.address}
+                </Text>
+
+                <TouchableOpacity style={{display: this.state.isActiveInput !== ORIGIN? "none" : "flex"}}
+                  ref={picFav => {this.pickupFav = picFav}}
+                  onPress={() => {
+                    DataController.getItem(DataController.TUT_FAV_LOC)
+                    .then(status => {
+                      if(status == 'true') {
+                        if((this.state.preLoc != '') && (this.state.isActiveInput === ORIGIN))
+                          this.setModalVisible(true)
+                      }
+                      else {
+                        this.showPopover(DataController.TUT_FAV_LOC, this.pickupFav)
+                      }
+                    })
+                    .catch(err => {console.log(err)})
+                  }}>
+                  <View>
+                    <Image source={Constants.ICONS.favourite}
+                    style={[styles.icon,
+                      this.state.isActiveInput === ORIGIN?
+                      this.state.activeInput.icons : this.state.inactiveInput.icons]}
+                    tintColor='black'/>
+                  </View>
+                </TouchableOpacity>
+              </View>
+            </TouchableHighlight>
+          </Animated.View>
+          
+          <Animated.View 
+          style={{
+            transform: [
+              {translateY: this.state.translateYAnimDest},
+              {scaleX: this.state.scaleXAnimDest}
+            ], zIndex: this.state.isActiveInput === DESTINATION? 99 : 1}}>
+            <TouchableHighlight 
+              underlayColor='white'
+              style={[styles.locationInputsContainer,
+                      this.state.isActiveInput === DESTINATION? 
+                      this.state.activeInput.container : this.state.inactiveInput.container,
+                      this.state.isActiveInput === DESTINATION? null : {justifyContent: "flex-end", paddingTop: 0}]}
+              onPress={() => {
+                requestAnimationFrame(() => {
+                  if(this.state.isActiveInput !== DESTINATION) {
+                    this.animStart(DESTINATION)
+
+                    if (this.state.destLoc !== '')
+                      this.mapView.animateToRegion({
+                        latitude: this.state.destLoc.latitude,
+                        longitude: this.state.destLoc.longitude,
+                        latitudeDelta: LATITUDE_DELTA,
+                        longitudeDelta: LONGITUDE_DELTA
+                      }, 500)
+                  }
+                  else this.props.navigation.navigate('Search', {screen: 'Home'})
+                })
+              }}>
+              <View style={styles.locationInputs}>
+                  <View style={[styles.destOrigLocationDots, { backgroundColor: 'red'} ,
+                  this.state.isActiveInput === DESTINATION?
+                    this.state.activeInput.icons : this.state.inactiveInput.icons]}/>
+
+                  <Text numberOfLines={1} ellipsizeMode="tail"
+                  style={[styles.inputs, 
+                    this.state.isActiveInput === DESTINATION?
+                    this.state.activeInput.text : this.state.inactiveInput.text]}>
+                    {this.state.destLoc === '' ? 'Drop location' : this.state.destLoc.address}
+                  </Text>
+
+                  <TouchableOpacity style={{display: this.state.isActiveInput !== DESTINATION? "none" : "flex"}}
+                    ref={drFav => {this.dropFav = drFav}}
+                    onPress={() => {
+                      DataController.getItem(DataController.TUT_FAV_LOC)
+                      .then(status => {
+                        if(status == 'true') {
+                          if((this.state.destLoc != '') && (this.state.isActiveInput === DESTINATION))
+                            this.setModalVisible(true)
+                        }
+                        else {
+                          this.showPopover(DataController.TUT_FAV_LOC, this.dropFav)
+                        }
+                      })
+                      .catch(err => {console.log(err)})
+                    }}>
+                    <View>
+                      <Image source={Constants.ICONS.favourite}
+                      style={[styles.icon,
+                        this.state.isActiveInput === DESTINATION?
+                        this.state.activeInput.icons : this.state.inactiveInput.icons]}
+                      tintColor='black'/>
+                    </View>
+                  </TouchableOpacity>
+                </View>
+            </TouchableHighlight>
+          </Animated.View>
+        </View>
+
+        <View style={{flex:1, alignItems: "flex-end", justifyContent:"flex-end"}}>
+          <TouchableHighlight underlayColor='white'
+          style={styles.fab} onPress={()=>{
+              this.checkLocationPermission();
+            }}>
+              <Image source={Constants.ICONS.curr_location}
+              style={[styles.icon, {alignSelf: 'flex-end', tintColor: '#0092FE'}]}/>
+          </TouchableHighlight>
+        </View>
+
+        <View style={[styles.footer]}>  
+          <TouchableHighlight
+          ref={covVeh => {this.covVehSwitch = covVeh}}
+          underlayColor={this.state.isCoveredVehicle? ACCENT : 'transparent'}
+          style={{
+            borderWidth: 2, 
+            borderColor: this.state.isCoveredVehicle? ACCENT : 'black',
+            backgroundColor: this.state.isCoveredVehicle? ACCENT : 'transparent',
+            paddingVertical: 4, paddingHorizontal: 10, borderRadius: 5,
+            opacity: this.state.isCoveredVehicle? 1 : 0.2,
+            display: this.state.vehiclesList.length > 0? 'flex' : 'none'
+          }}
+          onPress={() => {
+            DataController.getItem(DataController.TUT_COV_VEH)
+            .then(status => {
+              if(status == 'true') {
+                this.setState(prevState => {
+                  prevState.isCoveredVehicle = !prevState.isCoveredVehicle
+                  prevState.vehiclesList[prevState.selectedVehicleIndex].covered = !prevState.isCoveredVehicle
+                  return prevState
+                })
+              }
+              else {
+                this.showPopover(DataController.TUT_COV_VEH, this.covVehSwitch)
+              }
+            })
+            .catch(err => {console.log(err)})
+          }}>
+
+            <View style={{flexDirection: "row",
+                          justifyContent:"space-between"}}>
+              <Text style={{fontSize: 12, 
+                color: this.state.isCoveredVehicle? 'white' : 'black',
+                fontWeight: "700"}}>
+                Covered Vehicle
+              </Text>
+              
+              <Image source={Constants.ICONS.tick}
+                style={{width: 15, height: 15, tintColor: this.state.isCoveredVehicle? 'white' : 'black'}}
+                />
+            </View>
+          </TouchableHighlight>
+
+          <ScrollView 
+          style={{marginVertical: 10, display: this.state.vehiclesList.length > 0? 'flex' : 'none'}}
+          horizontal={true} showsHorizontalScrollIndicator={false}
+          contentContainerStyle={{
+            flexDirection: 'row', flexGrow: 1
+          }}>
+            {
+              this.state.vehiclesList.map((vehicle, index) => {
+                return(
+                <TouchableHighlight key={index} underlayColor='white'
+                onPress={() => {
+                  this.setState(prevState => {
+                    prevState.selectedVehicle = vehicle.vehicle_name
+                    prevState.selectedVehicleID = vehicle.id
+                    prevState.selectedVehicleIndex = index
+                    return prevState
+                  })
+                  this.showFreeDrivOnMap()
+                }}
+                style={{alignItems: "center", paddingHorizontal: 10, flex: 1}} key={vehicle.vehicle_name}>
+                  <View style={{alignItems: "center"}}>
+                    {vehicle.distance > 0?
+                      <Text style={{fontSize: 10, height: 20}}>{vehicle.distance} min</Text>
+                      :
+                      <DotLoader/>}
+
+                    <View style={{backgroundColor: this.state.selectedVehicle === vehicle.vehicle_name? ACCENT: 'transparent',
+                                  borderRadius: 100, marginBottom: 5}}>
+                      <Image source={vehicleIcon}
+                      style={styles.iconsVehicle}/>
+                    </View>
+
+                    <Text
+                    style={{fontSize: 10, textAlign: "center"}}>{vehicle.vehicle_name.replace(' ', '\n')}</Text>
+                  </View>
+                </TouchableHighlight>)
+              })
+            }
+          </ScrollView>
+        
+          <View style={{flexDirection: 'row', height: 45}}>
+            <TouchableHighlight ref={bookBt => {this.bookNowButton = bookBt}}
+            underlayColor={ACCENT_DARK}
+            onPress={() => {
+              this.bookNow()
+            }}
+            style={{
+              backgroundColor: ACCENT, width: '68%', marginRight: '1%',
+              borderRadius: 5, alignItems: "center", justifyContent: "center"
+            }}>
+              <Text style={{color: 'white', fontSize: 15, fontWeight: "700"}}>Book</Text>
+            </TouchableHighlight>
+
+            <TouchableHighlight
+            ref={setDT => {this.setDateTimeButton = setDT}}
+            underlayColor={ACCENT_DARK}
+            onPress={() => {
+              DataController.getItem(DataController.TUT_SET_DATETIME)
+              .then(status => {
+                if(status == 'true') {
+                  this.showDateTimePicker(true, 'date')
+                }
+                else {
+                  this.showPopover(DataController.TUT_SET_DATETIME, this.setDateTimeButton)
+                }
+              })
+              .catch(err => {console.log(err)})
+            }}
+            style={{
+              backgroundColor: ACCENT, width: '15%', marginRight: '1%',
+              borderRadius: 5, alignItems: "center", justifyContent: "center"
+            }}>
+              <Image style={styles.icon} source={Constants.ICONS.clock}/>
+            </TouchableHighlight>
+
+            <TouchableHighlight
+            ref={qBook => {this.quickBook = qBook}}
+            onPress={() => {
+              DataController.getItem(DataController.TUT_Q_BOOK)
+              .then(status => {
+                if(status == 'true') {
+                  this.props.navigation.navigate("MyBookings", {quickBook: true})
+                }
+                else {
+                  this.showPopover(DataController.TUT_Q_BOOK, this.quickBook)
+                }
+              })
+              .catch(err => {console.log(err)})
+              
+            }}
+            underlayColor={ACCENT_DARK}
+            style={{
+              backgroundColor: ACCENT, width: '15%', borderRadius: 5, alignItems: "center", justifyContent: "center"
+            }}>
+              <Image style={styles.icon} source={instantIcon}/>
+            </TouchableHighlight>
+          </View>
+        </View>
+      </View>
+    );
+  }
+
+  // For iOS
+  renderHeader() {
+    return(
+      <View style={[styles.header]}>
+          <TouchableHighlight 
+          style={styles.iconHamMenu}
+          underlayColor='rgba(255, 255, 255, 0.05)'
+          onPress={() => {
+            this.props.navigation.openDrawer()
+          }}>
+              <Image style={{width:22, height:22}}
+              source={Constants.ICONS.ham_menu}
+              tintColor='black'/>
+          </TouchableHighlight>
+          
+          <Animated.View 
+          style={{
+            transform: [
+              {translateY: this.state.translateYAnimOrig},
+              {scaleX: this.state.scaleXAnimOrig}
+            ], zIndex: this.state.isActiveInput === ORIGIN? 99 : 1}}>
+            <TouchableHighlight 
+            underlayColor='white'
+            style={[styles.locationInputsContainer, 
+              this.state.isActiveInput === ORIGIN? 
+              this.state.activeInput.container : this.state.inactiveInput.container,]}
+              onPress={() => {
+                requestAnimationFrame(() => {
+                  if(this.state.isActiveInput !== ORIGIN) {
+                    this.animStart(ORIGIN)
+
+                    if (this.state.preLoc !== '')
+                      this.mapView.animateToRegion({
+                        latitude: this.state.preLoc.latitude,
+                        longitude: this.state.preLoc.longitude,
+                        latitudeDelta: LATITUDE_DELTA,
+                        longitudeDelta: LONGITUDE_DELTA
+                      }, 500)
+                  }
+                  else this.props.navigation.navigate('Search', {screen: 'Home'})
+                })
+              }}>
+              <View style={styles.locationInputs}>
+                <View style={[styles.destOrigLocationDots, { backgroundColor: 'green'},
+                this.state.isActiveInput === ORIGIN?
+                this.state.activeInput.icons : this.state.inactiveInput.icons]}/>
+
+                <Text 
+                numberOfLines={1} 
+                ellipsizeMode="tail" 
+                style={[styles.inputs,
+                this.state.isActiveInput === ORIGIN?
+                this.state.activeInput.text : this.state.inactiveInput.text]}> 
+                  {this.state.preLoc === '' ? 'Pickup location' : this.state.preLoc.address}
+                </Text>
+
+                <TouchableOpacity style={{display: this.state.isActiveInput !== ORIGIN? "none" : "flex"}}
+                  ref={picFav => {this.pickupFav = picFav}}
+                  onPress={() => {
+                    DataController.getItem(DataController.TUT_FAV_LOC)
+                    .then(status => {
+                      if(status == 'true') {
+                        if((this.state.preLoc != '') && (this.state.isActiveInput === ORIGIN))
+                          this.setModalVisible(true)
+                      }
+                      else {
+                        this.showPopover(DataController.TUT_FAV_LOC, this.pickupFav)
+                      }
+                    })
+                    .catch(err => {console.log(err)})
+                  }}>
+                  <View>
+                    <Image source={Constants.ICONS.favourite}
+                    style={[styles.icon, {tintColor: 'black'},
+                      this.state.isActiveInput === ORIGIN?
+                      this.state.activeInput.icons : this.state.inactiveInput.icons]}/>
+                  </View>
+                </TouchableOpacity>
+              </View>
+            </TouchableHighlight>
+          </Animated.View>
+          
+          <Animated.View 
+          style={{
+            transform: [
+              {translateY: this.state.translateYAnimDest},
+              {scaleX: this.state.scaleXAnimDest}
+            ], zIndex: this.state.isActiveInput === DESTINATION? 99 : 1}}>
+            <TouchableHighlight 
+              underlayColor='white'
+              style={[styles.locationInputsContainer,
+                      this.state.isActiveInput === DESTINATION? 
+                      this.state.activeInput.container : this.state.inactiveInput.container,
+                      this.state.isActiveInput === DESTINATION? null : {justifyContent: "flex-end", paddingTop: 0}]}
+              onPress={() => {
+                requestAnimationFrame(() => {
+                  if(this.state.isActiveInput !== DESTINATION) {
+                    this.animStart(DESTINATION)
+
+                    if (this.state.destLoc !== '')
+                      this.mapView.animateToRegion({
+                        latitude: this.state.destLoc.latitude,
+                        longitude: this.state.destLoc.longitude,
+                        latitudeDelta: LATITUDE_DELTA,
+                        longitudeDelta: LONGITUDE_DELTA
+                      }, 500)
+                  }
+                  else this.props.navigation.navigate('Search', {screen: 'Home'})
+                })
+              }}>
+              <View style={styles.locationInputs}>
+                  <View style={[styles.destOrigLocationDots, { backgroundColor: 'red'} ,
+                  this.state.isActiveInput === DESTINATION?
+                    this.state.activeInput.icons : this.state.inactiveInput.icons]}/>
+
+                  <Text numberOfLines={1} ellipsizeMode="tail"
+                  style={[styles.inputs, 
+                    this.state.isActiveInput === DESTINATION?
+                    this.state.activeInput.text : this.state.inactiveInput.text]}>
+                    {this.state.destLoc === '' ? 'Drop location' : this.state.destLoc.address}
+                  </Text>
+
+                  <TouchableOpacity style={{display: this.state.isActiveInput !== DESTINATION? "none" : "flex"}}
+                    ref={drFav => {this.dropFav = drFav}}
+                    onPress={() => {
+                      DataController.getItem(DataController.TUT_FAV_LOC)
+                      .then(status => {
+                        if(status == 'true') {
+                          if((this.state.destLoc != '') && (this.state.isActiveInput === DESTINATION))
+                            this.setModalVisible(true)
+                        }
+                        else {
+                          this.showPopover(DataController.TUT_FAV_LOC, this.dropFav)
+                        }
+                      })
+                      .catch(err => {console.log(err)})
+                    }}>
+                    <View>
+                      <Image source={Constants.ICONS.favourite}
+                      style={[styles.icon, {tintColor: 'black'},
+                        this.state.isActiveInput === DESTINATION?
+                        this.state.activeInput.icons : this.state.inactiveInput.icons]}
+                      tintColor='black'/>
+                    </View>
+                  </TouchableOpacity>
+                </View>
+            </TouchableHighlight>
+          </Animated.View>
+        </View>
+    );
+  }
+
+  // For iOS
+  renderFooter() {
+    return(
+      <View style={{position: 'absolute', bottom: 0}}> 
+        <View style={{flex:1, alignItems: "flex-end", justifyContent:"flex-end"}}>
+            <TouchableHighlight underlayColor='white'
+            style={styles.fab} onPress={()=>{
+                this.checkLocationPermission();
+              }}>
+                <Image source={Constants.ICONS.curr_location}
+                style={[styles.icon, {alignSelf: 'flex-end', tintColor: '#0092FE'}]}/>
+            </TouchableHighlight>
+          </View>
+        <View style={[styles.footer]}>  
+          <TouchableHighlight
+          ref={covVeh => {this.covVehSwitch = covVeh}}
+          underlayColor={this.state.isCoveredVehicle? ACCENT : 'transparent'}
+          style={{
+            borderWidth: 2, 
+            borderColor: this.state.isCoveredVehicle? ACCENT : 'black',
+            backgroundColor: this.state.isCoveredVehicle? ACCENT : 'transparent',
+            paddingVertical: 4, paddingHorizontal: 10, borderRadius: 5,
+            opacity: this.state.isCoveredVehicle? 1 : 0.2,
+            display: this.state.vehiclesList.length > 0? 'flex' : 'none'
+          }}
+          onPress={() => {
+            DataController.getItem(DataController.TUT_COV_VEH)
+            .then(status => {
+              if(status == 'true') {
+                this.setState(prevState => {
+                  prevState.isCoveredVehicle = !prevState.isCoveredVehicle
+                  prevState.vehiclesList[prevState.selectedVehicleIndex].covered = !prevState.isCoveredVehicle
+                  return prevState
+                })
+              }
+              else {
+                this.showPopover(DataController.TUT_COV_VEH, this.covVehSwitch)
+              }
+            })
+            .catch(err => {console.log(err)})
+          }}>
+
+            <View style={{flexDirection: "row",
+                          justifyContent:"space-between"}}>
+              <Text style={{fontSize: 12, 
+                color: this.state.isCoveredVehicle? 'white' : 'black',
+                fontWeight: "700"}}>
+                Covered Vehicle
+              </Text>
+              
+              <Image source={Constants.ICONS.tick}
+                style={{width: 15, height: 15, tintColor: this.state.isCoveredVehicle? 'white' : 'black'}}
+                />
+            </View>
+          </TouchableHighlight>
+
+          <ScrollView 
+          style={{marginVertical: 10, display: this.state.vehiclesList.length > 0? 'flex' : 'none'}}
+          horizontal={true} showsHorizontalScrollIndicator={false}
+          contentContainerStyle={{
+            flexDirection: 'row', flexGrow: 1
+          }}>
+            {
+              this.state.vehiclesList.map((vehicle, index) => {
+                return(
+                <TouchableHighlight key={index} underlayColor='white'
+                onPress={() => {
+                  this.setState(prevState => {
+                    prevState.selectedVehicle = vehicle.vehicle_name
+                    prevState.selectedVehicleID = vehicle.id
+                    prevState.selectedVehicleIndex = index
+                    return prevState
+                  })
+                  this.showFreeDrivOnMap()
+                }}
+                style={{alignItems: "center", paddingHorizontal: 10, flex: 1}} key={vehicle.vehicle_name}>
+                  <View style={{alignItems: "center"}}>
+                    {vehicle.distance > 0?
+                      <Text style={{fontSize: 10, height: 20}}>{vehicle.distance} min</Text>
+                      :
+                      <DotLoader/>}
+
+                    <View style={{backgroundColor: this.state.selectedVehicle === vehicle.vehicle_name? ACCENT: 'transparent',
+                                  borderRadius: 100, marginBottom: 5}}>
+                      <Image source={vehicleIcon}
+                      style={styles.iconsVehicle}/>
+                    </View>
+
+                    <Text
+                    style={{fontSize: 10, textAlign: "center"}}>{vehicle.vehicle_name.replace(' ', '\n')}</Text>
+                  </View>
+                </TouchableHighlight>)
+              })
+            }
+          </ScrollView>
+        
+          <View style={{flexDirection: 'row', height: 45}}>
+            <TouchableHighlight ref={bookBt => {this.bookNowButton = bookBt}}
+            underlayColor={ACCENT_DARK}
+            onPress={() => {
+              this.bookNow()
+            }}
+            style={{
+              backgroundColor: ACCENT, width: '68%', marginRight: '1%',
+              borderRadius: 5, alignItems: "center", justifyContent: "center"
+            }}>
+              <Text style={{color: 'white', fontSize: 15, fontWeight: "700"}}>Book</Text>
+            </TouchableHighlight>
+
+            <TouchableHighlight
+            ref={setDT => {this.setDateTimeButton = setDT}}
+            underlayColor={ACCENT_DARK}
+            onPress={() => {
+              DataController.getItem(DataController.TUT_SET_DATETIME)
+              .then(status => {
+                if(status == 'true') {
+                  this.showDateTimePicker(true, 'date')
+                }
+                else {
+                  this.showPopover(DataController.TUT_SET_DATETIME, this.setDateTimeButton)
+                }
+              })
+              .catch(err => {console.log(err)})
+            }}
+            style={{
+              backgroundColor: ACCENT, width: '15%', marginRight: '1%',
+              borderRadius: 5, alignItems: "center", justifyContent: "center"
+            }}>
+              <Image style={styles.icon} source={Constants.ICONS.clock}/>
+            </TouchableHighlight>
+
+            <TouchableHighlight
+            ref={qBook => {this.quickBook = qBook}}
+            onPress={() => {
+              DataController.getItem(DataController.TUT_Q_BOOK)
+              .then(status => {
+                if(status == 'true') {
+                  this.props.navigation.navigate("MyBookings", {quickBook: true})
+                }
+                else {
+                  this.showPopover(DataController.TUT_Q_BOOK, this.quickBook)
+                }
+              })
+              .catch(err => {console.log(err)})
+              
+            }}
+            underlayColor={ACCENT_DARK}
+            style={{
+              backgroundColor: ACCENT, width: '15%', borderRadius: 5, alignItems: "center", justifyContent: "center"
+            }}>
+              <Image style={styles.icon} source={instantIcon}/>
+            </TouchableHighlight>
+          </View>
+        </View>
+      </View>
+    );
+  }
+
+  showToast(text) {
+    this.toast.show(text);
+  }
+
   render() {
     return(
       <View style={{flex: 1,}}>
@@ -971,307 +1594,10 @@ export default class Home extends Component {
           </MapView>
         </View>
 
-        <View style={styles.headerfootercont}>
-          <View style={[styles.header]}>
-            <TouchableHighlight 
-            style={styles.iconHamMenu}
-            underlayColor='rgba(255, 255, 255, 0.05)'
-            onPress={() => {
-              this.props.navigation.openDrawer()
-            }}>
-                <Image style={{width:22, height:22}}
-                source={Constants.ICONS.ham_menu}
-                tintColor='black'/>
-            </TouchableHighlight>
-            
-            <Animated.View 
-            style={{
-              transform: [
-                {translateY: this.state.translateYAnimOrig},
-                {scaleX: this.state.scaleXAnimOrig}
-              ], zIndex: this.state.isActiveInput === ORIGIN? 99 : 1}}>
-              <TouchableHighlight 
-              underlayColor='white'
-              style={[styles.locationInputsContainer, 
-                this.state.isActiveInput === ORIGIN? 
-                this.state.activeInput.container : this.state.inactiveInput.container,]}
-                onPress={() => {
-                  requestAnimationFrame(() => {
-                    if(this.state.isActiveInput !== ORIGIN) {
-                      this.animStart(ORIGIN)
-
-                      if (this.state.preLoc !== '')
-                        this.mapView.animateToRegion({
-                          latitude: this.state.preLoc.latitude,
-                          longitude: this.state.preLoc.longitude,
-                          latitudeDelta: LATITUDE_DELTA,
-                          longitudeDelta: LONGITUDE_DELTA
-                        }, 500)
-                    }
-                    else this.props.navigation.navigate('Search', {screen: 'Home'})
-                  })
-                }}>
-                <View style={styles.locationInputs}>
-                  <View style={[styles.destOrigLocationDots, { backgroundColor: 'green'},
-                  this.state.isActiveInput === ORIGIN?
-                  this.state.activeInput.icons : this.state.inactiveInput.icons]}/>
-
-                  <Text 
-                  numberOfLines={1} 
-                  ellipsizeMode="tail" 
-                  style={[styles.inputs,
-                  this.state.isActiveInput === ORIGIN?
-                  this.state.activeInput.text : this.state.inactiveInput.text]}> 
-                    {this.state.preLoc === '' ? 'Pickup location' : this.state.preLoc.address}
-                  </Text>
-
-                  <TouchableOpacity style={{display: this.state.isActiveInput !== ORIGIN? "none" : "flex"}}
-                    ref={picFav => {this.pickupFav = picFav}}
-                    onPress={() => {
-                      DataController.getItem(DataController.TUT_FAV_LOC)
-                      .then(status => {
-                        if(status == 'true') {
-                          if((this.state.preLoc != '') && (this.state.isActiveInput === ORIGIN))
-                            this.setModalVisible(true)
-                        }
-                        else {
-                          this.showPopover(DataController.TUT_FAV_LOC, this.pickupFav)
-                        }
-                      })
-                      .catch(err => {console.log(err)})
-                    }}>
-                    <View>
-                      <Image source={Constants.ICONS.favourite}
-                      style={[styles.icon,
-                        this.state.isActiveInput === ORIGIN?
-                        this.state.activeInput.icons : this.state.inactiveInput.icons]}
-                      tintColor='black'/>
-                    </View>
-                  </TouchableOpacity>
-                </View>
-              </TouchableHighlight>
-            </Animated.View>
-            
-            <Animated.View 
-            style={{
-              transform: [
-                {translateY: this.state.translateYAnimDest},
-                {scaleX: this.state.scaleXAnimDest}
-              ], zIndex: this.state.isActiveInput === DESTINATION? 99 : 1}}>
-              <TouchableHighlight 
-                underlayColor='white'
-                style={[styles.locationInputsContainer,
-                        this.state.isActiveInput === DESTINATION? 
-                        this.state.activeInput.container : this.state.inactiveInput.container,
-                        this.state.isActiveInput === DESTINATION? null : {justifyContent: "flex-end", paddingTop: 0}]}
-                onPress={() => {
-                  requestAnimationFrame(() => {
-                    if(this.state.isActiveInput !== DESTINATION) {
-                      this.animStart(DESTINATION)
-
-                      if (this.state.destLoc !== '')
-                        this.mapView.animateToRegion({
-                          latitude: this.state.destLoc.latitude,
-                          longitude: this.state.destLoc.longitude,
-                          latitudeDelta: LATITUDE_DELTA,
-                          longitudeDelta: LONGITUDE_DELTA
-                        }, 500)
-                    }
-                    else this.props.navigation.navigate('Search', {screen: 'Home'})
-                  })
-                }}>
-                <View style={styles.locationInputs}>
-                    <View style={[styles.destOrigLocationDots, { backgroundColor: 'red'} ,
-                    this.state.isActiveInput === DESTINATION?
-                      this.state.activeInput.icons : this.state.inactiveInput.icons]}/>
-
-                    <Text numberOfLines={1} ellipsizeMode="tail"
-                    style={[styles.inputs, 
-                      this.state.isActiveInput === DESTINATION?
-                      this.state.activeInput.text : this.state.inactiveInput.text]}>
-                      {this.state.destLoc === '' ? 'Drop location' : this.state.destLoc.address}
-                    </Text>
-
-                    <TouchableOpacity style={{display: this.state.isActiveInput !== DESTINATION? "none" : "flex"}}
-                      ref={drFav => {this.dropFav = drFav}}
-                      onPress={() => {
-                        DataController.getItem(DataController.TUT_FAV_LOC)
-                        .then(status => {
-                          if(status == 'true') {
-                            if((this.state.destLoc != '') && (this.state.isActiveInput === DESTINATION))
-                              this.setModalVisible(true)
-                          }
-                          else {
-                            this.showPopover(DataController.TUT_FAV_LOC, this.dropFav)
-                          }
-                        })
-                        .catch(err => {console.log(err)})
-                      }}>
-                      <View>
-                        <Image source={Constants.ICONS.favourite}
-                        style={[styles.icon,
-                          this.state.isActiveInput === DESTINATION?
-                          this.state.activeInput.icons : this.state.inactiveInput.icons]}
-                        tintColor='black'/>
-                      </View>
-                    </TouchableOpacity>
-                  </View>
-              </TouchableHighlight>
-            </Animated.View>
-          </View>
-
-          <View style={{flex:1, alignItems: "flex-end", justifyContent:"flex-end"}}>
-            <TouchableHighlight underlayColor='white'
-            style={styles.fab} onPress={()=>{
-                this.checkLocationPermission();
-              }}>
-                <Image source={Constants.ICONS.curr_location}
-                style={[styles.icon, {alignSelf: 'flex-end', tintColor: '#0092FE'}]}/>
-            </TouchableHighlight>
-          </View>          
-
-          <View style={[styles.footer]}>  
-            <TouchableHighlight
-            ref={covVeh => {this.covVehSwitch = covVeh}}
-            underlayColor={this.state.isCoveredVehicle? ACCENT : 'transparent'}
-            style={{
-              borderWidth: 2, 
-              borderColor: this.state.isCoveredVehicle? ACCENT : 'black',
-              backgroundColor: this.state.isCoveredVehicle? ACCENT : 'transparent',
-              paddingVertical: 4, paddingHorizontal: 10, borderRadius: 5,
-              opacity: this.state.isCoveredVehicle? 1 : 0.2,
-              display: this.state.vehiclesList.length > 0? 'flex' : 'none'
-            }}
-            onPress={() => {
-              DataController.getItem(DataController.TUT_COV_VEH)
-              .then(status => {
-                if(status == 'true') {
-                  this.setState(prevState => {
-                    prevState.isCoveredVehicle = !prevState.isCoveredVehicle
-                    prevState.vehiclesList[prevState.selectedVehicleIndex].covered = !prevState.isCoveredVehicle
-                    return prevState
-                  })
-                }
-                else {
-                  this.showPopover(DataController.TUT_COV_VEH, this.covVehSwitch)
-                }
-              })
-              .catch(err => {console.log(err)})
-            }}>
-
-              <View style={{flexDirection: "row",
-                            justifyContent:"space-between"}}>
-                <Text style={{fontSize: 12, 
-                  color: this.state.isCoveredVehicle? 'white' : 'black',
-                  fontWeight: "700"}}>
-                  Covered Vehicle
-                </Text>
-                
-                <Image source={Constants.ICONS.tick}
-                  style={{width: 15, height: 15, tintColor: this.state.isCoveredVehicle? 'white' : 'black'}}
-                  />
-              </View>
-            </TouchableHighlight>
-
-            <ScrollView 
-            style={{marginVertical: 10, display: this.state.vehiclesList.length > 0? 'flex' : 'none'}}
-            horizontal={true} showsHorizontalScrollIndicator={false}
-            contentContainerStyle={{
-              flexDirection: 'row', flexGrow: 1
-            }}>
-              {
-                this.state.vehiclesList.map((vehicle, index) => {
-                  return(
-                  <TouchableHighlight key={index} underlayColor='white'
-                  onPress={() => {
-                    this.setState(prevState => {
-                      prevState.selectedVehicle = vehicle.vehicle_name
-                      prevState.selectedVehicleID = vehicle.id
-                      prevState.selectedVehicleIndex = index
-                      return prevState
-                    })
-                    this.showFreeDrivOnMap()
-                  }}
-                  style={{alignItems: "center", paddingHorizontal: 10, flex: 1}} key={vehicle.vehicle_name}>
-                    <View style={{alignItems: "center"}}>
-                      {vehicle.distance > 0?
-                        <Text style={{fontSize: 10, height: 20}}>{vehicle.distance} min</Text>
-                        :
-                        <DotLoader/>}
-
-                      <View style={{backgroundColor: this.state.selectedVehicle === vehicle.vehicle_name? ACCENT: 'transparent',
-                                    borderRadius: 100, marginBottom: 5}}>
-                        <Image source={vehicleIcon}
-                        style={styles.iconsVehicle}/>
-                      </View>
-
-                      <Text
-                      style={{fontSize: 10, textAlign: "center"}}>{vehicle.vehicle_name.replace(' ', '\n')}</Text>
-                    </View>
-                  </TouchableHighlight>)
-                })
-              }
-            </ScrollView>
-          
-            <View style={{flexDirection: 'row', height: 45}}>
-              <TouchableHighlight ref={bookBt => {this.bookNowButton = bookBt}}
-              underlayColor={ACCENT_DARK}
-              onPress={() => {
-                this.bookNow()
-              }}
-              style={{
-                backgroundColor: ACCENT, width: '68%', marginRight: '1%',
-                borderRadius: 5, alignItems: "center", justifyContent: "center"
-              }}>
-                <Text style={{color: 'white', fontSize: 15, fontWeight: "700"}}>Book</Text>
-              </TouchableHighlight>
-
-              <TouchableHighlight
-              ref={setDT => {this.setDateTime = setDT}}
-              underlayColor={ACCENT_DARK}
-              onPress={() => {
-                DataController.getItem(DataController.TUT_SET_DATETIME)
-                .then(status => {
-                  if(status == 'true') {
-                    this.showDateTimePicker(true, 'date')
-                  }
-                  else {
-                    this.showPopover(DataController.TUT_SET_DATETIME, this.setDateTime)
-                  }
-                })
-                .catch(err => {console.log(err)})
-              }}
-              style={{
-                backgroundColor: ACCENT, width: '15%', marginRight: '1%',
-                borderRadius: 5, alignItems: "center", justifyContent: "center"
-              }}>
-                <Image style={styles.icon} source={Constants.ICONS.clock}/>
-              </TouchableHighlight>
-
-              <TouchableHighlight
-              ref={qBook => {this.quickBook = qBook}}
-              onPress={() => {
-                DataController.getItem(DataController.TUT_Q_BOOK)
-                .then(status => {
-                  if(status == 'true') {
-                    this.props.navigation.navigate("MyBookings", {quickBook: true})
-                  }
-                  else {
-                    this.showPopover(DataController.TUT_Q_BOOK, this.quickBook)
-                  }
-                })
-                .catch(err => {console.log(err)})
-                
-              }}
-              underlayColor={ACCENT_DARK}
-              style={{
-                backgroundColor: ACCENT, width: '15%', borderRadius: 5, alignItems: "center", justifyContent: "center"
-              }}>
-                <Image style={styles.icon} source={instantIcon}/>
-              </TouchableHighlight>
-            </View>
-          </View>
-        </View>
+        {/* Renders Header and Footer according to the Platform */}
+        {Platform.OS == "android"? this.renderHeaderFooter() : null}
+        {Platform.OS == "ios"? this.renderHeader() : null}
+        {Platform.OS == "ios"? this.renderFooter() : null}
 
         {/* Pin on Map */}
         <View style={{top: '50%', bottom: '50%', marginTop: -50, position: 'absolute', 
@@ -1354,14 +1680,14 @@ export default class Home extends Component {
               <View style={{
                   position: 'absolute', backgroundColor: 'white',
                   opacity: 0.8, top: 0, left: 0, right: 0,
-                  bottom: this.state.isLoading? 0 : '100%',
+                  transform: [{scaleY: this.state.isLoading? 0 : '100%'}],
               }}/>
             </View>
           </View>
         </Modal>
 
         {/* Date Time picker*/}
-        <DateTimePickerComp setDateTime={(date) => this.setDateTime(date)} ref={p => this.dateTimePicker = p}/>
+        <DateTimePickerComp dateTimeSetter={this.setDateTime} ref={p => this.dateTimePicker = p}/>
 
         {/* Tutorials popover */}
         <PopOverComp isVisible={this.state.isVisible} fromView={this.state.fromView}
@@ -1369,6 +1695,9 @@ export default class Home extends Component {
       
         {/* Left side strip above map, to Open Navigation Drawer. */}
         <View style={{height: '100%', width: 10, opacity: 0, position: 'absolute', backgroundColor: 'red'}}/>
+      
+        {/* Toast Box */}
+        <ToastComp ref={t => this.toast = t}/>
       </View>
     )
   }
@@ -1433,6 +1762,7 @@ const styles = StyleSheet.create({
     color: 'black',
     opacity: 0.4
   },
+  
   fab: { // My Location button
     backgroundColor: 'white',
     borderRadius: 100,

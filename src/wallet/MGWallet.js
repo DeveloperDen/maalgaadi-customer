@@ -126,7 +126,10 @@ export default class MGWallet extends Component {
                 {/* Header showing balance */}
                 <View style={{
                     flexDirection: 'row', backgroundColor: ACCENT, justifyContent: 'center',
-                    paddingVertical: 20
+                    paddingVertical: 20, shadowColor: 'rgb(0, 0, 0)',
+                    shadowOffset: {width: 0, height: 2},
+                    shadowOpacity: 0.2,
+                    shadowRadius: 6,
                 }}>
                     <View style={{ backgroundColor: ACCENT_DARK, borderRadius: 100, padding: 15, margin: 10}}>
                         <Image
@@ -205,7 +208,7 @@ export default class MGWallet extends Component {
                 {/* Filter button */}
                 <Animated.View
                 style={{
-                    position: 'absolute', alignSelf: 'center', translateY: filterBottom,
+                    position: 'absolute', alignSelf: 'center', transform: [{translateY: filterBottom}],
                     opacity: this.state.history.length > 0? filterOp : 0, bottom: 40
                 }}>
                     <TouchableHighlight
@@ -220,11 +223,12 @@ export default class MGWallet extends Component {
                         style={{
                             backgroundColor: '#151515', borderRadius: 100,
                             flexDirection: 'row', paddingVertical: 12, paddingHorizontal: 35,
-                            justifyContent: 'center',  elevation: 3 
+                            justifyContent: 'center',  elevation: 3,
+                            shadowColor: 'rgb(0, 0, 0)', shadowOffset: {width: 0, height: 4},
+                            shadowOpacity: 0.4, shadowRadius: 6,
                         }}>
                             <Image source={Constants.ICONS.filter}
-                            style={{width: 20, height: 20, marginEnd: 10}}
-                            tintColor='white'/>
+                            style={{width: 20, height: 20, marginEnd: 10, tintColor: 'white'}}/>
                             <Text style={{color: 'white'}}>FILTER</Text>
                         </View>
                     </TouchableHighlight>

@@ -4,12 +4,15 @@ import {
   View,
   Text,
   Picker,
+  Platform,
+  TouchableHighlight, Image
 } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
 import * as Constants from '../utils/AppConstants'
 import * as DataController from '../utils/DataStorageController'
 
 const ACCENT = '#FFCB28' // 255, 203, 40 
+const ACCENT_DARK = '#F1B800'
 
 export default class RateCard extends Component {
     static navigationOptions = ({navigation}) => {
@@ -24,6 +27,7 @@ export default class RateCard extends Component {
             rates: '',
             vehicles: '',
             selectedIndex: 'none',
+            vehPickerOpen: false
         }
 
         this.ratesFields = [
@@ -124,33 +128,37 @@ export default class RateCard extends Component {
                 style={{
                     width: '95%', backgroundColor: 'white',
                     elevation: 2, alignSelf: 'center', borderRadius: 3,
-                    marginTop: 15, paddingHorizontal: 5
+                    marginTop: 15, paddingHorizontal: 0
                 }}>
-                    <Picker
-                    selectedValue={this.state.selectedIndex}
-                    style={{
-                        height: 50, width: '100%',
-                    }}
-                    onValueChange={(itemValue, itemIndex) =>
-                        this.setState(prevState => {
-                            prevState.selectedIndex = itemValue
-                            prevState.rates = prevState.vehicles[itemValue]
-                            return prevState
-                        })
-                    }>
-                        {
-                            this.state.vehicles !== ''?
-                            this.state.vehicles.map((value, index) => {
-                                return(
-                                    <Picker.Item label={value.vehicle_name} value={index} key={value.vehicle_name}/>
-                                )
-                            }) :
-                            <Picker.Item label="Getting Vehicles..." value='none' />
-                        }
-                    </Picker>
+                    {Platform.OS == "android"?
+                        <Picker
+                        selectedValue={this.state.selectedIndex}
+                        style={{
+                            height: 50, width: '100%',
+                        }}
+                        onValueChange={(itemValue, itemIndex) =>
+                            this.setState(prevState => {
+                                prevState.selectedIndex = itemValue
+                                prevState.rates = prevState.vehicles[itemValue]
+                                return prevState
+                            })
+                        }>
+                            {
+                                this.state.vehicles !== ''?
+                                this.state.vehicles.map((value, index) => {
+                                    return(
+                                        <Picker.Item label={value.vehicle_name} value={index} key={value.vehicle_name}/>
+                                    )
+                                }) :
+                                <Picker.Item label="Getting Vehicles..." value='none' />
+                            }
+                        </Picker>
+                    :
+                        null
+                    }
                 </View>
 
-                <ScrollView style={{display: this.state.rates === ''? "none" : "flex"}}>
+                <ScrollView style={{display: this.state.rates === ''? "none" : "flex", marginHorizontal: 10}}>
                     {this.ratesFields.map((value, index) => {
                         console.log(value.field, this.state.rates)
                         return(
@@ -192,6 +200,65 @@ export default class RateCard extends Component {
                         All other charges like Toll Tax etc. will be charged on actual basis.
                     </Text>
                 </ScrollView>
+            
+                {/* Veicle picker for iOS */}
+                <View
+                style={{
+                    backgroundColor: '#FBFBFB', display: this.state.vehPickerOpen? 'flex' : 'none',
+                    shadowColor: 'rgb(0, 0, 0)', shadowOffset: {width: 0, height: -2},
+                    shadowOpacity: 0.07, shadowRadius: 1, position: 'absolute', bottom: 0, start: 0, end: 0,
+                }}>
+                    <Picker
+                        selectedValue={this.state.selectedIndex}
+                        onValueChange={(itemValue, itemIndex) =>
+                            this.setState(prevState => {
+                                prevState.selectedIndex = itemValue
+                                prevState.rates = prevState.vehicles[itemValue]
+                                return prevState
+                            })
+                        }>
+                            {
+                                this.state.vehicles !== ''?
+                                this.state.vehicles.map((value, index) => {
+                                    return(
+                                        <Picker.Item label={value.vehicle_name} value={index} key={value.vehicle_name}/>
+                                    )
+                                }) :
+                                <Picker.Item label="Getting Vehicles..." value='none' />
+                            }
+                    </Picker>
+                </View>
+
+                {/* Vehicle Picker button for iOS */}
+                {Platform.OS == "ios"?
+
+                <TouchableHighlight
+                style={{
+                    backgroundColor: ACCENT_DARK, padding: 20, justifyContent: 'center',
+                    shadowColor: 'rgb(0, 0, 0)', shadowOffset: {width: 0, height: -2},
+                    shadowOpacity: 0.2, shadowRadius: 5, position: 'absolute', bottom: 0, start: 0, end: 0,
+                }}
+                underlayColor={ACCENT}
+                onPress={() => {
+                    this.setState(prevState => {
+                        prevState.vehPickerOpen = !prevState.vehPickerOpen;
+                        return prevState;
+                    })
+                }}>
+                    <View style={{flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between'}}>
+                        <Text
+                        style={{
+                            fontSize: 18, color: 'white'
+                        }}>
+                            {this.state.vehicles == ''? 'Getting Vehices...' : this.state.vehicles[this.state.selectedIndex].vehicle_name}
+                        </Text>
+
+                        <Image source={Constants.ICONS.forward}
+                        style={{width: 18, height: 18, transform: [{rotate: this.state.vehPickerOpen? '90deg' : '-90deg'}], tintColor: 'white'}}/>
+                    </View>
+                </TouchableHighlight>
+                
+                : null}
             </View>
         )
     }

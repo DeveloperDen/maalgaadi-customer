@@ -10,7 +10,7 @@ import {
   TextInput,
   TouchableOpacity,
 } from 'react-native';
-import DateTimePicker from '@react-native-community/datetimepicker';
+import DateTimePickerComp from '../utils/DateTimePickerComp';
 import { LandmarkModel } from '../models/landmark_model';
 import { formatDate } from './../utils/UtilFunc';
 import { BookingEventType } from '../models/bookings_model';
@@ -119,15 +119,28 @@ export default class AddBooking extends Component {
     }
 
     showDateTimePicker = (show, mode, date = new Date()) => {
-        this.setState(prevState => {
-            prevState.showDateTime = show
-            prevState.dateTimePickerMode = mode
-            if(mode === 'date') {
-                prevState.selectedDateTime.setHours(date.getHours())
-                prevState.selectedDateTime.setMinutes(date.getMinutes())
-            }
-            else prevState.selectedDateTime = date
+        if(Platform.OS == "ios") {
+            this.dateTimePicker.showToggle(show);
+        }
+        else {
+            this.setState(prevState => {
+                prevState.showDateTime = show
+                prevState.dateTimePickerMode = mode
+                if(mode === 'date') {
+                    prevState.selectedDateTime.setHours(date.getHours())
+                    prevState.selectedDateTime.setMinutes(date.getMinutes())
+                }
+                else prevState.selectedDateTime = date
+    
+                return prevState
+            })
+        }
+    }
 
+    // To set date time from the DateTimePicker component.
+    setDateTime = (date) => {
+        this.setState(prevState => {
+            prevState.selectedDateTime = date
             return prevState
         })
     }
@@ -494,7 +507,12 @@ export default class AddBooking extends Component {
                                         flexDirection: 'row', alignItems: 'center', margin: 10
                                     }}>
                                         <View>
-                                            <Text style={{fontSize: 18, fontWeight: "700"}}> Loading </Text>
+                                            <Text
+                                            style={{
+                                                fontSize: 18, fontWeight: "700", opacity: this.state.isLoadingSelected? 1 : 0.4
+                                            }}>
+                                                Loading
+                                            </Text>
                                             <Text style={{fontSize: 10, opacity: 0.4}}> Driver to load vehicle </Text>
                                         </View>
                                         <Image source={Constants.ICONS.tick}
@@ -523,7 +541,12 @@ export default class AddBooking extends Component {
                                         flexDirection: 'row', alignItems: 'center', margin: 10
                                     }}>
                                         <View>
-                                            <Text style={{fontSize: 18, fontWeight: "700"}}> Unloading </Text>
+                                            <Text
+                                            style={{
+                                                fontSize: 18, fontWeight: "700", opacity: this.state.isUnLoadingSelected? 1 : 0.4
+                                            }}>
+                                                Unloading
+                                            </Text>
                                             <Text style={{fontSize: 10, opacity: 0.4}}> Driver to unload vehicle </Text>
                                         </View>
                                         <Image source={Constants.ICONS.tick}
@@ -571,7 +594,12 @@ export default class AddBooking extends Component {
                                         flexDirection: 'row', alignItems: 'center', justifyContent: "space-between"
                                     }}>
                                         <View>
-                                            <Text style={{fontSize: 18, fontWeight: "700"}}>Physical</Text>
+                                            <Text 
+                                            style={{
+                                                fontSize: 18, fontWeight: "700", opacity: this.state.isPhysicalSelected? 1 : 0.4
+                                            }}>
+                                                Physical
+                                            </Text>
                                             <Text style={{fontSize: 10, opacity: 0.4}}>
                                                 POD to be delievered by driver
                                             </Text>
@@ -579,8 +607,7 @@ export default class AddBooking extends Component {
                                         
                                         <View>
                                             <Image source={Constants.ICONS.tick}
-                                            style={{width: 20, height: 20, margin: 5}}
-                                            tintColor={this.state.isPhysicalSelected? '#00CF35' : 'rgba(0, 0, 0, 0.1)'}
+                                            style={{width: 20, height: 20, margin: 5, tintColor: this.state.isPhysicalSelected? '#00CF35' : 'rgba(0, 0, 0, 0.1)'}}
                                             />
                                             <Text style={{fontSize: 15, opacity: 0.3}}>
                                                 {String.fromCharCode(8377) + this.state.physicalPODCharge}
@@ -737,19 +764,8 @@ export default class AddBooking extends Component {
                     <Text style={{fontSize: 18, fontWeight: '700', color: 'white'}}>Estimate Fare</Text>
                 </TouchableHighlight>
             
-                {/* Date Time picker, shown only when, showDateTime is True. */}
-                {this.state.showDateTime &&
-                <DateTimePicker
-                value={new Date()}
-                mode={this.state.dateTimePickerMode}
-                minimumDate={new Date()}
-                onChange={(event, date) => {
-                if(this.state.dateTimePickerMode === 'date' && event.type === 'set')
-                    this.showDateTimePicker(true, 'time', date)
-                else
-                    this.showDateTimePicker(false, 'date', date)
-                }}
-                />}
+                {/* Date Time picker*/}
+                <DateTimePickerComp dateTimeSetter={this.setDateTime} value={this.state.selectedDateTime} ref={p => this.dateTimePicker = p}/>
 
                 <ToastComp ref={t => this.toast = t}/>
 

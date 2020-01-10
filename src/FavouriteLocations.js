@@ -7,9 +7,9 @@ import {
   Modal,
   TouchableOpacity,
   TouchableHighlight,
-  ToastAndroid
 } from 'react-native';
 import {ScrollView, TextInput} from 'react-native-gesture-handler';
+import ToastComp from './utils/ToastComp';
 
 const Constants = require('./utils/AppConstants')
 const DataController = require('./utils/DataStorageController')
@@ -104,16 +104,16 @@ export default class FavouriteLocations extends Component {
                     
                     return prevState
                 })
-                ToastAndroid.show("Favourite Location Updated", ToastAndroid.SHORT);
+                this.showToast("Favourite Location Updated");
             }
             else{
-                ToastAndroid.show(value.message, ToastAndroid.SHORT);
+                this.showToast(value.message);
             }
             
         })
         .catch(err => {
             console.log(err);
-            ToastAndroid.show(Constants.ERROR_EDIT_LOC, ToastAndroid.SHORT);
+            this.showToast(Constants.ERROR_EDIT_LOC);
         })
 
         this.setState(prevState => {
@@ -151,16 +151,16 @@ export default class FavouriteLocations extends Component {
                     prevState.activeIndex = 0
                     return prevState
                 })
-                ToastAndroid.show("Favourite Location Deleted", ToastAndroid.SHORT);
+                this.showToast("Favourite Location Deleted");
             }
             else{
-                ToastAndroid.show(value.message, ToastAndroid.SHORT);
+                this.showToast(value.message);
             }
             
         })
         .catch(err => {
             console.log(err);
-            ToastAndroid.show(Constants.ERROR_EDIT_LOC, ToastAndroid.SHORT);
+            this.showToast(Constants.ERROR_EDIT_LOC);
         })
 
         this.setState(prevState => {
@@ -192,7 +192,7 @@ export default class FavouriteLocations extends Component {
             }
         })
 
-        const response = await request.json().then(value => {
+        await request.json().then(value => {
             console.log(value)
 
             if(!value.success){
@@ -200,7 +200,7 @@ export default class FavouriteLocations extends Component {
                     prevState.isLoading = false
                     return prevState
                 })
-                ToastAndroid.show(value.message, ToastAndroid.SHORT);
+                this.showToast(value.message);
             }
             else {
                 this.setState(prevState => {
@@ -216,8 +216,12 @@ export default class FavouriteLocations extends Component {
                 prevState.isLoading = false
                 return prevState
             })
-            ToastAndroid.show(Constants.ERROR_GET_DETAILS, ToastAndroid.SHORT);
+            this.showToast(Constants.ERROR_GET_DETAILS);
         }) 
+    }
+
+    showToast(text) {
+        this.toast.show(text);
     }
 
     render() {
@@ -374,7 +378,7 @@ export default class FavouriteLocations extends Component {
                             <View style={{
                                 position: 'absolute', backgroundColor: 'white',
                                 opacity: 0.8, top: 0, left: 0, right: 0,
-                                bottom: this.state.isLoading? 0 : '100%',
+                                transform: [{scaleY: this.state.isLoading? 0 : '100%'}],
                             }}/>
                         </View>
                     </View>
@@ -462,6 +466,9 @@ export default class FavouriteLocations extends Component {
                             </View>
                         </View>
                 </Modal>
+            
+                {/* Toast Box */}
+                <ToastComp ref={t => this.toast = t}/>
             </View>
         )
     }

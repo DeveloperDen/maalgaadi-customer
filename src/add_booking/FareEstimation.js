@@ -690,7 +690,11 @@ export default class FareEstimation extends Component {
                     paddingVertical: 15,
                     justifyContent: 'center',
                     alignItems: 'center',
-                    elevation: 10
+                    elevation: 10,
+                    shadowColor: 'rgb(0, 0, 0)',
+                    shadowOffset: {width: 0, height: -2},
+                    shadowOpacity: 0.2,
+                    shadowRadius: 4,
                 }}>
                     <Text style={{fontSize: 18, fontWeight: '700', color: 'white'}}>Confirm Booking</Text>
                 </TouchableHighlight>

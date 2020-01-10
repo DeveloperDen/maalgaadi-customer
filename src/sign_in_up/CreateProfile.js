@@ -7,16 +7,18 @@ import {
   Text,
   Picker,
   Linking,
-  ToastAndroid
+  ToastAndroid,
+  Platform
 } from 'react-native';
 import { ScrollView, TextInput, TouchableOpacity } from 'react-native-gesture-handler';
 import { PopOverComp } from '../utils/PopOverComp';
+import { ICONS } from '../utils/AppConstants';
 
 const Constants = require('../utils/AppConstants')
 const DataController = require('../utils/DataStorageController')
 
 const ACCENT = '#FFCB28' // 255, 203, 40
-const ACCENT_DARK = '#F1B800' 
+const ACCENT_DARK = '#F1B800'
 
 export default class CreateProfile extends Component {
     static navigationOptions = ({navigation}) => {
@@ -56,7 +58,8 @@ export default class CreateProfile extends Component {
             email: '',
             org: '',
             goodsType: 'Select Goods Type',
-            goodsId: 0
+            goodsId: 0,
+            tripPickerOpen: false
         }
     }
 
@@ -305,27 +308,70 @@ export default class CreateProfile extends Component {
                     
                         <View
                         style={{
-                            borderBottomColor: 'rgba(0, 0, 0, 0.2)', borderBottomWidth: 2,
-                            borderRadius: 3,
                             marginBottom: 10, paddingHorizontal: 10
                         }}>
                             <Text style={{fontSize: 15}}>TRIP FREQUENCY</Text>
-                            <Picker
-                            selectedValue={this.state.tripFreq}
-                            style={{height: 50, width: '100%'}}
-                            onValueChange={(itemValue, itemIndex) =>
-                                this.setState(prevState => {
-                                    prevState.tripFreq = itemValue
-                                    return prevState
-                                })
-                            }>
-                                {this.tripFreqArray.map((value, index) => {
-                                    return(
-                                        <Picker.Item label={value} value={index} key={index}/>
-                                    )
-                                })}
-                                
-                            </Picker>
+                            {Platform.OS == "android"?
+                                <Picker
+                                selectedValue={this.state.tripFreq}
+                                style={{height: 50, width: '100%'}}
+                                onValueChange={(itemValue, itemIndex) =>
+                                    this.setState(prevState => {
+                                        prevState.tripFreq = itemValue
+                                        return prevState
+                                    })
+                                }>
+                                    {this.tripFreqArray.map((value, index) => {
+                                        return(
+                                            <Picker.Item label={value} value={index} key={index}/>
+                                        )
+                                    })}
+                                    
+                                </Picker>
+                            :
+                                <TouchableOpacity
+                                style={{
+                                    backgroundColor: 'rgba(0, 0, 0, 0.05)', padding: 15, justifyContent: 'center',
+                                    borderRadius: 4, marginTop: 5, marginHorizontal: 10,
+                                }}
+                                onPress={() => {
+                                    this.setState(prevState => {
+                                        prevState.tripPickerOpen = !prevState.tripPickerOpen;
+                                        return prevState;
+                                    })
+                                }}>
+                                    <View style={{flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between'}}>
+                                        <Text
+                                        style={{
+                                            fontSize: 16, opacity: 0.6 
+                                        }}>
+                                            {this.tripFreqArray[this.state.tripFreq]}
+                                        </Text>
+
+                                        <Image source={ICONS.forward}
+                                        style={{width: 18, height: 18, transform: [{rotate: this.state.tripPickerOpen? '-90deg' : '90deg'}], opacity: 0.6}}/>
+                                    </View>
+                                </TouchableOpacity>
+                            }
+
+                            {/* Trip Picker for iOS */}
+                            <View style={{backgroundColor: 'rgba(0, 0, 0, 0.02)', marginHorizontal: 10, display: this.state.tripPickerOpen? 'flex' : 'none'}}>
+                                <Picker
+                                selectedValue={this.state.tripFreq}
+                                onValueChange={(itemValue, itemIndex) =>
+                                    this.setState(prevState => {
+                                        prevState.tripFreq = itemValue
+                                        return prevState
+                                    })
+                                }>
+                                    {this.tripFreqArray.map((value, index) => {
+                                        return(
+                                            <Picker.Item label={value} value={index} key={index}/>
+                                        )
+                                    })}
+                                    
+                                </Picker>
+                            </View>
                         </View>
                     
                         <View style={{alignItems: 'center', marginVertical: 30}}>
@@ -353,6 +399,7 @@ export default class CreateProfile extends Component {
                 <PopOverComp isVisible={this.state.isVisible} fromView={this.state.fromView}
                 closePopover={this.closePopover.bind(this)} text={this.state.popOverText}/>
 
+                {/* Save button */}
                 <TouchableHighlight
                 disabled={this.state.isLoading}
                 underlayColor={ACCENT_DARK}
@@ -364,7 +411,11 @@ export default class CreateProfile extends Component {
                     paddingVertical: 15,
                     justifyContent: 'center',
                     alignItems: 'center',
-                    elevation: 10
+                    elevation: 10,
+                    shadowColor: 'rgb(0, 0, 0)',
+                    shadowOffset: {width: 0, height: -2},
+                    shadowOpacity: 0.2,
+                    shadowRadius: 4,
                 }}>
                     <Text style={{
                         fontSize: 18, fontWeight: '700', color: 'white',
