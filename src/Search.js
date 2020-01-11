@@ -4,7 +4,7 @@ import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplet
 import { getItem, CUSTOMER_ID } from './utils/DataStorageController';
 import { BASE_URL, VIEW_FAV_LOCATION_URL, FIELDS, KEY, ICONS } from './utils/AppConstants';
 
-const GOOGLE_MAPS_APIKEY = 'AIzaSyCJYc7hsuiHCwUQWQ0NTk0TW0ne0y43NAE';
+const GOOGLE_MAPS_APIKEY = 'AIzaSyD3ZGOuuW3NDUNLPcJoBkAR0kpjP2dT4lA';
 const ACCENT = '#FFCB28' // 255, 203, 40
  
 export default class Search extends Component {
@@ -91,7 +91,8 @@ export default class Search extends Component {
                     returnKeyType={'search'}
                     fetchDetails={true}
                     renderDescription={row =>
-                        <View onTouchEnd={() => {
+                        <View
+                        onTouchEnd={() => {
                             this.showLoadingModal();
                         }}
                         style={{flexDirection: 'row',alignItems: 'center', marginEnd: 10}}>

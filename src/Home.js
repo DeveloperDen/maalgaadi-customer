@@ -11,7 +11,7 @@ import {
   ScrollView,
   Animated,
   Modal,
-  NativeEventEmitter,
+  NativeEventEmitter, NativeModules,
   PermissionsAndroid, Alert, Platform,
 } from 'react-native';
 import MapView, {PROVIDER_GOOGLE, Marker } from 'react-native-maps';
@@ -238,6 +238,33 @@ export default class Home extends Component {
         stylers: [{color: '#17263c'}]
       }
     ]
+
+    // Listener to events emitted by PaymentWebviewScreen
+    const { NativePaymentView } = NativeModules;
+    // Page Finished Loading
+    this.eventEmitter = new NativeEventEmitter(NativePaymentView);
+    this.eventEmitter.addListener('PageFinished', (event) => {
+      console.log("URL: ", event.url)
+      this.showToast("URL: " + event.url)
+    })
+    // Transaction finished
+    this.eventEmitter.addListener('TransFinished', (event) => {
+      const params = event.transParams
+      console.log("Transaction Params: ", params);
+      DataController.setItem(DataController.PAYMENT_TRANS_DATA, JSON.stringify(params))
+      .then(() => {
+        if(params.success) {
+          this.props.navigation.navigate({
+            routeName: "TransactionSuccess"
+          })
+        }
+        else {
+          this.props.navigation.navigate({
+            routeName: "TransactionFailed"
+          })
+        }
+      })
+    })
   }
 
   setModalVisible = async (visible, save = false) => {
@@ -456,33 +483,6 @@ export default class Home extends Component {
         this.props.navigation.navigate("NoNetworkModal");
     })
 
-    // TODO: Remove the comments below, after adding Native Modules(in iOS, works for Android).
-  //   // Listener to events emitted by PaymentWebviewScreen
-  //   // Page Finished Loading
-  //   const eventEmitter = new NativeEventEmitter();
-  //   eventEmitter.addListener('PageFinished', (event) => {
-  //     console.log("URL: ", event.url)
-  //     this.showToast("URL: " + event.url)
-  //   })
-  //   // Transaction finished
-  //   eventEmitter.addListener('TransFinished', (event) => {
-  //     const params = event.transParams
-  //     console.log("Transaction Params: ", params);
-  //     DataController.setItem(DataController.PAYMENT_TRANS_DATA, JSON.stringify(params))
-  //     .then(() => {
-  //       if(params.success) {
-  //         this.props.navigation.navigate({
-  //           routeName: "TransactionSuccess"
-  //         })
-  //       }
-  //       else {
-  //         this.props.navigation.navigate({
-  //           routeName: "TransactionFailed"
-  //         })
-  //       }
-  //     })
-  //  })
-
     const isProfileCompleted = await DataController.getItem(DataController.IS_PROFILE_COMPLETED)
     isProfileCompleted === "false" ? this.props.navigation.navigate("CreateProfile", {
       [Constants.IS_NEW_USER] : true
@@ -568,6 +568,8 @@ export default class Home extends Component {
   componentWillUnmount() {
     this.unsubscribeFCM();
     this.netInfoSub();
+    
+    this.eventEmitter.removeAllListeners();
   }
 
   async getRatingResponse() {
@@ -1826,4 +1828,3 @@ const styles = StyleSheet.create({
     fontSize: 15
   }
 });
-

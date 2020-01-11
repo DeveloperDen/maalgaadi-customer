@@ -24,7 +24,7 @@ export default class PaymentWebview extends Component {
     constructor(props) {
         super(props)
 
-        this.NativeTest = NativeModules.NativeTest
+        this.NativePaymentView = NativeModules.NativePaymentView
 
         this.state = {
             message: 'Initializing payment...'
@@ -96,7 +96,7 @@ export default class PaymentWebview extends Component {
             method: 'GET',
         })
 
-        const response = await request.text().then(value => {
+        await request.text().then(value => {
             console.log("Got RSA: ", value)
             this.setState(prevState => {
                 prevState.message = 'Got RSA, now rendering WebView...';
@@ -121,7 +121,7 @@ export default class PaymentWebview extends Component {
             // Before navigating to Payment Webview, navigate back to Add Money, which can further go back to Home Screen
             this.props.navigation.state.params.onGoBack();
             this.props.navigation.dispatch(StackActions.popToTop());
-            this.NativeTest.navigateToExample(JSON.stringify(params))
+            this.NativePaymentView.navigateToPaymentScreen(JSON.stringify(params))
         }).catch(err => {
             console.log(err)
             ToastAndroid.show(err, ToastAndroid.SHORT);

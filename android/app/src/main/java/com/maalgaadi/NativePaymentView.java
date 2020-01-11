@@ -15,20 +15,20 @@ import com.facebook.react.bridge.ReactMethod;
 import java.util.Map;
 import java.util.HashMap;
 
-public class NativeTest extends ReactContextBaseJavaModule {
+public class NativePaymentView extends ReactContextBaseJavaModule {
   private static ReactApplicationContext reactContext;
 
   private static final String DURATION_SHORT_KEY = "SHORT";
   private static final String DURATION_LONG_KEY = "LONG";
 
-  NativeTest(ReactApplicationContext context) {
+  NativePaymentView(ReactApplicationContext context) {
     super(context);
     reactContext = context;
   }
 
   @Override
   public String getName() {
-    return "NativeTest";
+    return "NativePaymentView";
   }
 
   @Override
@@ -45,7 +45,7 @@ public class NativeTest extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
-    void navigateToExample(String params) {
+    void navigateToPaymentScreen(String params) {
         Activity activity = getCurrentActivity();
         if (activity != null) {
             Intent intent = new Intent(activity, PaymentWebviewScreen.class);

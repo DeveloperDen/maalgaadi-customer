@@ -42,8 +42,7 @@ import RatingDialog from './src/add_booking/RatingDialog'
 import { createAppContainer, createSwitchNavigator } from 'react-navigation'
 import { createDrawerNavigator } from 'react-navigation-drawer'
 import {createMaterialTopTabNavigator} from 'react-navigation-tabs'
-import React, {Component} from 'react';
-import {Easing, Animated, Image} from 'react-native'
+import {Easing, Animated} from 'react-native'
 
 const ACCENT = '#FFCB28' // 255, 203, 40
 

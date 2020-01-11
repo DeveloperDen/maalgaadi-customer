@@ -10,7 +10,8 @@ import {
   Modal,
   Switch,
   Keyboard,
-  Alert
+  Alert,
+  Platform
 } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
 import { NO_ACIVE_FLEET, GET_ACTIVE_DRIVER_LIST, ERROR_GET_DETAILS, BASE_URL, FIELDS, DELETE_ACTIVE_DRIVERS, ERR_ACTIVE_FLEET, GET_DRIVER_DATA_BY_MGCODE, ADD_FAVORITE_DRIVER, KEY, ICONS }

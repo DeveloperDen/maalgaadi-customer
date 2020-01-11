@@ -39,8 +39,8 @@ export const unFormatDate = (dateStr) => {
   return date
 }
 
-export const showNotification = (notMessage, notTitle) => {
-  PushNotification.cancelAllLocalNotifications();
+export const showNotification = (notifMessage, notifTitle) => {
+  // PushNotification.cancelAllLocalNotifications();
 
   PushNotification.localNotification({
       /* Android Only Properties */
@@ -49,7 +49,7 @@ export const showNotification = (notMessage, notTitle) => {
       vibrate: false, 
 
       /* iOS and Android properties */
-      title: notTitle,
-      message: notMessage,
+      title: notifTitle,
+      message: notifMessage,
   });
 }

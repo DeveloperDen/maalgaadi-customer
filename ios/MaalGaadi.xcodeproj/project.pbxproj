@@ -44,6 +44,7 @@
 		C037FEF723C5F33600E70A4E /* AIRGoogleMapPolygon.m in Sources */ = {isa = PBXBuildFile; fileRef = C037FEDC23C5F33600E70A4E /* AIRGoogleMapPolygon.m */; };
 		C037FEF823C5F33600E70A4E /* AIRGMSMarker.m in Sources */ = {isa = PBXBuildFile; fileRef = C037FEDD23C5F33600E70A4E /* AIRGMSMarker.m */; };
 		C037FEF923C5F33600E70A4E /* AIRGoogleMapCalloutSubview.m in Sources */ = {isa = PBXBuildFile; fileRef = C037FEDE23C5F33600E70A4E /* AIRGoogleMapCalloutSubview.m */; };
+		C09B28DE23C9DCBA0020C191 /* NativePaymentView.m in Sources */ = {isa = PBXBuildFile; fileRef = C09B28DD23C9DCBA0020C191 /* NativePaymentView.m */; };
 		C0E759E423C4A16D001F363E /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = C0E759E323C4A16D001F363E /* GoogleService-Info.plist */; };
 		CDE8F7A054A4E8EF1E32D149 /* libPods-MaalGaadi-tvOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 83F80BEECDA4FCEB866FF992 /* libPods-MaalGaadi-tvOS.a */; };
 		DB514DF4A691373AAAF783EF /* libPods-MaalGaadi.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 83302627268DDB1F41CACEF8 /* libPods-MaalGaadi.a */; };
@@ -144,6 +145,8 @@
 		C037FEDC23C5F33600E70A4E /* AIRGoogleMapPolygon.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AIRGoogleMapPolygon.m; sourceTree = "<group>"; };
 		C037FEDD23C5F33600E70A4E /* AIRGMSMarker.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AIRGMSMarker.m; sourceTree = "<group>"; };
 		C037FEDE23C5F33600E70A4E /* AIRGoogleMapCalloutSubview.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AIRGoogleMapCalloutSubview.m; sourceTree = "<group>"; };
+		C09B28DC23C9DC960020C191 /* NativePaymentView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = NativePaymentView.h; path = MaalGaadi/NativePaymentView.h; sourceTree = "<group>"; };
+		C09B28DD23C9DCBA0020C191 /* NativePaymentView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = NativePaymentView.m; sourceTree = "<group>"; };
 		C0DF364223C0AEEA002C3BA9 /* MaalGaadi.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; name = MaalGaadi.entitlements; path = MaalGaadi/MaalGaadi.entitlements; sourceTree = "<group>"; };
 		C0E759E323C4A16D001F363E /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		D6080C0392C4D4290C572F96 /* Pods-MaalGaadiTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MaalGaadiTests.debug.xcconfig"; path = "Target Support Files/Pods-MaalGaadiTests/Pods-MaalGaadiTests.debug.xcconfig"; sourceTree = "<group>"; };
@@ -218,6 +221,8 @@
 				13B07FB61A68108700A75B9A /* Info.plist */,
 				13B07FB11A68108700A75B9A /* LaunchScreen.xib */,
 				13B07FB71A68108700A75B9A /* main.m */,
+				C09B28DC23C9DC960020C191 /* NativePaymentView.h */,
+				C09B28DD23C9DCBA0020C191 /* NativePaymentView.m */,
 			);
 			name = MaalGaadi;
 			sourceTree = "<group>";
@@ -536,7 +541,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "export NODE_BINARY=node\n../node_modules/react-native/scripts/react-native-xcode.sh";
+			shellScript = "export NODE_BINARY=node\n../node_modules/react-native/scripts/react-native-xcode.sh\n";
 		};
 		2CF07A94E95879B49180D2B2 /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -747,6 +752,7 @@
 				C037FEE523C5F33600E70A4E /* AIRGoogleMapWMSTileManager.m in Sources */,
 				C037FEE823C5F33600E70A4E /* AIRGoogleMapCalloutManager.m in Sources */,
 				C037FEEC23C5F33600E70A4E /* AIRGoogleMapWMSTile.m in Sources */,
+				C09B28DE23C9DCBA0020C191 /* NativePaymentView.m in Sources */,
 				13B07FBC1A68108700A75B9A /* AppDelegate.m in Sources */,
 				13B07FC11A68108700A75B9A /* main.m in Sources */,
 				C037FEEB23C5F33600E70A4E /* AIRGoogleMapHeatmapManager.m in Sources */,
