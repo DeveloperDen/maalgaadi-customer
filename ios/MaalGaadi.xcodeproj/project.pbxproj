@@ -9,7 +9,6 @@
 /* Begin PBXBuildFile section */
 		00E356F31AD99517003FC87E /* MaalGaadiTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 00E356F21AD99517003FC87E /* MaalGaadiTests.m */; };
 		13B07FBC1A68108700A75B9A /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB01A68108700A75B9A /* AppDelegate.m */; };
-		13B07FBD1A68108700A75B9A /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB11A68108700A75B9A /* LaunchScreen.xib */; };
 		13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
 		13B07FC11A68108700A75B9A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
 		2D02E4BC1E0B4A80006451C7 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB01A68108700A75B9A /* AppDelegate.m */; };
@@ -17,6 +16,8 @@
 		2D02E4BF1E0B4AB3006451C7 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
 		2DCD954D1E0B4F2C00145EB5 /* MaalGaadiTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 00E356F21AD99517003FC87E /* MaalGaadiTests.m */; };
 		6E1B2E91AF53286604EA60E5 /* libPods-MaalGaadiTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F82B636BD187268C29B3A93B /* libPods-MaalGaadiTests.a */; };
+		C01B21C023CC924D00BFF410 /* Launch Screen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = C01B21BF23CC924D00BFF410 /* Launch Screen.storyboard */; };
+		C01B21C223CC94B100BFF410 /* launcher_icon_1024.png in Resources */ = {isa = PBXBuildFile; fileRef = C01B21C123CC94B100BFF410 /* launcher_icon_1024.png */; };
 		C037FEDF23C5F33600E70A4E /* AIRDummyView.m in Sources */ = {isa = PBXBuildFile; fileRef = C037FEA923C5F33600E70A4E /* AIRDummyView.m */; };
 		C037FEE023C5F33600E70A4E /* AIRGoogleMapUrlTile.m in Sources */ = {isa = PBXBuildFile; fileRef = C037FEAD23C5F33600E70A4E /* AIRGoogleMapUrlTile.m */; };
 		C037FEE123C5F33600E70A4E /* AIRGoogleMapPolygonManager.m in Sources */ = {isa = PBXBuildFile; fileRef = C037FEB023C5F33600E70A4E /* AIRGoogleMapPolygonManager.m */; };
@@ -76,7 +77,6 @@
 		13B07F961A680F5B00A75B9A /* MaalGaadi.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MaalGaadi.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		13B07FAF1A68108700A75B9A /* AppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AppDelegate.h; path = MaalGaadi/AppDelegate.h; sourceTree = "<group>"; };
 		13B07FB01A68108700A75B9A /* AppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = AppDelegate.m; path = MaalGaadi/AppDelegate.m; sourceTree = "<group>"; };
-		13B07FB21A68108700A75B9A /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/LaunchScreen.xib; sourceTree = "<group>"; };
 		13B07FB51A68108700A75B9A /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = MaalGaadi/Images.xcassets; sourceTree = "<group>"; };
 		13B07FB61A68108700A75B9A /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = MaalGaadi/Info.plist; sourceTree = "<group>"; };
 		13B07FB71A68108700A75B9A /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = main.m; path = MaalGaadi/main.m; sourceTree = "<group>"; };
@@ -91,6 +91,8 @@
 		83F80BEECDA4FCEB866FF992 /* libPods-MaalGaadi-tvOS.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-MaalGaadi-tvOS.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		A2A49874CDA094DF79F9A79A /* Pods-MaalGaadi.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MaalGaadi.release.xcconfig"; path = "Target Support Files/Pods-MaalGaadi/Pods-MaalGaadi.release.xcconfig"; sourceTree = "<group>"; };
 		B2661FF34538FF86312A725B /* Pods-MaalGaadi-tvOSTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MaalGaadi-tvOSTests.debug.xcconfig"; path = "Target Support Files/Pods-MaalGaadi-tvOSTests/Pods-MaalGaadi-tvOSTests.debug.xcconfig"; sourceTree = "<group>"; };
+		C01B21BF23CC924D00BFF410 /* Launch Screen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = "Launch Screen.storyboard"; sourceTree = "<group>"; };
+		C01B21C123CC94B100BFF410 /* launcher_icon_1024.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = launcher_icon_1024.png; path = ../../../icons_withBG/launcher_icon_1024.png; sourceTree = "<group>"; };
 		C037FEA923C5F33600E70A4E /* AIRDummyView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AIRDummyView.m; sourceTree = "<group>"; };
 		C037FEAA23C5F33600E70A4E /* AIRGoogleMapWMSTile.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AIRGoogleMapWMSTile.h; sourceTree = "<group>"; };
 		C037FEAB23C5F33600E70A4E /* AIRGoogleMapPolyline.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AIRGoogleMapPolyline.h; sourceTree = "<group>"; };
@@ -212,6 +214,7 @@
 		13B07FAE1A68108700A75B9A /* MaalGaadi */ = {
 			isa = PBXGroup;
 			children = (
+				C01B21C123CC94B100BFF410 /* launcher_icon_1024.png */,
 				C0E759E323C4A16D001F363E /* GoogleService-Info.plist */,
 				C0DF364223C0AEEA002C3BA9 /* MaalGaadi.entitlements */,
 				008F07F21AC5B25A0029DE68 /* main.jsbundle */,
@@ -219,10 +222,10 @@
 				13B07FB01A68108700A75B9A /* AppDelegate.m */,
 				13B07FB51A68108700A75B9A /* Images.xcassets */,
 				13B07FB61A68108700A75B9A /* Info.plist */,
-				13B07FB11A68108700A75B9A /* LaunchScreen.xib */,
 				13B07FB71A68108700A75B9A /* main.m */,
 				C09B28DC23C9DC960020C191 /* NativePaymentView.h */,
 				C09B28DD23C9DCBA0020C191 /* NativePaymentView.m */,
+				C01B21BF23CC924D00BFF410 /* Launch Screen.storyboard */,
 			);
 			name = MaalGaadi;
 			sourceTree = "<group>";
@@ -505,8 +508,9 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C01B21C023CC924D00BFF410 /* Launch Screen.storyboard in Resources */,
+				C01B21C223CC94B100BFF410 /* launcher_icon_1024.png in Resources */,
 				13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */,
-				13B07FBD1A68108700A75B9A /* LaunchScreen.xib in Resources */,
 				C0E759E423C4A16D001F363E /* GoogleService-Info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -790,18 +794,6 @@
 			targetProxy = 2D02E4911E0B4A5D006451C7 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
-
-/* Begin PBXVariantGroup section */
-		13B07FB11A68108700A75B9A /* LaunchScreen.xib */ = {
-			isa = PBXVariantGroup;
-			children = (
-				13B07FB21A68108700A75B9A /* Base */,
-			);
-			name = LaunchScreen.xib;
-			path = MaalGaadi;
-			sourceTree = "<group>";
-		};
-/* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
 		00E356F61AD99517003FC87E /* Debug */ = {

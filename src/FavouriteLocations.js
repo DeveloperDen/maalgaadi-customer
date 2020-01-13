@@ -311,7 +311,7 @@ export default class FavouriteLocations extends Component {
                         justifyContent: 'center'
                         }}>
                         <View 
-                        style={{backgroundColor: 'white', width: '80%',
+                        style={{backgroundColor: 'white', width: '70%',
                         paddingHorizontal: 12, paddingVertical: 20, borderRadius: 3,
                         elevation: 10}}>
                             <TextInput editable={false} multiline={true}
@@ -401,14 +401,15 @@ export default class FavouriteLocations extends Component {
                         }}>
                             <View style={{
                             borderRadius: 5, backgroundColor: 'white', overflow: 'hidden',
-                            width: '75%',
+                            width: '70%',
                             }}>
                                 <View
                                 style={{
                                 flexDirection: 'row', justifyContent: 'space-between', elevation: 2,
-                                backgroundColor: 'white'
+                                backgroundColor: 'white', padding: 20,
+                                shadowColor: 'rgba(0, 0, 0)', shadowOffset: {height: 2}, shadowOpacity: 0.1, shadowRadius: 2
                                 }}>
-                                    <Text style={{margin: 20, fontWeight: '700', fontSize: 15}}>
+                                    <Text style={{fontWeight: '700', fontSize: 15}}>
                                         Remove Location?
                                     </Text>
 
@@ -417,13 +418,13 @@ export default class FavouriteLocations extends Component {
                                         this.setModalVisible(false, 0, null, 'del')
                                     }}>
                                         <Image source={Constants.ICONS.close}
-                                        style={{width: 15, height: 15, margin: 20}}/>
+                                        style={{width: 20, height: 20}}/>
                                     </TouchableOpacity>
                                 </View>
 
                                 <Text style={{
                                     fontSize: 15, opacity: 0.5, textAlign: 'center',
-                                    marginHorizontal: 15, marginVertical: 20 
+                                    marginHorizontal: 15, marginVertical: 25 
                                 }}>
                                     Are you sure you want to delete this favourite location?
                                 </Text>
@@ -479,6 +480,7 @@ const styles = StyleSheet.create({
         borderBottomColor: '#CDCDCD',
         borderBottomWidth: 2,
         margin: 5,
-        fontSize: 15
+        fontSize: 15,
+        padding: Platform.OS == "ios"? 10 : 0
       }
 });

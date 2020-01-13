@@ -4,7 +4,6 @@ import {
   View,
   StatusBar,
   Image,
-  Platform,
 } from 'react-native';
 import {firebase} from '@react-native-firebase/messaging'
 import { getDeviceId } from 'react-native-device-info';

@@ -10,10 +10,10 @@ RCT_EXPORT_MODULE();
   return @[@"PageFinished", @"TransFinished"];
 }
 
-RCT_EXPORT_METHOD(navigateToPaymentScreen:(NSString *)name)
+RCT_EXPORT_METHOD(navigateToPaymentScreen:(NSString *)params)
 {
-  RCTLogInfo(@"Params: %@", name);
-  [self sendEventWithName:@"PageFinished" body:@{@"url": @"Some URL"}];
+  RCTLogInfo(@"Params: %@", params);
+  [self sendEventWithName:@"PageFinished" body:@{@"Params Recieved: ": params}];
 }
 
 @end

@@ -45,4 +45,5 @@ messaging().setBackgroundMessageHandler(async (message) => {
 
     showNotification(notifMessage, title != null? title : "MaalGaadi");
 });
+
 AppRegistry.registerComponent(appName, () => App);

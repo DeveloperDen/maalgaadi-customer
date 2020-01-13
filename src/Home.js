@@ -569,7 +569,8 @@ export default class Home extends Component {
     this.unsubscribeFCM();
     this.netInfoSub();
     
-    this.eventEmitter.removeAllListeners();
+    this.eventEmitter.removeAllListeners('PageFinished');
+    this.eventEmitter.removeAllListeners('TransFinished');
   }
 
   async getRatingResponse() {
@@ -1562,7 +1563,6 @@ export default class Home extends Component {
         <StatusBar backgroundColor='white' 
         barStyle="dark-content"/>
 
-        {/* TODO: Position it on iOS to make it scollable and touchable */}
         <View style={styles.map}>
           <MapView
             showsMyLocationButton={false}
@@ -1624,7 +1624,7 @@ export default class Home extends Component {
             justifyContent: 'center'
             }}>
             <View
-            style={{backgroundColor: 'white', width: '80%',
+            style={{backgroundColor: 'white', width: '70%',
               paddingHorizontal: 12, paddingVertical: 20, borderRadius: 3,
               elevation: 10}}>
               <TextInput editable={false} multiline={true}
@@ -1825,6 +1825,7 @@ const styles = StyleSheet.create({
     borderBottomColor: '#CDCDCD',
     borderBottomWidth: 2,
     margin: 5,
-    fontSize: 15
+    fontSize: 15,
+    padding: Platform.OS == "ios"? 10 : 0
   }
 });

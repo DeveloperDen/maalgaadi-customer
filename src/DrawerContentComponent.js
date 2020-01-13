@@ -170,7 +170,7 @@ const showAlert = (props) => {
         <View style={{flex: 1}}>
             <TouchableHighlight
             style={styles.headerContainer}
-                underlayColor={ACCENT_DARK}
+                underlayColor={ACCENT}
                 onPress={() => {
                     if(profCheck === "true"){
                         console.log("Completed Profile!")
@@ -235,7 +235,7 @@ const showAlert = (props) => {
 const styles = StyleSheet.create({
     headerContainer: {
         height: 150,
-        backgroundColor: '#FFCB28',
+        backgroundColor: ACCENT_DARK,
         paddingLeft: 15
     },
     titleText: {

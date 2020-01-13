@@ -67,7 +67,11 @@ export default class TripDetails extends Component {
 
     NavigationBottomBar = () => {
         return (
-            <View style={[styles.row_space, { backgroundColor: 'white', elevation: 10, justifyContent: 'space-evenly' }]}>
+            <View
+            style={
+                [styles.row_space, { backgroundColor: 'white', elevation: 10, justifyContent: 'space-evenly',
+                shadowRadius: 4, shadowOpacity: 0.2, shadowOffset: {height: -2}, shadowColor: 'rgba(0, 0, 0)'
+            }]}>
                 <TouchableHighlight underlayColor='rgba(0, 0, 0, 0.02)'
                     disabled={(this.state.status != PENDING && this.state.status != CANCELLED) ? false : true}
                     style={{ opacity: (this.state.status != PENDING && this.state.status != CANCELLED) ? 1 : 0.3 }}
@@ -360,7 +364,7 @@ export default class TripDetails extends Component {
                                         alignItems: 'center', paddingHorizontal: 15
                                     }}>
                                     <Image source={Constants.ICONS.call}
-                                        style={{ width: 18, height: 18, marginEnd: 15 }} tintColor='white' />
+                                        style={{ width: 18, height: 18, marginEnd: 15, tintColor: 'white'}}/>
                                     <Text style={{ color: 'white', fontWeight: '700' }}>Call</Text>
                                 </View>
                             </TouchableHighlight>}

@@ -1,6 +1,5 @@
 import 'react-navigation'
 import {createStackNavigator} from 'react-navigation-stack'
-// Test Comment
 import Home from './src/Home'
 import Search from './src/Search'
 import RunningMyBookings from './src/my_bookings/RunningMyBookings'

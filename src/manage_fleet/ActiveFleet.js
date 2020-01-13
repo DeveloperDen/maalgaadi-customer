@@ -248,7 +248,7 @@ export default class RunningMyBookings extends Component {
                                 }}/>
                                 <View style={{flex: 1}}>
                                     <Text style={{fontSize: 16, fontWeight: "700"}}>
-                                    {member.name}
+                                        {member.name}
                                     </Text>
                                     <Text style={{fontSize: 12, opacity: 0.4, marginVertical: 5}}>{member.vehicle_name}</Text>
                                     <Text style={{fontSize: 12, opacity: 0.4}}>{member.vehicle_reg_no}</Text>
@@ -318,14 +318,14 @@ export default class RunningMyBookings extends Component {
 
                             <View style={{
                                 flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
-                                marginHorizontal: 20
+                                marginHorizontal: 20,
                             }}>
                                 <View>
                                     <TextInput maxLength={6}
                                     placeholder="Enter driver code"
                                     style={{
                                         marginTop: 20, borderWidth: 1, borderRadius: 3, borderColor: ACCENT,
-                                        paddingHorizontal: 15
+                                        paddingHorizontal: 15, paddingVertical: Platform.OS == "ios"? 15 : 0
                                     }}
                                     onChangeText={(text) => {
                                         this.setState(prevState => {
@@ -359,7 +359,7 @@ export default class RunningMyBookings extends Component {
 
                             {this.state.driverDetail != '' &&
                                 <View style={{
-                                    flexDirection: 'row', alignItems: 'center', marginTop: 10,
+                                    flexDirection: 'row', alignItems: 'center', marginTop: 15,
                                     paddingHorizontal: 20, paddingVertical: 10,
                                     backgroundColor: 'rgba(0, 0, 0, 0.04)'
                                 }}>
@@ -461,14 +461,15 @@ export default class RunningMyBookings extends Component {
                     }}>
                         <View style={{
                         borderRadius: 5, backgroundColor: 'white', overflow: 'hidden',
-                        width: '75%',
+                        width: '70%',
                         }}>
                             <View
                             style={{
                             flexDirection: 'row', justifyContent: 'space-between', elevation: 2,
-                            backgroundColor: 'white'
+                            shadowColor: 'rgba(0, 0, 0)', shadowOffset: {height: 2}, shadowOpacity: 0.2, shadowRadius: 2,
+                            backgroundColor: 'white', padding: 15,
                             }}>
-                                <Text style={{margin: 20, fontWeight: '700', fontSize: 15}}>
+                                <Text style={{fontWeight: '700', fontSize: 15}}>
                                     Remove Driver?
                                 </Text>
 
@@ -477,13 +478,13 @@ export default class RunningMyBookings extends Component {
                                     this.setModalVisible(false, false)
                                 }}>
                                     <Image source={ICONS.close}
-                                    style={{width: 15, height: 15, margin: 20}}/>
+                                    style={{width: 20, height: 20}}/>
                                 </TouchableOpacity>
                             </View>
 
                             <Text style={{
                                 fontSize: 15, opacity: 0.5, textAlign: 'center',
-                                marginHorizontal: 15, marginVertical: 20 
+                                marginHorizontal: 15, marginVertical: 25
                             }}>
                                 Are you sure you want to remove this driver from the fleet?
                             </Text>

@@ -6,15 +6,14 @@ import {
   Image,
   Modal,
   TouchableHighlight,
-  ToastAndroid,
   ActivityIndicator,
-  TouchableOpacity
 } from 'react-native';
 import { TextInput, ScrollView} from 'react-native-gesture-handler';
 import uuid from 'uuid-random'
 import { TripEstimateDataModel } from '../models/trip_estimate_model';
 import { NavigationActions } from 'react-navigation';
 import ProgressCircle from 'react-native-progress-circle'
+import ToastComp from '../utils/ToastComp'
 
 const DataController = require('../utils/DataStorageController')
 const Constants = require('../utils/AppConstants')
@@ -105,8 +104,12 @@ export default class FareEstimation extends Component {
             
         }).catch(err => {
             console.log(err)
-            ToastAndroid.show(Constants.ERROR_GET_DETAILS, ToastAndroid.SHORT);
+            this.showToast(Constants.ERROR_GET_DETAILS);
         })       
+    }
+
+    showToast(text) {
+        this.toast.show(text);
     }
 
     getBookingEstimate = async () => {
@@ -142,11 +145,11 @@ export default class FareEstimation extends Component {
                 this.payDriver = value.data.final_amount
             }
             else {
-                ToastAndroid.show(value.message, ToastAndroid.SHORT)
+                this.showToast(value.message)
             }
         }).catch(err => {
             console.log(err)
-            ToastAndroid.show(Constants.ERROR_GET_DETAILS, ToastAndroid.SHORT);
+            this.showToast(Constants.ERROR_GET_DETAILS);
         })
     }
 
@@ -199,7 +202,7 @@ export default class FareEstimation extends Component {
             body: JSON.stringify(this.bookingModel)
         })
     
-        const response = await request.json().then(value => {
+        await request.json().then(value => {
             console.log(value)
             if(value.success) {
                 const bookingID = value.data.booking_id
@@ -214,11 +217,11 @@ export default class FareEstimation extends Component {
             }
             else {
                 this.setModalVisible(false, true)
-                ToastAndroid.show(value.message, ToastAndroid.SHORT)
+                this.showToast(value.message)
             }
         }).catch(err => {
             console.log(err)
-            ToastAndroid.show(err, ToastAndroid.SHORT);
+            this.showToast(err);
             this.setModalVisible(false, true)
         })  
     }
@@ -256,11 +259,11 @@ export default class FareEstimation extends Component {
             }
             else {
                 this.setModalVisible(false, true)
-                ToastAndroid.show(value.message, ToastAndroid.SHORT)
+                this.showToast(value.message)
             }
         }).catch(err => {
             console.log(err)
-            ToastAndroid.show(err, ToastAndroid.SHORT);
+            this.showToast(err);
             this.setModalVisible(false, true)
         })  
     }
@@ -272,7 +275,7 @@ export default class FareEstimation extends Component {
                 this.showNoDriverAvailableDialog(true, message)
                 break;
             case 1:
-                ToastAndroid.show(message, ToastAndroid.SHORT);
+                this.showToast(message);
                 await DataController.setItem(DataController.RUNNING_TRIP_DATA, JSON.stringify(tripObj))
                 this.props.navigation.reset([
                     NavigationActions.navigate({routeName: "Main"
@@ -321,23 +324,23 @@ export default class FareEstimation extends Component {
             this.setModalVisible(false, true)
             this.showNoDriverAvailableDialog(false)
             if(value.success) {
-                ToastAndroid.show("Booking Cancelled!", ToastAndroid.SHORT)
+                this.showToast("Booking Cancelled!")
                 this.props.navigation.popToTop()
             }
             else if(value.data.responseCode === 1) {
                 console.log("Case 1: ", value.message)
-                ToastAndroid.show(value.message, ToastAndroid.SHORT);
+                this.showToast(value.message);
                 // TODO
                 // DataController.setItem(DataController.RUNNING_TRIP_DATA, JSON.stringify(tripObj))
                 // this.props.navigation.replace("TripDetails", {/* Add Some Params */})
             }
             else {
                 console.log(value.message);
-                ToastAndroid.show(value.message, ToastAndroid.SHORT);
+                this.showToast(value.message);
             }
         }).catch(err => {
             console.log(err)
-            ToastAndroid.show(err, ToastAndroid.SHORT);
+            this.showToast(err);
         })
     }
 
@@ -389,17 +392,17 @@ export default class FareEstimation extends Component {
             if(value.success) {
                 DataController.setItem(DataController.RUNNING_TRIP_DATA, JSON.stringify(value.data));
                 this.props.navigation.popToTop()
-                ToastAndroid.show(value.message, ToastAndroid.LONG);
+                this.showToast(value.message);
             }
             else{
-                ToastAndroid.show(value.message, ToastAndroid.SHORT);
+                this.showToast(value.message);
                 this.showNoDriverAvailableDialog(true, this.state.noDrivAvailModalMessage);
             }
             
         })
         .catch(err => {
             console.log(err);
-            ToastAndroid.show(err, ToastAndroid.SHORT);
+            this.showToast(err);
             this.showNoDriverAvailableDialog(true, this.state.noDrivAvailModalMessage);
         })
 
@@ -544,13 +547,13 @@ export default class FareEstimation extends Component {
 
                             <View
                             style={{
-                                flexDirection: 'row', alignItems: "center", alignSelf: 'center',
-                                marginBottom: 15, borderBottomColor: 'rgba(0, 0, 0, 0.2)', borderBottomWidth: 2,
+                                flexDirection: 'row', alignItems: "center", alignSelf: 'center', marginVertical: 15,
+                                borderBottomColor: 'rgba(0, 0, 0, 0.2)', borderBottomWidth: 2,
                             }}>
                                 <Text style={{fontSize: 35}}>{String.fromCharCode(8377)}</Text>
-                                <TextInput value={this.state.yourPrice}
+                                <TextInput value={this.state.yourPrice.toString()}
                                 style={{
-                                    fontSize: 40,
+                                    fontSize: 40, padding: 5
                                 }} keyboardType="decimal-pad"
                                 onChangeText={(text) => {
                                     if(text === '') {
@@ -647,7 +650,7 @@ export default class FareEstimation extends Component {
                 underlayColor={ACCENT_DARK}
                 onPress={() => {
                     if(this.state.inValidPrice || this.state.yourPrice === ''){
-                        ToastAndroid.show("Please Upgrade your price", ToastAndroid.SHORT)
+                        this.showToast("Please Upgrade your price")
                     }
                     else {
                         let isBookingAllow = false;
@@ -661,7 +664,7 @@ export default class FareEstimation extends Component {
                         if (customeOwnPrice >= newAmt) {
                             isBookingAllow = true;
                         } else {
-                            ToastAndroid.show("Please Upgrade your price", ToastAndroid.SHORT)
+                            this.showToast("Please Upgrade your price")
                             isBookingAllow = false;
                         }
 
@@ -677,7 +680,7 @@ export default class FareEstimation extends Component {
                             } else {
                                 // TODO
                                 // this.confirmBooking();
-                                ToastAndroid.show("Will book later.", ToastAndroid.SHORT)
+                                this.showToast("Will book later.")
                             }
 
                             this.startFindDrivInterval();
@@ -772,9 +775,11 @@ export default class FareEstimation extends Component {
                     justifyContent: 'center'
                     }}>
                         <View
-                        style={{backgroundColor: 'white', width: '80%',
-                        paddingTop: 20, borderRadius: 3,
-                        elevation: 10, overflow: 'hidden'}}>
+                        style={{
+                            backgroundColor: 'white', width: '70%',
+                            paddingTop: 20, borderRadius: 3,
+                            elevation: 10, overflow: 'hidden'
+                        }}>
                             <Text style={{
                                 fontWeight: '700', fontSize: 18, textAlign: 'center',
                                 alignSelf: 'center', marginHorizontal: 15
@@ -789,13 +794,13 @@ export default class FareEstimation extends Component {
                                 color={ACCENT}
                                 bgColor="#fff" // Overlay White
                                 shadowColor="#E8E8E8" // Stroke background color
-                                outerCircleStyle={{alignSelf: 'center', marginTop: 15}}
+                                outerCircleStyle={{alignSelf: 'center', marginVertical: 25}}
                             >
                                 <Text style={{color: "#E8E8E8"}}>{this.state.timer}s</Text>
                             </ProgressCircle>
                             
                             <Text style={{
-                                textAlign: 'center', alignSelf: 'center', marginTop: 15,
+                                textAlign: 'center', alignSelf: 'center',
                                 opacity: 0.3, marginHorizontal: 15
                             }}>
                                 {Constants.FIND_DRIVER_DESC}
@@ -831,7 +836,7 @@ export default class FareEstimation extends Component {
                     justifyContent: 'center'
                     }}>
                         <View
-                        style={{backgroundColor: 'white', width: '80%',
+                        style={{backgroundColor: 'white', width: '70%',
                         paddingTop: 20, borderRadius: 3,
                         elevation: 10, overflow: 'hidden'}}>
                             <Image source={require('../../assets/not-found.png')}
@@ -994,6 +999,8 @@ export default class FareEstimation extends Component {
                         </View>
                     </View>
                 </Modal>
+            
+                <ToastComp ref={t => this.toast = t}/>
             </View>
         )
     }

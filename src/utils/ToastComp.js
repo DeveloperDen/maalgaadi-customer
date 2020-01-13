@@ -31,7 +31,7 @@ export default class ToastComp extends Component {
                 positionValue={100}
                 translateFrom={-50}
                 opacity={1}
-                textStyle={{color: 'black'}}
+                textStyle={{color: 'white'}}
             />
         )
     }

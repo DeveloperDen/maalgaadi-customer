@@ -160,7 +160,7 @@ export default class RatingDialog extends Component {
                     alignItems: 'center', justifyContent: 'center',
                 }}>
                     <View
-                    style={{backgroundColor: 'white', width: '80%',
+                    style={{backgroundColor: 'white', width: '70%',
                     paddingTop: 20, borderRadius: 3,
                     elevation: 10, overflow: 'hidden'}}>
                         <View
