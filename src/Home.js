@@ -346,33 +346,44 @@ export default class Home extends Component {
             buttonNegative: 'Cancel',
             buttonPositive: 'OK',
           },
-        );
-        if (!granted === PermissionsAndroid.RESULTS.GRANTED) {
-          console.log('Location permission granted.');
-          Geolocation.getCurrentPosition(
-            (position) => {
-                console.log(position);
-                this.mapView.animateToRegion({
-                  latitude: position.coords.latitude,
-                  longitude: position.coords.longitude,
-                  latitudeDelta: LATITUDE_DELTA,
-                  longitudeDelta: LONGITUDE_DELTA
-                }, 500)
-            },
-            (error) => {
-              console.log(error.code, error.message);
-            },
-            { enableHighAccuracy: true, timeout: 15000, maximumAge: 10000 }
-          );
-    
-        } else {
-          console.log('Location permission denied');
-          Alert.alert('MaalGaadi', 'Allow location access for better working of the application.',
-          [{text: 'OK', onPress: () => {console.log("Getting location permission again..")}}]);
-          this.checkLocationPermission()
-        }
+        ).then(result => {
+          switch (result) {
+            case RESULTS.UNAVAILABLE:
+              this.showLocationAlert('Sorry, location feature is not available on your device. MaalGaadi may not work as expected.')
+              break;
+
+            case RESULTS.DENIED:
+              this.showLocationAlert('MaalGaadi uses location to get the drivers around you and provide an amazing transportation experience.', true);
+              break;
+
+            case RESULTS.GRANTED:
+              console.log('The permission is granted');
+              Geolocation.getCurrentPosition(
+                (position) => {
+                    console.log(position);
+                    this.mapView.animateToRegion({
+                      latitude: position.coords.latitude,
+                      longitude: position.coords.longitude,
+                      latitudeDelta: LATITUDE_DELTA,
+                      longitudeDelta: LONGITUDE_DELTA
+                    }, 500)
+                },
+                (error) => {
+                  console.log(error.code, error.message);
+                },
+                { enableHighAccuracy: true, timeout: 15000, maximumAge: 10000 }
+              );
+              break;
+
+            case RESULTS.BLOCKED:
+              console.log('The permission is denied and not requestable anymore');
+              this.showLocationAlert('MaalGaadi is unable to request for the location permission to work. Please try restarting the application or reinstalling it.');
+              break;
+          }
+        });
       }
-      else { // Else for iOS
+
+      else { // Else for iOS.
         check(PERMISSIONS.IOS.LOCATION_WHEN_IN_USE).then(result => {
           console.log("iOS Location Permission results: ");
 
@@ -416,7 +427,6 @@ export default class Home extends Component {
     }
   }
 
-  // For iOS
   showLocationAlert(message, toRequest = false) {
     Alert.alert("MaalGaadi", message,
     [{
@@ -427,17 +437,20 @@ export default class Home extends Component {
     }])
   }
 
-  // For iOS
   requestLocationPermission() {
     console.log("Requesting location permission...");
 
-    request(PERMISSIONS.IOS.LOCATION_WHEN_IN_USE)
-    .then(() => {
+    if(Platform.OS == "android")
       this.checkLocationPermission();
-    })
-    .catch(err => {
-      console.log(err);
-    })
+
+    else
+      request(PERMISSIONS.IOS.LOCATION_WHEN_IN_USE)
+      .then(() => {
+        this.checkLocationPermission();
+      })
+      .catch(err => {
+        console.log(err);
+      })
   }
 
   getCurrentLocation(input) {
@@ -489,7 +502,7 @@ export default class Home extends Component {
     }) 
     : null
 
-    this.checkLocationPermission()
+    await this.checkLocationPermission()
     
     // Will Focus listener
     this.willFocusListener = this.props.navigation.
@@ -810,35 +823,18 @@ export default class Home extends Component {
       .catch(error => console.log(error));
   }
 
-  showDateTimePicker = (show, mode, date = new Date()) => {
-    if(Platform.OS == "ios") {
-      this.dateTimePicker.showToggle(show);
-    }
-    else {
-      this.setState(prevState => {
-        prevState.showDateTime = show
-        prevState.dateTimePickerMode = mode
-        if(mode === 'date') {
-          prevState.selectedDateTime.setHours(date.getHours())
-          prevState.selectedDateTime.setMinutes(date.getMinutes())
-        }
-        else prevState.selectedDateTime = date
-        return prevState
-      })
-
-      if(mode === 'date' && !show)  // When mode is 'date' and not 'show'ing the dialog, is when Time Dialog is closed.
-        this.bookNow(false)
-    }
+  showDateTimePicker = (show) => {
+    this.dateTimePicker.showToggle(show);
   }
 
   // To set date time from the DateTimePicker component.
   setDateTime = (date) => {
     this.setState(prevState => {
-      prevState.selectedDateTime = date
+      prevState.selectedDateTime = date;
       return prevState
     })
-
-    this.bookNow(false)
+    
+    this.bookNow(false);
   }
 
   bookNow = async (isBookNow = true) => {

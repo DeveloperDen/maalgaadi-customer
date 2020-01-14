@@ -118,29 +118,14 @@ export default class AddBooking extends Component {
         })
     }
 
-    showDateTimePicker = (show, mode, date = new Date()) => {
-        if(Platform.OS == "ios") {
-            this.dateTimePicker.showToggle(show);
-        }
-        else {
-            this.setState(prevState => {
-                prevState.showDateTime = show
-                prevState.dateTimePickerMode = mode
-                if(mode === 'date') {
-                    prevState.selectedDateTime.setHours(date.getHours())
-                    prevState.selectedDateTime.setMinutes(date.getMinutes())
-                }
-                else prevState.selectedDateTime = date
-    
-                return prevState
-            })
-        }
+    showDateTimePicker = (show) => {
+        this.dateTimePicker.showToggle(show);
     }
-
+    
     // To set date time from the DateTimePicker component.
     setDateTime = (date) => {
         this.setState(prevState => {
-            prevState.selectedDateTime = date
+            prevState.selectedDateTime = date;
             return prevState
         })
     }
@@ -296,7 +281,7 @@ export default class AddBooking extends Component {
                     <TouchableHighlight disabled={!this.state.dateTouchableEnabled}
                         underlayColor='black'
                         onPress={() => {
-                            this.showDateTimePicker(true, 'date')
+                            this.showDateTimePicker(true)
                         }}
                         style={{
                             borderRadius: 100,

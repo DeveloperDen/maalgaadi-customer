@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import DateTimePicker from '@react-native-community/datetimepicker';
-import { View, Animated, Modal, TouchableOpacity, Image, Text, Easing } from 'react-native';
+import { View, Animated, Modal, TouchableOpacity, Image, Text, Easing, Platform } from 'react-native';
 import { ICONS } from './AppConstants';
 
 const ACCENT = '#FFCB28' // 255, 203, 40
@@ -16,59 +16,103 @@ export default class DateTimePickerComp extends Component {
             pickerTranslateY: new Animated.Value(200),
             boxOpacity: new Animated.Value(0),
             date: this.props.value? this.props.value : new Date,
+            mode: 'date',
         }
     }
 
     showToggle(show) {
-        if(show) {
+        if(Platform.OS == "android") {
             this.setState(prevState => {
-                prevState.showDateTime = true;
+                prevState.showDateTime = show;
                 return prevState;
             })
         }
-
-        this.animation = Animated.parallel([
-            Animated.timing(this.state.overlayOpacity,
-                {
-                    toValue: show? 0.5 : 0,
-                    duration: show? 100 : 200,
-                    useNativeDriver: true
-                }
-            ),
-            Animated.timing(this.state.pickerTranslateY,
-                {
-                    toValue: show? 0 : 200,
-                    duration: show? 200 : 100,
-                    useNativeDriver: true,
-                    easing: Easing.ease
-                }
-            ),
-            Animated.timing(this.state.boxOpacity,
-                {
-                    toValue: show? 1 : 0,
-                    duration: 100,
-                    useNativeDriver: true,
-                }
-            )
-        ])
-        
-        this.animation.start(() => {
-            if(!show) {
+        else { // For iOS
+            if(show) {
                 this.setState(prevState => {
-                    prevState.overlayOpacity= new Animated.Value(0);
-                    prevState.pickerTranslateY= new Animated.Value(200);
-                    prevState.boxOpacity= new Animated.Value(0);
-                    prevState.showDateTime= false;
+                    prevState.showDateTime = true;
                     return prevState;
                 })
             }
-        });
+
+            this.animation = Animated.parallel([
+                Animated.timing(this.state.overlayOpacity,
+                    {
+                        toValue: show? 0.5 : 0,
+                        duration: show? 100 : 200,
+                        useNativeDriver: true
+                    }
+                ),
+                Animated.timing(this.state.pickerTranslateY,
+                    {
+                        toValue: show? 0 : 200,
+                        duration: show? 200 : 100,
+                        useNativeDriver: true,
+                        easing: Easing.ease
+                    }
+                ),
+                Animated.timing(this.state.boxOpacity,
+                    {
+                        toValue: show? 1 : 0,
+                        duration: 100,
+                        useNativeDriver: true,
+                    }
+                )
+            ])
+            
+            this.animation.start(() => {
+                if(!show) {
+                    this.setState(prevState => {
+                        prevState.overlayOpacity= new Animated.Value(0);
+                        prevState.pickerTranslateY= new Animated.Value(200);
+                        prevState.boxOpacity= new Animated.Value(0);
+                        prevState.showDateTime= false;
+                        return prevState;
+                    })
+                }
+            });
+        }
     }
 
     render() {
-        // TODO: Setup for Android
-        datePickerAndroid =
-            <View/>
+        const datePickerAndroid =
+        this.state.showDateTime &&
+            <DateTimePicker
+            minimumDate={this.props.minimumDate? this.props.minimumDate : new Date}
+            maximumDate={this.props.maximumDate? this.props.maximumDate : null}
+            value={this.state.date}
+            mode={Platform.OS == 'ios'? 'datetime' : this.state.mode}
+            onChange={(event, date) => {
+                if(event.type == "set") {
+                    if(this.state.mode == 'time') { // Since, time dialog was shown, date and time are set, don't show the dialog.
+                        this.showToggle(false);
+                        this.setState(prevState => {
+                            prevState.mode = 'date';
+                            return prevState;
+                        }, () => {
+                            this.updatedDate.setHours(this.state.date.getHours());
+                            this.updatedDate.setMinutes(this.state.date.getMinutes());
+                            this.props.dateTimeSetter(this.updatedDate);
+                        })
+                    }
+
+                    else {
+                        this.setState(prevState => {
+                            prevState.mode = 'time';
+                            return prevState;
+                        });
+                        this.updatedDate = date;
+                    }
+                }
+                else if(event.type == "dismissed") {
+                    this.showToggle(false);
+
+                    this.setState(prevState => {
+                        prevState.mode = 'date';
+                        return prevState;
+                    })
+                }
+            }}/>
 
         datePickerIOS =
         <Modal
