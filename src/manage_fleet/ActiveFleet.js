@@ -325,7 +325,7 @@ export default class RunningMyBookings extends Component {
                                     placeholder="Enter driver code"
                                     style={{
                                         marginTop: 20, borderWidth: 1, borderRadius: 3, borderColor: ACCENT,
-                                        paddingHorizontal: 15, paddingVertical: Platform.OS == "ios"? 15 : 0
+                                        paddingHorizontal: 15, paddingVertical: 10
                                     }}
                                     onChangeText={(text) => {
                                         this.setState(prevState => {

@@ -8,7 +8,7 @@ import {
 } from 'react-native';
 import { TextInput, TouchableHighlight, TouchableOpacity } from 'react-native-gesture-handler';
 import {getDeviceId} from 'react-native-device-info';
-import {firebase} from '@react-native-firebase/messaging'
+import firebase from 'react-native-firebase'
 import ToastComp from '../utils/ToastComp';
 
 

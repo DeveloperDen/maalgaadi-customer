@@ -13,7 +13,7 @@ import {
     StatusBar
 } from 'react-native';
 import { ScrollView, } from 'react-native-gesture-handler';
-import messaging from '@react-native-firebase/messaging';
+import firebase from 'react-native-firebase'
 const DataController = require('../utils/DataStorageController')
 const Constants = require('../utils/AppConstants')
 const ACCENT = '#FFCB28' // 255, 203, 40
@@ -139,7 +139,7 @@ export default class TripDetails extends Component {
             })
 
             // Subscribe to FCM Message listener
-            this.unsubscribeFCM = messaging().onMessage(async message => {
+            this.unsubscribeFCM = firebase.messaging().onMessage(async message => {
                 console.log("Got message: ", message.data);
         
                 const data = message.data;

@@ -24,9 +24,10 @@ import {LandmarkModel} from './models/landmark_model'
 import DotLoader from './home/components/DotLoader';
 import {formatDate, showNotification} from './utils/UtilFunc'
 import { PopOverComp } from './utils/PopOverComp';
-import messaging from '@react-native-firebase/messaging';
+import firebase from 'react-native-firebase';
 import {check, request, PERMISSIONS, RESULTS} from 'react-native-permissions';
 import ToastComp from './utils/ToastComp';
+import { getDeviceId } from 'react-native-device-info';
 
 const BookingModel = require('./models/bookings_model')
 const Constants = require('./utils/AppConstants')
@@ -75,6 +76,7 @@ export default class Home extends Component {
     this.formatDate = formatDate
 
     this.state = {
+      isLoading: false,
       showRatingModal: true,
       fromView: null,
       popOverText: '',
@@ -537,7 +539,7 @@ export default class Home extends Component {
     this.getFreeDrivers()
 
     // Subscribe to FCM Message listener
-    this.unsubscribeFCM = messaging().onMessage(async message => {
+    this.unsubscribeFCM = firebase.messaging().onMessage(async message => {
       let notifMessage = message.data.message;
       const title = message.data.title;
 
@@ -575,15 +577,51 @@ export default class Home extends Component {
         ])
     })
 
+    // Subscribe to FCM token updates
+    this.unsubscribeFCMRefresh = firebase.messaging().onTokenRefresh((token) => {
+      console.log("FCM Token refreshed. Updating...");
+      this.updateFCMToken(token);
+    })
+
     this.getRatingResponse();
   }
 
   componentWillUnmount() {
     this.unsubscribeFCM();
+    this.unsubscribeFCMRefresh();
     this.netInfoSub();
     
     this.eventEmitter.removeAllListeners('PageFinished');
     this.eventEmitter.removeAllListeners('TransFinished');
+  }
+
+  // Update FCM token on the server.
+  async updateFCMToken(token = '') {
+    if(token == ''){
+        console.log("No token provided, getting token now...");
+        token = await firebase.messaging().getToken();
+    }
+    DataController.setItem(DataController.FCM_TOKEN, token);
+
+    const reqURL = Constants.BASE_URL + Constants.APP_DOWNLOAD + '?' + 
+                    Constants.FIELDS_LOGIN.DEVICE_ID + '=' + getDeviceId() + '&' +
+                    Constants.FIELDS_LOGIN.FCM_TOKEN + '=' + token
+    
+    console.log("Request: ", reqURL)
+
+    const request = await fetch(reqURL, {
+        method: 'GET',
+        headers: {
+            key: Constants.KEY
+        }
+    })
+
+    await request.json().then(value => {
+        console.log("FCM update response: ", value)
+    }).catch(err => {
+        console.log(err)
+        this.showToast(Constants.UPDATE_CUSTOMER_PROFILE);
+    })
   }
 
   async getRatingResponse() {
@@ -1677,8 +1715,8 @@ export default class Home extends Component {
             
               <View style={{
                   position: 'absolute', backgroundColor: 'white',
-                  opacity: 0.8, top: 0, left: 0, right: 0,
-                  transform: [{scaleY: this.state.isLoading? 0 : '100%'}],
+                  opacity: 0.8, top: 0, left: 0, right: 0, bottom: 0,
+                  width: this.state.isLoading? null : 0,
               }}/>
             </View>
           </View>

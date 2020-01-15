@@ -3,7 +3,7 @@
  */
 
 import 'react-native-gesture-handler'
-import messaging from '@react-native-firebase/messaging';
+import firebase from 'react-native-firebase';
 import {AppRegistry} from 'react-native';
 import App from './App';
 import {name as appName} from './app.json';
@@ -12,7 +12,7 @@ import { showNotification } from './src/utils/UtilFunc';
 const Constants = require('./src/utils/AppConstants')
 const DataController = require('./src/utils/DataStorageController')
 
-messaging().setBackgroundMessageHandler(async (message) => {
+const bgMessagingAndroid = async (message) => {
     console.log('Message recieved in background');
     console.log(message)
 
@@ -44,6 +44,7 @@ messaging().setBackgroundMessageHandler(async (message) => {
     }
 
     showNotification(notifMessage, title != null? title : "MaalGaadi");
-});
+};
 
+AppRegistry.registerHeadlessTask('RNFirebaseBackgroundMessage', () => bgMessagingAndroid);
 AppRegistry.registerComponent(appName, () => App);

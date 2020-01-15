@@ -5,7 +5,7 @@ import {
   StatusBar,
   Image,
 } from 'react-native';
-import {firebase} from '@react-native-firebase/messaging'
+import firebase from 'react-native-firebase';
 import { getDeviceId } from 'react-native-device-info';
 
 const Constants = require('./utils/AppConstants')
@@ -28,23 +28,20 @@ export default class Splash extends Component {
 
     async componentDidMount() {
         // Check for the permission and if not enabled, get the permission.
-        await firebase.messaging().hasPermission()
-        .then(enabled => {
-            console.log("Firebase Permission checked: ", enabled);
-            if(!enabled) {
-                console.log("Requesting...");
-                this.requestFirebasePermission();
-            }
-        })
+        const enabled = await firebase.messaging().hasPermission()
+        console.log("Firebase Permission checked: ", enabled);
+        if(!enabled) {
+            console.log("Requesting...");
+            await this.requestFirebasePermission();
+        }
         
         // Register for iOS remote message.
-        if (!firebase.messaging().isRegisteredForRemoteNotifications) {
-            console.log("Registering for Remote Notifications.")
-            await firebase.messaging().registerForRemoteNotifications();
+        console.log("Registering for Remote Notifications.")
+        try {
+            await firebase.messaging().ios.registerForRemoteNotifications();
             console.log("Now registered for remtote Notifications.")
-        }
-        else {
-            console.log("Registered for Remote Notification.");
+        } catch(err) {
+            console.log("Could not register for Remote Notification: ", err);
         }
 
         this.updateFCMToken();
@@ -91,20 +88,14 @@ export default class Splash extends Component {
         })
     }
 
-    // Permission specifically for iOS.
-    requestFirebasePermission() {
-        firebase.messaging().requestPermission()
-        .then((granted) => {
-            if(granted) {
-                console.log("Firebase Permission requested: Granted");
-            }
-            else {
-                console.log("Firebase Permission requested: Not Granted");
-                this.requestFirebasePermission();
-            }
+    async requestFirebasePermission() {
+        await firebase.messaging().requestPermission()
+        .then((result) => {
+            console.log("Firebase Permission requested: Granted: ", result);
         })
         .catch(error => {
             console.log("Firebase Permission requested Error: ", error);
+            this.requestFirebasePermission();
         })
     }
 

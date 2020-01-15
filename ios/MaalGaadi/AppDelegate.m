@@ -19,6 +19,7 @@
 {
   [GMSServices provideAPIKey:@"AIzaSyD3ZGOuuW3NDUNLPcJoBkAR0kpjP2dT4lA"];
   [FIRApp configure];
+  [[UIApplication sharedApplication] registerForRemoteNotifications];
   
   RCTBridge *bridge = [[RCTBridge alloc] initWithDelegate:self launchOptions:launchOptions];
   RCTRootView *rootView = [[RCTRootView alloc] initWithBridge:bridge

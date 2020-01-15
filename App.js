@@ -45,13 +45,6 @@ import {Easing, Animated} from 'react-native'
 
 const ACCENT = '#FFCB28' // 255, 203, 40
 
-const vehicleIcon = require('./assets/vehicle.png')
-
-const LOAD_RICK = 'Loading Rickshaw'
-const TATA_ACE = 'Tata Ace'
-const ASHOK_LL = 'Ashok Layland Dost'
-const PICKUP = 'Pick Up'
-
 const MyBookingsTabs = createMaterialTopTabNavigator({
   Running: RunningMyBookings,
   Past: PastMyBookings
@@ -184,30 +177,31 @@ const DrawerStackNavigator = createStackNavigator({
       headerStyle: {display: 'none'},
     })}
 
-}, {initialRouteName: 'Main',
-transitionConfig: () => ({
-  transitionSpec: {
-    duration: 300,
-    easing: Easing.out(Easing.poly(4)),
-    timing: Animated.timing,
-  },
-  screenInterpolator: sceneProps => {
-    const { layout, position, scene } = sceneProps;
-    const { index } = scene;
+}, {
+  initialRouteName: 'Main',
+    transitionConfig: () => ({
+    transitionSpec: {
+      duration: 300,
+      easing: Easing.out(Easing.poly(4)),
+      timing: Animated.timing,
+    },
+    screenInterpolator: sceneProps => {
+      const { layout, position, scene } = sceneProps;
+      const { index } = scene;
 
-    const width = layout.initWidth;
-    const translateX = position.interpolate({
-      inputRange: [index - 1, index, index + 1],
-      outputRange: [width, 0, 0],
-    });
+      const width = layout.initWidth;
+      const translateX = position.interpolate({
+        inputRange: [index - 1, index, index + 1],
+        outputRange: [width, 0, 0],
+      });
 
-    const opacity = position.interpolate({
-      inputRange: [index - 1, index - 0.99, index],
-      outputRange: [0, 1, 1],
-    });
+      const opacity = position.interpolate({
+        inputRange: [index - 1, index - 0.99, index],
+        outputRange: [0, 1, 1],
+      });
 
-    return { opacity, transform: [{ translateX }] };
-  },
+      return { opacity, transform: [{ translateX }] };
+    },
   }),
 })
 
@@ -251,14 +245,12 @@ const HomeStackNavigator = createStackNavigator({
     initialRouteName: "Home",
     mode: 'card',
     transparentCard: true,
-    defaultNavigationOptions: {
-      gesturesEnabled: false,
-    },
     transitionConfig: () => ({
       transitionSpec: {
         duration: 300,
         easing: Easing.out(Easing.poly(4)),
         timing: Animated.timing,
+        useNativeDriver: true
       },
       screenInterpolator: sceneProps => {
         const { layout, position, scene } = sceneProps;
@@ -291,7 +283,33 @@ const RegistrationNavigator = createStackNavigator({
       headerStyle: {display: 'none'},
     })}
   },
-  {initialRouteName: 'Login',
+  {
+    initialRouteName: 'Login',
+    transitionConfig: () => ({
+      transitionSpec: {
+        duration: 300,
+        easing: Easing.out(Easing.poly(4)),
+        timing: Animated.timing,
+        useNativeDriver: true
+      },
+      screenInterpolator: sceneProps => {
+        const { layout, position, scene } = sceneProps;
+        const { index } = scene;
+
+        const height = layout.initHeight;
+        const translateX = position.interpolate({
+          inputRange: [index - 1, index, index + 1],
+          outputRange: [height, 0, 0],
+        });
+
+        const opacity = position.interpolate({
+          inputRange: [index - 1, index - 0.99, index],
+          outputRange: [0, 1, 1],
+        });
+
+        return { opacity, transform: [{ translateX }] };
+      },
+    }),
 })
 
 const MainSwitchNavigator = createSwitchNavigator({

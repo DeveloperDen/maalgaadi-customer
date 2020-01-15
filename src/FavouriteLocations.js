@@ -377,8 +377,8 @@ export default class FavouriteLocations extends Component {
                             
                             <View style={{
                                 position: 'absolute', backgroundColor: 'white',
-                                opacity: 0.8, top: 0, left: 0, right: 0,
-                                transform: [{scaleY: this.state.isLoading? 0 : '100%'}],
+                                opacity: 0.8, top: 0, left: 0, right: 0, bottom: 0,
+                                width: this.state.isLoading? null : 0,
                             }}/>
                         </View>
                     </View>
