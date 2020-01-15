@@ -234,9 +234,9 @@ const showAlert = (props) => {
 
 const styles = StyleSheet.create({
     headerContainer: {
-        height: 150,
+        height: 180,
         backgroundColor: ACCENT_DARK,
-        paddingLeft: 15
+        paddingHorizontal: 20,
     },
     titleText: {
         color: 'white',
@@ -258,7 +258,7 @@ const styles = StyleSheet.create({
         paddingHorizontal: 15,
         flexDirection: 'row',
         alignItems: "center",
-        paddingVertical: 16
+        paddingVertical: 20
     }
 });
 

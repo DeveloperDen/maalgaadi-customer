@@ -99,11 +99,11 @@ export default class AddMoney extends Component {
                     flexDirection: 'row', alignItems: 'center',
                     alignSelf: 'center', marginTop: 50,
                     borderBottomColor: this.state.isActiveInput? ACCENT : 'rgba(0, 0, 0, 0.3)',
-                    borderBottomWidth: 2, paddingHorizontal: 5, width: '70%'
+                    borderBottomWidth: 2, paddingHorizontal: 5, width: '70%',
+                    paddingBottom: 15
                 }}>
                     <Image source={rupee}
-                    style={{width: 30, height: 30, marginEnd: 15,}}
-                    tintColor={this.state.isActiveInput? ACCENT : 'rgba(0, 0, 0, 0.3)'}/>
+                    style={{width: 30, height: 30, marginEnd: 15, tintColor: this.state.isActiveInput? ACCENT : 'rgba(0, 0, 0, 0.3)'}}/>
 
                     <TextInput
                     keyboardType="number-pad"
@@ -155,4 +155,3 @@ export default class AddMoney extends Component {
 }
 
 const styles = StyleSheet.create({});
-

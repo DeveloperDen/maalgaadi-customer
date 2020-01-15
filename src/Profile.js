@@ -103,7 +103,7 @@ export default class Profile extends Component {
                         this.state.data.map((value, index) => {
                             return(
                                 <View key={index} style={{
-                                    flexDirection: 'row', alignItems: 'center', marginBottom: 20,
+                                    flexDirection: 'row', alignItems: 'center', marginBottom: 25,
                                     marginHorizontal: 15
                                 }}>
                                     <Image source={value[0]} style={{width: 25, height: 25, opacity: 0.3}}/>
@@ -112,7 +112,7 @@ export default class Profile extends Component {
                                     paddingStart: 5, marginStart: 20
                                 }}>
                                         <Text style={{fontSize: 13, opacity: 0.3}}>{value[1]}</Text>
-                                        <Text style={{fontSize: 16, marginTop: 5}}>{value[2]}</Text>
+                                        <Text style={{fontSize: 16, marginTop: 10}}>{value[2]}</Text>
                                     </View>
                                 </View>
                             )

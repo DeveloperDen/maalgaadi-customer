@@ -163,7 +163,7 @@ export default class RunningMyBookings extends Component {
             }
         })
 
-        const response = await request.json().then(value => {
+        await request.json().then(value => {
             console.log(value)
 
             if(!value.success){
@@ -211,11 +211,16 @@ export default class RunningMyBookings extends Component {
 
         await request.json().then(value => {
             console.log(value)
-            this.props.navigation.navigate("Main");
+            if(Platform.OS == "android") {
+                this.props.navigation.navigate("Main")
 
-            Alert.alert("Add Driver", value.message, [
-                {text: "OK"}
-            ])
+                Alert.alert("Add Driver", value.message, [
+                    {text: "OK"}
+                ])
+            }
+            else {
+                this.showToast(value.message);
+            }
             
         }).catch(err => {
             console.log(err)

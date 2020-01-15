@@ -273,8 +273,7 @@ export default class CreateProfile extends Component {
                         <View
                         style={{
                             borderBottomColor: 'rgba(0, 0, 0, 0.2)', borderBottomWidth: 2,
-                            borderRadius: 3,
-                            marginBottom: 25,
+                            borderRadius: 3, marginBottom: 25,
                         }}>
                             <TouchableHighlight
                             underlayColor='white'
@@ -284,26 +283,27 @@ export default class CreateProfile extends Component {
                             style={{
                                 padding: 10
                             }}>
-                                <View
-                                style={{
-                                    flexDirection: 'row', alignItems: 'center',
-                                    justifyContent: 'space-between'
-                                }}>
-                                    <Text style={{fontSize: 15}}>TYPE OF GOODS</Text>
-                                    <Image source={Constants.ICONS.forward}
-                                    style={{width: 15, height: 15}}/>
+                                <View>
+                                    <View
+                                    style={{
+                                        flexDirection: 'row', alignItems: 'center',
+                                        justifyContent: 'space-between'
+                                    }}>
+                                        <Text style={{fontSize: 15}}>TYPE OF GOODS</Text>
+                                        <Image source={Constants.ICONS.forward}
+                                        style={{width: 15, height: 15}}/>
+                                    </View>
+
+                                    <Text
+                                    style={{
+                                        paddingHorizontal: 20, paddingTop: 10,
+                                        fontSize: 15, opacity: 0.4
+                                    }}>
+                                        {this.state.goodsType}
+                                    </Text>
                                 </View>
                                 
                             </TouchableHighlight>
-                            <Text
-                            style={{
-                                paddingHorizontal: 20,
-                                paddingBottom: 10,
-                                fontSize: 15,
-                                opacity: 0.4
-                            }}>
-                                {this.state.goodsType}
-                            </Text>
                         </View>
                     
                         <View
@@ -433,6 +433,6 @@ export default class CreateProfile extends Component {
 const styles = StyleSheet.create({
     inputs: {
         borderBottomColor: 'rgba(0, 0, 0, 0.2)', borderBottomWidth: 2,
-        marginBottom: 15
+        marginBottom: 15, padding: 6
     }
 });

@@ -41,7 +41,7 @@ import RatingDialog from './src/add_booking/RatingDialog'
 import { createAppContainer, createSwitchNavigator } from 'react-navigation'
 import { createDrawerNavigator } from 'react-navigation-drawer'
 import {createMaterialTopTabNavigator} from 'react-navigation-tabs'
-import {Easing, Animated} from 'react-native'
+import {Easing, Animated, Platform} from 'react-native'
 
 const ACCENT = '#FFCB28' // 255, 203, 40
 
@@ -243,7 +243,7 @@ const HomeStackNavigator = createStackNavigator({
     },
   }, {
     initialRouteName: "Home",
-    mode: 'card',
+    mode: Platform.OS == "ios"? 'modal' : 'card',
     transparentCard: true,
     transitionConfig: () => ({
       transitionSpec: {

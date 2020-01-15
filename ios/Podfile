@@ -43,6 +43,8 @@ target 'MaalGaadi' do
     inherit! :search_paths
     # Pods for testing
   end
+  
+  pod 'Firebase/Messaging'
 
   # React Native Maps dependencies
   rn_maps_path = '../node_modules/react-native-maps'

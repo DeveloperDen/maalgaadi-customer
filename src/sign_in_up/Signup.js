@@ -99,7 +99,7 @@ export default class Signup extends Component {
                 style={{
                     flexDirection: 'row', alignItems: 'center', borderBottomColor: 'rgba(0, 0, 0, 0.3)',
                     borderBottomWidth: 1, width: '80%', paddingHorizontal: 5, alignSelf: 'center',
-                    opacity: this.state.isLoading? 0.3 : 1
+                    opacity: this.state.isLoading? 0.3 : 1, paddingBottom: Platform.OS == "ios"? 5 : 0
                 }}>
                     <Image source={Constants.ICONS.device}
                     style={{width: 25, height: 25, opacity: 0.3}}/>
@@ -119,7 +119,7 @@ export default class Signup extends Component {
                 style={{
                     flexDirection: 'row', alignItems: 'center', borderBottomColor: 'rgba(0, 0, 0, 0.3)',
                     borderBottomWidth: 1, width: '80%', marginTop: 10, paddingHorizontal: 5, alignSelf: 'center',
-                    opacity: this.state.isLoading? 0.3 : 1
+                    opacity: this.state.isLoading? 0.3 : 1, paddingBottom: Platform.OS == "ios"? 5 : 0
                 }}>
                     <Image source={Constants.ICONS.key}
                     style={{width: 25, height: 25, opacity: 0.3}}/>
@@ -155,8 +155,8 @@ export default class Signup extends Component {
                     <View
                     style={{
                         flexDirection: 'row', alignItems: 'center', borderBottomColor: 'rgba(0, 0, 0, 0.3)',
-                        borderBottomWidth: 1, width: '80%', marginTop: 10, paddingHorizontal: 5, alignSelf: 'center',
-                        opacity: this.state.isLoading? 0.3 : 1
+                        borderBottomWidth: 1, width: '80%', marginTop: 15, paddingHorizontal: 5, alignSelf: 'center',
+                        opacity: this.state.isLoading? 0.3 : 1, paddingBottom: Platform.OS == "ios"? 5 : 0
                     }}>
                         <TextInput 
                         editable={!this.state.isLoading}
@@ -179,7 +179,7 @@ export default class Signup extends Component {
                             })
                         }}>
                             <Image source={Constants.ICONS.cancel}
-                        style={{width: 25, height: 25, opacity: 0.3}}/>
+                        style={{width: 20, height: 20, opacity: 0.3}}/>
                         </TouchableOpacity>
                         
                     </View>

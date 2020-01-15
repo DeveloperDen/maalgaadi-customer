@@ -100,8 +100,8 @@ export default class ChangePassword extends Component {
                 <View
                 style={{
                     flexDirection: 'row', alignItems: 'center', borderBottomColor: 'rgba(0, 0, 0, 0.3)',
-                    borderBottomWidth: 1, width: '80%', marginTop: 10, paddingHorizontal: 5, alignSelf: 'center',
-                    opacity: this.state.isLoading? 0.3 : 1
+                    borderBottomWidth: 1, width: '80%', marginTop: 15, paddingHorizontal: 5, alignSelf: 'center',
+                    opacity: this.state.isLoading? 0.3 : 1, paddingBottom: Platform.OS == "ios"? 5 : 0
                 }}>
                     <TextInput
                     editable={!this.state.isLoading}
@@ -141,7 +141,7 @@ export default class ChangePassword extends Component {
                 style={{
                     flexDirection: 'row', alignItems: 'center', borderBottomColor: 'rgba(0, 0, 0, 0.3)',
                     borderBottomWidth: 1, width: '80%', marginTop: 10, paddingHorizontal: 5, alignSelf: 'center',
-                    opacity: this.state.isLoading? 0.3 : 1
+                    opacity: this.state.isLoading? 0.3 : 1, paddingBottom: Platform.OS == "ios"? 5 : 0
                 }}>
                     <TextInput editable={!this.state.isLoading}
                     placeholder="Confirm Password" secureTextEntry={this.state.showPass_NewConf? false : true}

@@ -6,17 +6,13 @@ import {
   Image,
   View,
   Text,
-  StatusBar,
-  Dimensions,
-  Keyboard,
   ScrollView,
-  Animated,
   Modal,
   ActivityIndicator,
-  ToastAndroid
 } from 'react-native';
 import {BookingEventType} from '../models/bookings_model'
 import { formatDate, unFormatDate } from './../utils/UtilFunc';
+import ToastComp from '../utils/ToastComp';
 
 const Constants = require('../utils/AppConstants')
 const DataController = require('../utils/DataStorageController')
@@ -43,6 +39,10 @@ export default class RunningMyBookings extends Component {
     this.props.navigation.navigate("Past") : this.getRunningTrip();
   }
 
+  showToast(text) {
+    this.toast.show(text);
+  }
+
   getRunningTrip = async () => {
     const reqBody = new FormData()
     const custId = await DataController.getItem(DataController.CUSTOMER_ID)
@@ -65,13 +65,13 @@ export default class RunningMyBookings extends Component {
         })
       }
       else {
-        ToastAndroid.show(value.message, ToastAndroid.SHORT);
+        this.showToast(value.message);
       }
       console.log("Response: ", value)
     })
     .catch(err => {
         console.log(err);
-        ToastAndroid.show(Constants.ERROR_GET_BOOKINGS, ToastAndroid.SHORT);
+        this.showToast(Constants.ERROR_GET_BOOKINGS);
     })
 
     this.setState(prevState => {
@@ -118,12 +118,12 @@ export default class RunningMyBookings extends Component {
           prevState.bookings.splice(this.state.activeIndex, 1)
           return prevState
         })
-      ToastAndroid.show(value.message, ToastAndroid.SHORT);
+      this.showToast(value.message);
       console.log("Response: ", value)
     })
     .catch(err => {
         console.log(err);
-        ToastAndroid.show(Constants.ERROR_GET_BOOKINGS, ToastAndroid.SHORT);
+        this.showToast(Constants.ERROR_GET_BOOKINGS);
     })
 
     this.showCancelModal(false)
@@ -149,7 +149,7 @@ export default class RunningMyBookings extends Component {
         console.log(value)
 
         if (!value.success) {
-            ToastAndroid.show(value.message, ToastAndroid.SHORT);
+            this.showToast(value.message);
         }
         else {
           let model = value.data;
@@ -177,7 +177,7 @@ export default class RunningMyBookings extends Component {
 
     }).catch(err => {
         console.log(err)
-        ToastAndroid.show(Constants.ERROR_GET_DETAILS, ToastAndroid.SHORT);
+        this.showToast(Constants.ERROR_GET_DETAILS);
     })
   }
 
@@ -388,6 +388,9 @@ export default class RunningMyBookings extends Component {
                 </View>
             </View>
         </Modal>
+      
+        {/* Toast Box */}
+        <ToastComp ref={t => this.toast = t}/>
       </View>
     )
   }

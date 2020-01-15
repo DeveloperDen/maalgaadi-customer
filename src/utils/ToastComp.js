@@ -18,7 +18,9 @@ export default class ToastComp extends Component {
             <Toast
                 ref={toast => this.toast = toast}
                 style={{
-                    backgroundColor:ACCENT_DARK, padding: 20,
+                    backgroundColor: ACCENT_DARK,
+                    padding: 20,
+                    marginHorizontal: '15%',
                     elevation: 4,
                     shadowColor: 'rgb(0, 0, 0)',
                     shadowOffset: {width: 0, height: 4},
@@ -28,10 +30,10 @@ export default class ToastComp extends Component {
                 position="top"
                 fadeInDuration={100}
                 fadeOutDuration={200}
-                positionValue={100}
+                positionValue={50}
                 translateFrom={-50}
                 opacity={1}
-                textStyle={{color: 'white'}}
+                textStyle={{color: 'white',}}
             />
         )
     }
