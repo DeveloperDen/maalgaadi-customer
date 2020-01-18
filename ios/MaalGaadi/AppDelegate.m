@@ -1,30 +1,36 @@
-/**
- * Copyright (c) Facebook, Inc. and its affiliates.
- *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
- */
-
+// Import [START]
 #import "AppDelegate.h"
+
 #import <React/RCTBridge.h>
 #import <React/RCTBundleURLProvider.h>
-#import <React/RCTRootView.h>//'
+#import <React/RCTRootView.h>
+#import <React/RCTLog.h>
+
 #import <Firebase.h>
 #import "RNFirebaseNotifications.h"
 #import "RNFirebaseMessaging.h"
 
+#import "CCWebViewController.h"
+
 @import GoogleMaps;
+// Import [END]
+
 @implementation AppDelegate
+{
+  UINavigationController *navigationController;
+}
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
+  // Modules' initializations [START]
   [GMSServices provideAPIKey:@"AIzaSyD3ZGOuuW3NDUNLPcJoBkAR0kpjP2dT4lA"];
   [FIRApp configure];
   [RNFirebaseNotifications configure];
   [[UNUserNotificationCenter currentNotificationCenter] setDelegate:self];
+  // Modules' initializations [END]
   
-  RCTBridge *bridge = [[RCTBridge alloc] initWithDelegate:self launchOptions:launchOptions];
-  RCTRootView *rootView = [[RCTRootView alloc] initWithBridge:bridge
+  self.reactBridge = [[RCTBridge alloc] initWithDelegate:self launchOptions:launchOptions];
+  RCTRootView *rootView = [[RCTRootView alloc] initWithBridge:self.reactBridge
                                                    moduleName:@"MaalGaadi"
                                             initialProperties:nil];
 
@@ -51,12 +57,41 @@ fetchCompletionHandler:(nonnull void (^)(UIBackgroundFetchResult))completionHand
 - (void)application:(UIApplication *)application didRegisterUserNotificationSettings:(UIUserNotificationSettings *)notificationSettings {
   [[RNFirebaseMessaging instance] didRegisterUserNotificationSettings:notificationSettings];
 }
-// [END]
 
 -(void) userNotificationCenter:(UNUserNotificationCenter *)center didReceiveNotificationResponse:(UNNotificationResponse *)response withCompletionHandler:(void (^)(void))completionHandler {
   
   [[RNFirebaseMessaging instance] didReceiveRemoteNotification:response.notification.request.content.userInfo];
   completionHandler();
+}
+// Firebase Notifications [END]
+
+- (void) navigateToPaymentView:(NSDictionary*)paramsDict {
+  RCTLogInfo(@"Got Params in Delegate. Navigating to WebView.");
+  
+//  CCWebViewController *controller = [[CCWebViewController alloc] initWithNibName:@"CCWebViewController" bundle:nil];
+  
+  CCWebViewController *controller = [UIStoryboard storyboardWithName:@"CCWebViewController" bundle:nil].instantiateInitialViewController;
+  
+  controller.amountCurrParam = paramsDict[@"amountCurrParam"];
+  controller.rsaKey = paramsDict[@"rsa"];
+  controller.amount = paramsDict[@"amount"];
+  controller.orderId = paramsDict[@"orderId"];
+  controller.custName = paramsDict[@"custName"];
+  controller.redirectUrl = paramsDict[@"redirectURL"];
+  controller.cancelUrl = paramsDict[@"cancelURL"];
+  controller.custNum = paramsDict[@"custNum"];
+  controller.custEmail = paramsDict[@"custEmail"];
+  controller.custAddress = paramsDict[@"custAddress"];
+  controller.zipCode = paramsDict[@"zipCode"];
+  controller.city = paramsDict[@"city"];
+  controller.state = paramsDict[@"state"];
+  
+//  UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController: controller];
+  [self.window.rootViewController presentViewController:controller animated:true completion:nil];
+}
+
+- (void) navigateToReactNative {
+  [self.window.rootViewController dismissViewControllerAnimated:true completion:nil];
 }
 
 - (NSURL *)sourceURLForBridge:(RCTBridge *)bridge

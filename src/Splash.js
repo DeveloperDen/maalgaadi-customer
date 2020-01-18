@@ -4,6 +4,7 @@ import {
   View,
   StatusBar,
   Image,
+  ActivityIndicator,
 } from 'react-native';
 import firebase from 'react-native-firebase';
 import { getDeviceId } from 'react-native-device-info';
@@ -113,6 +114,8 @@ export default class Splash extends Component {
 
                 <Image source={logo} resizeMode="contain"
                 style={{width: '80%'}}/>
+
+                <ActivityIndicator size="large" color='white'/>
             </View>
         )
     }

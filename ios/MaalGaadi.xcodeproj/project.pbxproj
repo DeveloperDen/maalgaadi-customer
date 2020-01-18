@@ -17,6 +17,7 @@
 		2DCD954D1E0B4F2C00145EB5 /* MaalGaadiTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 00E356F21AD99517003FC87E /* MaalGaadiTests.m */; };
 		6E1B2E91AF53286604EA60E5 /* libPods-MaalGaadiTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F82B636BD187268C29B3A93B /* libPods-MaalGaadiTests.a */; };
 		C01B21C023CC924D00BFF410 /* Launch Screen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = C01B21BF23CC924D00BFF410 /* Launch Screen.storyboard */; };
+		C0291D1923D1ECD500A10EFF /* CCWebViewController.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = C0291D1823D1ECD500A10EFF /* CCWebViewController.storyboard */; };
 		C037FEDF23C5F33600E70A4E /* AIRDummyView.m in Sources */ = {isa = PBXBuildFile; fileRef = C037FEA923C5F33600E70A4E /* AIRDummyView.m */; };
 		C037FEE023C5F33600E70A4E /* AIRGoogleMapUrlTile.m in Sources */ = {isa = PBXBuildFile; fileRef = C037FEAD23C5F33600E70A4E /* AIRGoogleMapUrlTile.m */; };
 		C037FEE123C5F33600E70A4E /* AIRGoogleMapPolygonManager.m in Sources */ = {isa = PBXBuildFile; fileRef = C037FEB023C5F33600E70A4E /* AIRGoogleMapPolygonManager.m */; };
@@ -44,6 +45,9 @@
 		C037FEF723C5F33600E70A4E /* AIRGoogleMapPolygon.m in Sources */ = {isa = PBXBuildFile; fileRef = C037FEDC23C5F33600E70A4E /* AIRGoogleMapPolygon.m */; };
 		C037FEF823C5F33600E70A4E /* AIRGMSMarker.m in Sources */ = {isa = PBXBuildFile; fileRef = C037FEDD23C5F33600E70A4E /* AIRGMSMarker.m */; };
 		C037FEF923C5F33600E70A4E /* AIRGoogleMapCalloutSubview.m in Sources */ = {isa = PBXBuildFile; fileRef = C037FEDE23C5F33600E70A4E /* AIRGoogleMapCalloutSubview.m */; };
+		C0517F8A23D2CA93004FCDEB /* logo_splash.png in Resources */ = {isa = PBXBuildFile; fileRef = C0517F8923D2CA92004FCDEB /* logo_splash.png */; };
+		C0722BC823D07E0000C59126 /* RSA.m in Sources */ = {isa = PBXBuildFile; fileRef = C0722BC123D07E0000C59126 /* RSA.m */; };
+		C0722BCA23D07E0000C59126 /* CCWebViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = C0722BC423D07E0000C59126 /* CCWebViewController.m */; };
 		C09B28DE23C9DCBA0020C191 /* NativePaymentView.m in Sources */ = {isa = PBXBuildFile; fileRef = C09B28DD23C9DCBA0020C191 /* NativePaymentView.m */; };
 		C0E759E423C4A16D001F363E /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = C0E759E323C4A16D001F363E /* GoogleService-Info.plist */; };
 		CDE8F7A054A4E8EF1E32D149 /* libPods-MaalGaadi-tvOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 83F80BEECDA4FCEB866FF992 /* libPods-MaalGaadi-tvOS.a */; };
@@ -68,6 +72,19 @@
 		};
 /* End PBXContainerItemProxy section */
 
+/* Begin PBXCopyFilesBuildPhase section */
+		C0722BBE23D07BED00C59126 /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+			);
+			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
 /* Begin PBXFileReference section */
 		008F07F21AC5B25A0029DE68 /* main.jsbundle */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = main.jsbundle; sourceTree = "<group>"; };
 		00E356EE1AD99517003FC87E /* MaalGaadiTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MaalGaadiTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -91,6 +108,7 @@
 		A2A49874CDA094DF79F9A79A /* Pods-MaalGaadi.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MaalGaadi.release.xcconfig"; path = "Target Support Files/Pods-MaalGaadi/Pods-MaalGaadi.release.xcconfig"; sourceTree = "<group>"; };
 		B2661FF34538FF86312A725B /* Pods-MaalGaadi-tvOSTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MaalGaadi-tvOSTests.debug.xcconfig"; path = "Target Support Files/Pods-MaalGaadi-tvOSTests/Pods-MaalGaadi-tvOSTests.debug.xcconfig"; sourceTree = "<group>"; };
 		C01B21BF23CC924D00BFF410 /* Launch Screen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = "Launch Screen.storyboard"; sourceTree = "<group>"; };
+		C0291D1823D1ECD500A10EFF /* CCWebViewController.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = CCWebViewController.storyboard; sourceTree = "<group>"; };
 		C037FEA923C5F33600E70A4E /* AIRDummyView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AIRDummyView.m; sourceTree = "<group>"; };
 		C037FEAA23C5F33600E70A4E /* AIRGoogleMapWMSTile.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AIRGoogleMapWMSTile.h; sourceTree = "<group>"; };
 		C037FEAB23C5F33600E70A4E /* AIRGoogleMapPolyline.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AIRGoogleMapPolyline.h; sourceTree = "<group>"; };
@@ -145,6 +163,11 @@
 		C037FEDC23C5F33600E70A4E /* AIRGoogleMapPolygon.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AIRGoogleMapPolygon.m; sourceTree = "<group>"; };
 		C037FEDD23C5F33600E70A4E /* AIRGMSMarker.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AIRGMSMarker.m; sourceTree = "<group>"; };
 		C037FEDE23C5F33600E70A4E /* AIRGoogleMapCalloutSubview.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AIRGoogleMapCalloutSubview.m; sourceTree = "<group>"; };
+		C0517F8923D2CA92004FCDEB /* logo_splash.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = logo_splash.png; path = ../assets/logo_splash.png; sourceTree = "<group>"; };
+		C0722BC123D07E0000C59126 /* RSA.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RSA.m; sourceTree = "<group>"; };
+		C0722BC223D07E0000C59126 /* CCWebViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCWebViewController.h; sourceTree = "<group>"; };
+		C0722BC423D07E0000C59126 /* CCWebViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCWebViewController.m; sourceTree = "<group>"; };
+		C0722BC623D07E0000C59126 /* RSA.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RSA.h; sourceTree = "<group>"; };
 		C09B28DC23C9DC960020C191 /* NativePaymentView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = NativePaymentView.h; path = MaalGaadi/NativePaymentView.h; sourceTree = "<group>"; };
 		C09B28DD23C9DCBA0020C191 /* NativePaymentView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = NativePaymentView.m; sourceTree = "<group>"; };
 		C0DF364223C0AEEA002C3BA9 /* MaalGaadi.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; name = MaalGaadi.entitlements; path = MaalGaadi/MaalGaadi.entitlements; sourceTree = "<group>"; };
@@ -212,6 +235,12 @@
 		13B07FAE1A68108700A75B9A /* MaalGaadi */ = {
 			isa = PBXGroup;
 			children = (
+				C0291D1823D1ECD500A10EFF /* CCWebViewController.storyboard */,
+				C0722BC223D07E0000C59126 /* CCWebViewController.h */,
+				C0722BC423D07E0000C59126 /* CCWebViewController.m */,
+				C0722BC623D07E0000C59126 /* RSA.h */,
+				C0722BC123D07E0000C59126 /* RSA.m */,
+				C0722BD223D087A600C59126 /* Logo */,
 				C0E759E323C4A16D001F363E /* GoogleService-Info.plist */,
 				C0DF364223C0AEEA002C3BA9 /* MaalGaadi.entitlements */,
 				008F07F21AC5B25A0029DE68 /* main.jsbundle */,
@@ -335,6 +364,14 @@
 			path = AirGoogleMaps;
 			sourceTree = "<group>";
 		};
+		C0722BD223D087A600C59126 /* Logo */ = {
+			isa = PBXGroup;
+			children = (
+				C0517F8923D2CA92004FCDEB /* logo_splash.png */,
+			);
+			name = Logo;
+			sourceTree = "<group>";
+		};
 		C933A463EC009615A999D9F4 /* Pods */ = {
 			isa = PBXGroup;
 			children = (
@@ -383,6 +420,7 @@
 				13B07F8E1A680F5B00A75B9A /* Resources */,
 				00DD1BFF1BD5951E006B06BC /* Bundle React Native code and images */,
 				A2DAC2B2F7188CC0172E1967 /* [CP] Copy Pods Resources */,
+				C0722BBE23D07BED00C59126 /* Embed Frameworks */,
 			);
 			buildRules = (
 			);
@@ -505,7 +543,9 @@
 			buildActionMask = 2147483647;
 			files = (
 				C01B21C023CC924D00BFF410 /* Launch Screen.storyboard in Resources */,
+				C0291D1923D1ECD500A10EFF /* CCWebViewController.storyboard in Resources */,
 				13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */,
+				C0517F8A23D2CA93004FCDEB /* logo_splash.png in Resources */,
 				C0E759E423C4A16D001F363E /* GoogleService-Info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -721,6 +761,7 @@
 				C037FEE123C5F33600E70A4E /* AIRGoogleMapPolygonManager.m in Sources */,
 				C037FEF423C5F33600E70A4E /* AIRGoogleMapOverlayManager.m in Sources */,
 				C037FEEE23C5F33600E70A4E /* AIRGMSPolyline.m in Sources */,
+				C0722BC823D07E0000C59126 /* RSA.m in Sources */,
 				C037FEE423C5F33600E70A4E /* AIRGoogleMapURLTileManager.m in Sources */,
 				C037FEF223C5F33600E70A4E /* AIRGoogleMapCalloutSubviewManager.m in Sources */,
 				C037FEE923C5F33600E70A4E /* AIRGoogleMapMarkerManager.m in Sources */,
@@ -741,6 +782,7 @@
 				C037FEE523C5F33600E70A4E /* AIRGoogleMapWMSTileManager.m in Sources */,
 				C037FEE823C5F33600E70A4E /* AIRGoogleMapCalloutManager.m in Sources */,
 				C037FEEC23C5F33600E70A4E /* AIRGoogleMapWMSTile.m in Sources */,
+				C0722BCA23D07E0000C59126 /* CCWebViewController.m in Sources */,
 				C09B28DE23C9DCBA0020C191 /* NativePaymentView.m in Sources */,
 				13B07FBC1A68108700A75B9A /* AppDelegate.m in Sources */,
 				13B07FC11A68108700A75B9A /* main.m in Sources */,
@@ -835,6 +877,10 @@
 				CURRENT_PROJECT_VERSION = 1;
 				DEAD_CODE_STRIPPING = NO;
 				DEVELOPMENT_TEAM = TDSWC8868S;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)",
+				);
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"$(inherited)",
 					"COCOAPODS=1",
@@ -868,6 +914,10 @@
 				CODE_SIGN_ENTITLEMENTS = MaalGaadi/MaalGaadi.entitlements;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = TDSWC8868S;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)",
+				);
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"$(inherited)",
 					"COCOAPODS=1",

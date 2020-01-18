@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="14460.31" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" colorMatched="YES" initialViewController="vXZ-lx-hvc">
+    <device id="retina6_5" orientation="portrait">
+        <adaptation id="fullscreen"/>
+    </device>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14460.20"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <scenes>
+        <!--Payment-->
+        <scene sceneID="ufC-wZ-h7g">
+            <objects>
+                <viewController storyboardIdentifier="CCWebViewController" title="Payment" modalPresentationStyle="currentContext" useStoryboardIdentifierAsRestorationIdentifier="YES" id="vXZ-lx-hvc" customClass="CCWebViewController" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="jyV-Pf-zRb"/>
+                        <viewControllerLayoutGuide type="bottom" id="2fi-mo-0CV"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="kh9-bI-dsS">
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                        <subviews>
+                            <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" translatesAutoresizingMaskIntoConstraints="NO" id="OMr-Ou-c8z">
+                                <rect key="frame" x="0.0" y="44" width="414" height="818"/>
+                                <subviews>
+                                    <navigationBar contentMode="scaleToFill" translucent="NO" translatesAutoresizingMaskIntoConstraints="NO" id="w8V-cT-bXb">
+                                        <rect key="frame" x="0.0" y="0.0" width="414" height="44"/>
+                                        <items>
+                                            <navigationItem title="Payment" id="mO5-K0-0Tc"/>
+                                        </items>
+                                    </navigationBar>
+                                    <webView opaque="NO" multipleTouchEnabled="YES" userInteractionEnabled="NO" alpha="0.10000000000000001" contentMode="scaleToFill" scalesPageToFit="YES" translatesAutoresizingMaskIntoConstraints="NO" id="U3Q-Mt-ZB0" customClass="viewWeb">
+                                        <rect key="frame" x="0.0" y="44" width="414" height="774"/>
+                                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                    </webView>
+                                </subviews>
+                            </stackView>
+                            <activityIndicatorView opaque="NO" userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" animating="YES" style="whiteLarge" translatesAutoresizingMaskIntoConstraints="NO" id="75g-VP-ZSC">
+                                <rect key="frame" x="188.66666666666666" y="430" width="37" height="36"/>
+                                <color key="color" cocoaTouchSystemColor="darkTextColor"/>
+                            </activityIndicatorView>
+                        </subviews>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <constraints>
+                            <constraint firstItem="OMr-Ou-c8z" firstAttribute="leading" secondItem="kh9-bI-dsS" secondAttribute="leading" id="4be-Qh-urI"/>
+                            <constraint firstItem="75g-VP-ZSC" firstAttribute="centerY" secondItem="kh9-bI-dsS" secondAttribute="centerY" id="4fV-io-vST"/>
+                            <constraint firstItem="75g-VP-ZSC" firstAttribute="top" secondItem="jyV-Pf-zRb" secondAttribute="bottom" constant="386" id="BVD-gr-r5J"/>
+                            <constraint firstAttribute="trailing" secondItem="OMr-Ou-c8z" secondAttribute="trailing" id="D5k-6P-61c"/>
+                            <constraint firstItem="OMr-Ou-c8z" firstAttribute="top" secondItem="jyV-Pf-zRb" secondAttribute="bottom" id="UXy-1E-88V"/>
+                            <constraint firstItem="OMr-Ou-c8z" firstAttribute="centerX" secondItem="75g-VP-ZSC" secondAttribute="centerX" id="Yd6-1k-l1R"/>
+                            <constraint firstItem="OMr-Ou-c8z" firstAttribute="bottom" secondItem="2fi-mo-0CV" secondAttribute="top" id="tHM-DG-SQW"/>
+                        </constraints>
+                    </view>
+                    <extendedEdge key="edgesForExtendedLayout" bottom="YES"/>
+                    <connections>
+                        <outlet property="indicator" destination="75g-VP-ZSC" id="Tqm-11-6J6"/>
+                        <outlet property="navItem" destination="mO5-K0-0Tc" id="Fb8-8p-RJO"/>
+                        <outlet property="viewWeb" destination="U3Q-Mt-ZB0" id="JWm-iW-IED"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="x5A-6p-PRh" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-568.79999999999995" y="-66.11694152923539"/>
+        </scene>
+    </scenes>
+</document>

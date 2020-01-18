@@ -245,7 +245,7 @@ const HomeStackNavigator = createStackNavigator({
     initialRouteName: "Home",
     mode: Platform.OS == "ios"? 'modal' : 'card',
     transparentCard: true,
-    transitionConfig: () => ({
+    transitionConfig: (transProps) => ({
       transitionSpec: {
         duration: 300,
         easing: Easing.out(Easing.poly(4)),
@@ -267,7 +267,9 @@ const HomeStackNavigator = createStackNavigator({
           outputRange: [0, 1, 1],
         });
 
-        return { opacity, transform: [{ translateY }] };
+        // Translate only if the requested Route is RateCard, else just animate opacity.
+        return transProps.scene.route.routeName == 'RateCard'?
+        { opacity, transform: [{ translateY }] } : { opacity };
       },
     }),
   }

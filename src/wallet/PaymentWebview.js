@@ -5,7 +5,8 @@ import {
   ToastAndroid,
   NativeModules,
   Text, ActivityIndicator,
-  StatusBar
+  StatusBar,
+  Platform
 } from 'react-native';
 import { StackActions } from 'react-navigation';
 import { BASE_URL, FIELDS, GET_CUSTOMER_BILLING_INFO, CCAVENUE, GET_RSA, TRANS_PARAMS } from './../utils/AppConstants';
@@ -121,7 +122,7 @@ export default class PaymentWebview extends Component {
             // Before navigating to Payment Webview, navigate back to Add Money, which can further go back to Home Screen
             this.props.navigation.state.params.onGoBack();
             this.props.navigation.dispatch(StackActions.popToTop());
-            this.NativePaymentView.navigateToPaymentScreen(JSON.stringify(params))
+            this.NativePaymentView.navigateToPaymentScreen(Platform.OS == "ios"? params : JSON.stringify(params))
         }).catch(err => {
             console.log(err)
             ToastAndroid.show(err, ToastAndroid.SHORT);

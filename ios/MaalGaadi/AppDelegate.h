@@ -12,5 +12,9 @@
 @interface AppDelegate : UIResponder <UIApplicationDelegate, RCTBridgeDelegate, UNUserNotificationCenterDelegate>
 
 @property (nonatomic, strong) UIWindow *window;
+@property (nonatomic, strong) RCTBridge *reactBridge;
+
+- (void) navigateToPaymentView:(NSDictionary*)paramsDict;
+- (void) navigateToReactNative;
 
 @end
