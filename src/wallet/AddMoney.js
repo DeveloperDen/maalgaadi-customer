@@ -106,7 +106,7 @@ export default class AddMoney extends Component {
                     style={{width: 30, height: 30, marginEnd: 15, tintColor: this.state.isActiveInput? ACCENT : 'rgba(0, 0, 0, 0.3)'}}/>
 
                     <TextInput
-                    keyboardType="number-pad"
+                    keyboardType="number-pad" returnKeyType="done"
                     
                     onChangeText={(text) => {
                         this.setState(prevState => {

@@ -46,8 +46,11 @@
 		C037FEF823C5F33600E70A4E /* AIRGMSMarker.m in Sources */ = {isa = PBXBuildFile; fileRef = C037FEDD23C5F33600E70A4E /* AIRGMSMarker.m */; };
 		C037FEF923C5F33600E70A4E /* AIRGoogleMapCalloutSubview.m in Sources */ = {isa = PBXBuildFile; fileRef = C037FEDE23C5F33600E70A4E /* AIRGoogleMapCalloutSubview.m */; };
 		C0517F8A23D2CA93004FCDEB /* logo_splash.png in Resources */ = {isa = PBXBuildFile; fileRef = C0517F8923D2CA92004FCDEB /* logo_splash.png */; };
+		C069A9A123D6EC6600A40EA5 /* NativePaymentView.h in Headers */ = {isa = PBXBuildFile; fileRef = C09B28DC23C9DC960020C191 /* NativePaymentView.h */; };
 		C0722BC823D07E0000C59126 /* RSA.m in Sources */ = {isa = PBXBuildFile; fileRef = C0722BC123D07E0000C59126 /* RSA.m */; };
-		C0722BCA23D07E0000C59126 /* CCWebViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = C0722BC423D07E0000C59126 /* CCWebViewController.m */; };
+		C08E61D823D6DA4900294228 /* CCWebViewController.h in Headers */ = {isa = PBXBuildFile; fileRef = C0722BC223D07E0000C59126 /* CCWebViewController.h */; };
+		C08E61D923D6DABC00294228 /* CCWebViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = C0722BC423D07E0000C59126 /* CCWebViewController.m */; };
+		C08E61DA23D6E58100294228 /* AppDelegate.h in Headers */ = {isa = PBXBuildFile; fileRef = 13B07FAF1A68108700A75B9A /* AppDelegate.h */; };
 		C09B28DE23C9DCBA0020C191 /* NativePaymentView.m in Sources */ = {isa = PBXBuildFile; fileRef = C09B28DD23C9DCBA0020C191 /* NativePaymentView.m */; };
 		C0E759E423C4A16D001F363E /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = C0E759E323C4A16D001F363E /* GoogleService-Info.plist */; };
 		CDE8F7A054A4E8EF1E32D149 /* libPods-MaalGaadi-tvOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 83F80BEECDA4FCEB866FF992 /* libPods-MaalGaadi-tvOS.a */; };
@@ -389,6 +392,19 @@
 		};
 /* End PBXGroup section */
 
+/* Begin PBXHeadersBuildPhase section */
+		C08E61D723D6DA2B00294228 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				C069A9A123D6EC6600A40EA5 /* NativePaymentView.h in Headers */,
+				C08E61DA23D6E58100294228 /* AppDelegate.h in Headers */,
+				C08E61D823D6DA4900294228 /* CCWebViewController.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXHeadersBuildPhase section */
+
 /* Begin PBXNativeTarget section */
 		00E356ED1AD99517003FC87E /* MaalGaadiTests */ = {
 			isa = PBXNativeTarget;
@@ -415,6 +431,7 @@
 			buildPhases = (
 				2CF07A94E95879B49180D2B2 /* [CP] Check Pods Manifest.lock */,
 				FD10A7F022414F080027D42C /* Start Packager */,
+				C08E61D723D6DA2B00294228 /* Headers */,
 				13B07F871A680F5B00A75B9A /* Sources */,
 				13B07F8C1A680F5B00A75B9A /* Frameworks */,
 				13B07F8E1A680F5B00A75B9A /* Resources */,
@@ -755,6 +772,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C08E61D923D6DABC00294228 /* CCWebViewController.m in Sources */,
 				C037FEE023C5F33600E70A4E /* AIRGoogleMapUrlTile.m in Sources */,
 				C037FEF523C5F33600E70A4E /* AIRGoogleMapHeatmap.m in Sources */,
 				C037FEF123C5F33600E70A4E /* RCTConvert+GMSMapViewType.m in Sources */,
@@ -782,7 +800,6 @@
 				C037FEE523C5F33600E70A4E /* AIRGoogleMapWMSTileManager.m in Sources */,
 				C037FEE823C5F33600E70A4E /* AIRGoogleMapCalloutManager.m in Sources */,
 				C037FEEC23C5F33600E70A4E /* AIRGoogleMapWMSTile.m in Sources */,
-				C0722BCA23D07E0000C59126 /* CCWebViewController.m in Sources */,
 				C09B28DE23C9DCBA0020C191 /* NativePaymentView.m in Sources */,
 				13B07FBC1A68108700A75B9A /* AppDelegate.m in Sources */,
 				13B07FC11A68108700A75B9A /* main.m in Sources */,

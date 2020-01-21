@@ -25,8 +25,9 @@
   // Modules' initializations [START]
   [GMSServices provideAPIKey:@"AIzaSyD3ZGOuuW3NDUNLPcJoBkAR0kpjP2dT4lA"];
   [FIRApp configure];
-  [RNFirebaseNotifications configure];
   [[UNUserNotificationCenter currentNotificationCenter] setDelegate:self];
+  [RNFirebaseNotifications configure];
+  [FIRMessaging messaging].shouldEstablishDirectChannel = YES;
   // Modules' initializations [END]
   
   self.reactBridge = [[RCTBridge alloc] initWithDelegate:self launchOptions:launchOptions];
@@ -67,8 +68,6 @@ fetchCompletionHandler:(nonnull void (^)(UIBackgroundFetchResult))completionHand
 
 - (void) navigateToPaymentView:(NSDictionary*)paramsDict {
   RCTLogInfo(@"Got Params in Delegate. Navigating to WebView.");
-  
-//  CCWebViewController *controller = [[CCWebViewController alloc] initWithNibName:@"CCWebViewController" bundle:nil];
   
   CCWebViewController *controller = [UIStoryboard storyboardWithName:@"CCWebViewController" bundle:nil].instantiateInitialViewController;
   

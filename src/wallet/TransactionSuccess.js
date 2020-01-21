@@ -6,7 +6,9 @@ import {
   TouchableHighlight, Image, Text,
   StatusBar,
   Animated, Easing,
-  ActivityIndicator
+  ActivityIndicator,
+  Platform,
+  Modal
 } from 'react-native';
 import { getItem, PAYMENT_TRANS_DATA, setItem, WALLET_BALANCE, CUSTOMER_ID, removeItem } from '../utils/DataStorageController';
 import { BASE_URL, SEND_TRANSACTION_STATUS, KEY, ICONS } from '../utils/AppConstants';
@@ -88,7 +90,7 @@ export default class TransactionStatus extends Component {
             body: JSON.stringify(this.transData)
         })
 
-        const response = await request.json().then(value => {
+        await request.json().then(value => {
             console.log(value)
 
             if(!value.success){
@@ -120,7 +122,7 @@ export default class TransactionStatus extends Component {
                 <StatusBar backgroundColor={ACCENT_DARK} 
                 barStyle="light-content"/>
 
-                <View style={{margin: 20}}>
+                <View style={{margin: Platform.OS == "ios"? 40 : 20}}>
                     <TouchableHighlight
                     onPress={() => {
                         this.props.navigation.goBack()
@@ -128,20 +130,24 @@ export default class TransactionStatus extends Component {
                     underlayColor='white'>
                         <Image
                         source={ICONS.close}
-                        tintColor='white'
-                        style={{width: 30, height: 30}}/>
+                        style={{width: 30, height: 30, tintColor: 'white'}}/>
                     </TouchableHighlight>
                 </View>
 
                 <View style={{flex: 1, justifyContent: 'space-between'}}>
-                    <Animated.View style={{backgroundColor: ACCENT_DARK, borderRadius: 100, padding: 50, alignSelf: 'center', opacity: this.state.opacity, scaleX: this.state.scale, scaleY: this.state.scale}}>
+                    <Animated.View
+                    style={{backgroundColor: ACCENT_DARK, borderRadius: 100, padding: 50, alignSelf: 'center',
+                    opacity: this.state.opacity, transform: [{scaleX: this.state.scale}, {scaleY: this.state.scale}]}}>
                         <Image
                         source={ICONS.my_wallet}
-                        tintColor='white'
-                        style={{width: 100, height: 100}}/>
+                        style={{width: 100, height: 100, tintColor: 'white'}}/>
                     </Animated.View>
                     
-                    <Animated.View style={{elevation: 5, marginHorizontal: 20, padding: 20, borderRadius: 5, backgroundColor: 'white', marginBottom: 30, translateY: this.state.translateY, opacity: this.state.opacity}}>
+                    <Animated.View
+                    style={{elevation: 5, marginHorizontal: 20, padding: 20, borderRadius: 5,
+                    backgroundColor: 'white', marginBottom: 30, transform: [{translateY: this.state.translateY}], opacity: this.state.opacity, 
+                    shadowColor: 'rgb(0, 0, 0)', shadowOffset: {width: 0, height: 2},
+                    shadowOpacity: 0.25, shadowRadius: 4,}}>
                         <View style={{alignItems: 'center',}}>
                             <Text style={{fontWeight: "700", fontSize: 50, color: ACCENT_DARK}}>{String.fromCharCode(8377) + ' ' + this.state.amount}</Text>
                             <Text style={{fontSize: 15, textAlign: 'center', marginHorizontal: 30, marginTop: 5, color: 'black', opacity: 0.3,}}>added successfully to you MaalGaadi Wallet</Text>
@@ -181,8 +187,16 @@ export default class TransactionStatus extends Component {
                     </Animated.View>
                 </View>
 
-                <ActivityIndicator size="large" color='white'
-                style={{alignSelf: 'center', scaleX: this.state.isLoading? 1 : 0, position: 'absolute', top: 0, bottom: 0, start: 0, end: 0}}/>
+                {/* Loading Circle to show while data is fetched */}
+                <Modal
+                transparent={true}
+                visible={this.state.isLoading}>
+                    <View style={{
+                        backgroundColor: 'rgba(0, 0, 0, 0.5)', justifyContent: 'center', alignItems: 'center', width: '100%', height: '100%'
+                    }}>
+                        <ActivityIndicator size="large" color='white'/>
+                    </View>
+                </Modal>
             </View>
         )
     }

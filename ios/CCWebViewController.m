@@ -2,8 +2,9 @@
 #import "RSA.h"
 #import <React/RCTLog.h>
 #import <React/RCTBridge.h>
-#import "NativePaymentView.h"
+#import <React/RCTConvert.h>
 #import "AppDelegate.h"
+#import "NativePaymentView.h"
 
 @interface CCWebViewController ()
 
@@ -94,10 +95,10 @@
   NSString *string = webView.request.URL.absoluteString;
   
   // Sending Page Loading finished event [START]
-  AppDelegate *appDelegate = (AppDelegate *) [UIApplication sharedApplication].delegate;
-  RCTBridge *reactBridge = [appDelegate reactBridge];
-  NativePaymentView *paymentView = [reactBridge moduleForName:@"NativePaymentView"];
-  [paymentView emitEvent:@{@"url":string} :@"PageFinished"];
+//  AppDelegate *appDelegate = (AppDelegate *) [UIApplication sharedApplication].delegate;
+//  RCTBridge *reactBridge = [appDelegate reactBridge];
+//  NativePaymentView *paymentView = [reactBridge moduleForName:@"NativePaymentView"];
+//  [paymentView emitEvent:@{@"url":string} :@"PageFinished"];
   // [END]
   
   // URL is closer to success url
@@ -113,7 +114,40 @@
     
     RCTLogInfo(@"Transaction Output: %@", output);
     
-    // TODO: Convert "output" to NSDictionary and send the TransFinished event
+    NSData *webData = [output dataUsingEncoding:NSUTF8StringEncoding];
+    NSError *error;
+    NSDictionary *outputDict = [NSJSONSerialization JSONObjectWithData:webData options:0 error:&error];
+    
+    int success = 0;
+    if(outputDict[@"success"] == true) {
+      success = 1;
+    }
+    NSString *message = outputDict[@"message"];
+    NSString *encResp = @"";
+    
+    NSDictionary *data = outputDict[@"data"];
+    if(data == nil) {
+      RCTLogInfo(@"data was null");
+      encResp = data[@"encResp"];
+    }
+
+    NSDictionary *transParams = @{
+                                 @"booking_id": @"",
+                                 @"amount": self.amount,
+                                 @"order_id": self.orderId,
+                                 @"encResp": encResp,
+                                 @"message": message,
+                                 @"status": @(success)
+                                 };
+    NSDictionary *evParams = @{
+                              @"transParams": transParams
+                              };
+    // Sending event [START]
+    AppDelegate *appDelegate = (AppDelegate *) [UIApplication sharedApplication].delegate;
+    RCTBridge *reactBridge = [appDelegate reactBridge];
+    NativePaymentView *paymentView = [reactBridge moduleForName:@"NativePaymentView"];
+    [paymentView emitEvent:evParams :@"TransFinished"];
+    // Sending event [END]
     
     [appDelegate navigateToReactNative];
   }
