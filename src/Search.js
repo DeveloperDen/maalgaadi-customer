@@ -92,7 +92,7 @@ export default class Search extends Component {
                     fetchDetails={true}
                     renderDescription={row =>
                         <View
-                        style={{flexDirection: 'row',alignItems: 'center'}}>
+                        style={{flexDirection: 'row', alignItems: 'center', marginEnd: 45}}>
                             <Image
                             source={row.favourite? ICONS.heart_filled : ICONS.location}
                             style={{width: 15, height:15, marginEnd: 10, opacity: 0.3,}}/>
@@ -181,7 +181,6 @@ export default class Search extends Component {
                         listView: {
                             marginTop: 5,
                             borderRadius: 5,
-                            elevation: 1,
                             marginHorizontal: 5
                         },
                         predefinedPlacesDescription: {

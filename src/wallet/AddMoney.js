@@ -144,7 +144,7 @@ export default class AddMoney extends Component {
                 style={{
                     backgroundColor: this.state.amount.length > 0? ACCENT : '#C9C9C9',
                     position: 'absolute', alignSelf: 'center', bottom: 0, width: '100%', alignItems: 'center',
-                    justifyContent: 'center', elevation: 5, paddingVertical: 20,
+                    justifyContent: 'center', elevation: 10, paddingVertical: 20,
                     shadowOffset: {width: 0, height: -2}, shadowOpacity: 0.2, shadowRadius: 4,
                 }}>
                     <Text style={{color: 'white', fontSize: 15}}>ADD MONEY</Text>

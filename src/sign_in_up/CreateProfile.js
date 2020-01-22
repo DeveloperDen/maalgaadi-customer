@@ -231,7 +231,7 @@ export default class CreateProfile extends Component {
                             onPress={() => {
                                 this.showPopover(Constants.HINT_PROF_EMAIL, this.emailHint)
                             }}>
-                                <Image source={{uri:'https://cdn3.iconfinder.com/data/icons/google-material-design-icons/48/ic_error_48px-512.png'}}
+                                <Image source={ICONS.info}
                                 style={{width: 20, height: 20, opacity: 0.5}}/>
                             </TouchableOpacity>
                             
@@ -253,7 +253,7 @@ export default class CreateProfile extends Component {
                             onPress={() => {
                                 this.showPopover(Constants.HINT_PROF_ORG, this.orgHint)
                             }}>
-                                <Image source={{uri:'https://cdn3.iconfinder.com/data/icons/google-material-design-icons/48/ic_error_48px-512.png'}}
+                                <Image source={ICONS.info}
                                 style={{width: 20, height: 20, opacity: 0.5}}/>
                             </TouchableOpacity>
                             

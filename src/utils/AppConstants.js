@@ -243,7 +243,7 @@ export const ICONS = {
     info: require('../../assets/info.png'),
     cancel: require('../../assets/cancel.png'),
     tick: require('../../assets/tick.png'),
-    forward: require('../../assets/info.png'),
+    forward: require('../../assets/forward.png'),
     close: require('../../assets/close.png'),
     my_booking: require('../../assets/bookings.png'),
     my_fleet: require('../../assets/group_edit.png'),

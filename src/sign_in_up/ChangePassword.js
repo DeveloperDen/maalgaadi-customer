@@ -130,8 +130,8 @@ export default class ChangePassword extends Component {
                             return prevState
                         })
                     }}>
-                        <Image source={{uri: 
-                        this.state.showPass_New? Constants.ICONS.show_pass : Constants.ICONS.hide_pass}}
+                        <Image source={
+                        this.state.showPass_New? Constants.ICONS.show_pass : Constants.ICONS.hide_pass}
                     style={{width: 25, height: 25, opacity: 0.3}}/>
                     </TouchableOpacity>
                     
@@ -168,8 +168,8 @@ export default class ChangePassword extends Component {
                             return prevState
                         })
                     }}>
-                        <Image source={{uri: 
-                        this.state.showPass_NewConf? Constants.ICONS.show_pass : Constants.ICONS.hide_pass}}
+                        <Image source={
+                        this.state.showPass_NewConf? Constants.ICONS.show_pass : Constants.ICONS.hide_pass}
                     style={{width: 25, height: 25, opacity: 0.3}}/>
                     </TouchableOpacity>
                     
