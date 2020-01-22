@@ -92,14 +92,10 @@ export default class Search extends Component {
                     fetchDetails={true}
                     renderDescription={row =>
                         <View
-                        onTouchEnd={() => {
-                            this.showLoadingModal();
-                        }}
-                        style={{flexDirection: 'row',alignItems: 'center', marginEnd: 10}}>
+                        style={{flexDirection: 'row',alignItems: 'center'}}>
                             <Image
-                            source={{uri:
-                                row.favourite? 'https://cdn3.iconfinder.com/data/icons/google-material-design-icons/48/ic_favorite_48px-512.png' : 'https://cdn2.iconfinder.com/data/icons/pittogrammi/142/94-512.png'}}
-                            style={{width: 15, height:15, margin: 10, opacity: 0.3}}/>
+                            source={row.favourite? ICONS.heart_filled : ICONS.location}
+                            style={{width: 15, height:15, marginEnd: 10, opacity: 0.3,}}/>
                             <View>
                                 <Text style={{fontWeight: "700", fontSize: 15, ellipsizeMode: "tail",}} numberOfLines={1}>
                                     {row.favourite? row.description : row.structured_formatting.main_text}
@@ -141,6 +137,8 @@ export default class Search extends Component {
                         }     
                     }}
 
+                    onPressItem={() => this.showLoadingModal()}
+
                     numberOfLines={1}
 
                     renderLeftButton={() => {
@@ -169,9 +167,9 @@ export default class Search extends Component {
                         },
                         row: {
                             height: 60,
+                            paddingHorizontal: 15,
                             alignItems: 'center',
-                            marginVertical: 5,
-                            marginEnd: 35
+                            marginVertical: 10,
                         },
                         poweredContainer: {
                             justifyContent: 'center',
@@ -184,7 +182,7 @@ export default class Search extends Component {
                             marginTop: 5,
                             borderRadius: 5,
                             elevation: 1,
-                            flexGrow: 0
+                            marginHorizontal: 5
                         },
                         predefinedPlacesDescription: {
                             color: '#1faadb'

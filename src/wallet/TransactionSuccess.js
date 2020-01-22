@@ -11,7 +11,7 @@ import {
   Modal
 } from 'react-native';
 import { getItem, PAYMENT_TRANS_DATA, setItem, WALLET_BALANCE, CUSTOMER_ID, removeItem } from '../utils/DataStorageController';
-import { BASE_URL, SEND_TRANSACTION_STATUS, KEY, ICONS } from '../utils/AppConstants';
+import { BASE_URL, SEND_TRANSACTION_STATUS, KEY, ICONS, TRANS_PARAMS } from '../utils/AppConstants';
 
 const ACCENT = '#FFCB28' // 255, 203, 40
 const ACCENT_DARK = '#F1B800'
@@ -122,7 +122,7 @@ export default class TransactionStatus extends Component {
                 <StatusBar backgroundColor={ACCENT_DARK} 
                 barStyle="light-content"/>
 
-                <View style={{margin: Platform.OS == "ios"? 40 : 20}}>
+                <View style={{marginTop: Platform.OS == "ios"? 40 : 20, marginStart: 20}}>
                     <TouchableHighlight
                     onPress={() => {
                         this.props.navigation.goBack()

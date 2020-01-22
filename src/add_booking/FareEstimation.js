@@ -554,7 +554,7 @@ export default class FareEstimation extends Component {
                                 <TextInput value={this.state.yourPrice.toString()}
                                 style={{
                                     fontSize: 40, padding: 5
-                                }} keyboardType="decimal-pad"
+                                }} keyboardType="decimal-pad" returnKeyType="done"
                                 onChangeText={(text) => {
                                     if(text === '') {
                                         this.setState(prevState => {

@@ -86,7 +86,6 @@
   // Post page loading steps [START]
   [_indicator stopAnimating];
   _indicator.hidden = true;
-  
   // Initially, webview's user interaction is disabled and its alpha is not 1, in storyboard.
   _viewWeb.userInteractionEnabled = true;
   _viewWeb.alpha = 1.0;

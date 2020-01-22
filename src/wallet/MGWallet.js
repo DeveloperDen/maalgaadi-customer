@@ -134,8 +134,7 @@ export default class MGWallet extends Component {
                     <View style={{ backgroundColor: ACCENT_DARK, borderRadius: 100, padding: 15, margin: 10}}>
                         <Image
                         source={Constants.ICONS.my_wallet}
-                        tintColor='white'
-                        style={{width: 50, height: 50}}/>
+                        style={{width: 50, height: 50, tintColor: 'white'}}/>
                     </View>
                     
                     <View style={{margin: 10, justifyContent: 'center', alignItems: 'center'}}>

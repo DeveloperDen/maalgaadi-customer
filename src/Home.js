@@ -1850,7 +1850,7 @@ const styles = StyleSheet.create({
   },
   
   iconHamMenu: {
-    marginTop: 10,
+    marginTop: 0,
     padding: 25, 
     width:25,
     height:25, backgroundColor: 'transparent', alignItems:'center', justifyContent:'center'
