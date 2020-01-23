@@ -222,8 +222,8 @@ export default class GetOTP extends Component {
                     borderBottomWidth: 1, width: '80%', marginTop: 40, paddingHorizontal: 5, alignSelf: 'center',
                     opacity: this.state.isLoading? 0.3 : 1, paddingBottom: Platform.OS == "ios"? 5 : 0
                 }}>
-                    <TextInput editable={!this.state.isLoading}
-                    placeholder="Enter OTP" keyboardType='decimal-pad' maxLength={5}
+                    <TextInput editable={!this.state.isLoading} textContentType="oneTimeCode"
+                    placeholder="Enter OTP" keyboardType='decimal-pad' maxLength={5} returnKeyType="done"
                     style={{flex: 1, marginHorizontal: 10}}
                     onChangeText={text => {
                         this.setState(prevState => {

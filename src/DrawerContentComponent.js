@@ -218,7 +218,7 @@ const showAlert = (props) => {
                         key={index}>
                             <View style={styles.screenListItem}>
                                 <Image source={screen.icon}
-                                style={{width: 20, height: 20, tintColor: ACCENT}}/>
+                                style={{width: 20, height: 20, tintColor: ACCENT_DARK}}/>
                                 <Text
                                 style={{fontSize: 15, paddingStart: 30,}}>
                                     {screen.name}

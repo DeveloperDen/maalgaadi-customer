@@ -148,8 +148,6 @@ const DrawerStackNavigator = createStackNavigator({
   },
 
   Notifications: {screen: Notifications},
-  // Notifications: {screen: TransactionSuccess},
-  // Notifications: {screen: TransactionFailed},
 
   AddMoney: {screen: AddMoney},
   MGWallet: {screen: MGWallet},

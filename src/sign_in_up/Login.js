@@ -170,7 +170,7 @@ export default class Login extends Component {
                 }}>
                     <Image source={Constants.ICONS.device}
                     style={{width: 25, height: 25, opacity: 0.3}}/>
-                    <TextInput placeholder="Mobile Number" keyboardType='decimal-pad' maxLength={10}
+                    <TextInput placeholder="Mobile Number" keyboardType='decimal-pad' maxLength={10} returnKeyType="done"
                     onChangeText={(text) => {
                         this.setState(prevState => {
                             prevState.phone = text

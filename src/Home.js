@@ -498,17 +498,11 @@ export default class Home extends Component {
         this.props.navigation.navigate("NoNetworkModal");
     })
 
-    const isProfileCompleted = await DataController.getItem(DataController.IS_PROFILE_COMPLETED)
-    isProfileCompleted === "false" ? this.props.navigation.navigate("CreateProfile", {
-      [Constants.IS_NEW_USER] : true
-    }) 
-    : null
-
     await this.checkLocationPermission()
     
     // Will Focus listener
     this.willFocusListener = this.props.navigation.
-    addListener('willFocus', () => {
+    addListener('willFocus', async () => {
       if(this.props.navigation.state.params){
         this.mapView.animateToRegion({
           latitude: this.props.navigation.getParam('latitude'),
@@ -517,6 +511,21 @@ export default class Home extends Component {
           longitudeDelta: LONGITUDE_DELTA
         }, 500)
       }
+
+      // Profile update check
+      const isProfileUpdated = await DataController.getItem(DataController.IS_PROFILE_UPDATED);
+      if(isProfileUpdated === "true") {
+        this.showToast("Profile updated successfully")
+        DataController.setItem(DataController.IS_PROFILE_UPDATED, "false");
+      }
+
+      // Profile completed check
+      const isProfileCompleted = await DataController.getItem(DataController.IS_PROFILE_COMPLETED);
+      isProfileCompleted === "false" ? this.props.navigation.navigate("CreateProfile", {
+        [Constants.IS_NEW_USER] : true
+      }) 
+      : null
+      console.log("Profile completed: ", isProfileCompleted);
 
       this.getRatingResponse();
 
@@ -1636,10 +1645,16 @@ export default class Home extends Component {
         {Platform.OS == "ios"? this.renderFooter() : null}
 
         {/* Pin on Map */}
-        <View style={{top: '50%', bottom: '50%', marginTop: -50, position: 'absolute', 
-          alignSelf: "center", }}>
+        <View style={{top: '50%', bottom: '50%', marginTop: -35, position: 'absolute', 
+          alignSelf: "center", alignItems: 'center',
+          shadowColor: 'black', shadowOffset: {height: 2}, shadowOpacity: 0.2, shadowRadius: 2, elevation: 4}}>
             <Image source={this.state.isActiveInput === ORIGIN? greenPin : redPin}
             style={{width: 45, height: 45,}}/>
+            <View style={{backgroundColor: 'white', paddingVertical: 5, paddingHorizontal: 10, opacity: 0.8, borderRadius: 50, marginTop: 15}}>
+              <Text style={{fontSize: 11}}>
+                {this.state.isActiveInput === ORIGIN? "PICK UP" : "DROP"}
+              </Text>
+            </View>
         </View>
       
         {/* Dialog box to save locations. */}

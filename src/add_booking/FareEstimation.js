@@ -542,7 +542,7 @@ export default class FareEstimation extends Component {
                                 alignSelf: 'center', color: 'red', fontStyle: 'italic', fontSize: 12,
                                 marginTop: 15, display: this.state.inValidPrice? 'flex' : 'none'
                             }}>
-                                Price too Low. Please upgrade it.
+                                Entered Price is too Low. Please update it.
                             </Text>
 
                             <View

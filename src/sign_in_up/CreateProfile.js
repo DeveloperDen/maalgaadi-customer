@@ -7,12 +7,12 @@ import {
   Text,
   Picker,
   Linking,
-  ToastAndroid,
   Platform
 } from 'react-native';
 import { ScrollView, TextInput, TouchableOpacity } from 'react-native-gesture-handler';
 import { PopOverComp } from '../utils/PopOverComp';
 import { ICONS } from '../utils/AppConstants';
+import ToastComp from '../utils/ToastComp';
 
 const Constants = require('../utils/AppConstants')
 const DataController = require('../utils/DataStorageController')
@@ -45,7 +45,7 @@ export default class CreateProfile extends Component {
         this.isExc = false
 
         this.state = {
-            romView: null,
+            fromView: null,
             popOverText: '',
             tutCompFieldActive: null,
             isVisible: false,
@@ -61,6 +61,22 @@ export default class CreateProfile extends Component {
             goodsId: 0,
             tripPickerOpen: false
         }
+    }
+
+    validateFields() {
+        if(this.state.tripFreq != 0 && this.state.name != "" &&
+        this.state.address != "" && this.state.number != "" &&
+        this.state.email != "" && this.state.org != "" &&
+        this.state.goodsType != 'Select Goods Type' && this.state.goodsId != 0) {
+            this.updateUserProfile()
+        }
+        else {
+            this.showToast("Please fill the fields");
+        }
+    }
+
+    showToast(message) {
+        this.toast.show(message);
     }
 
     async componentDidMount() {
@@ -86,7 +102,7 @@ export default class CreateProfile extends Component {
         })
         .catch(err => {
             console.log(err)
-            ToastAndroid.show(Constants.ERROR_GET_DETAILS, ToastAndroid.SHORT);
+            this.showToast(Constants.ERROR_GET_DETAILS);
         })
     }
 
@@ -131,46 +147,54 @@ export default class CreateProfile extends Component {
             }
         })
 
-        const response = await request.json().then(async value => {
-            const dataToWrite = new FormData()
-            dataToWrite.append(DataController.IS_PROFILE_COMPLETED, "true")
-            dataToWrite.append(DataController.IS_LOGIN, "true")
-            dataToWrite.append(DataController.CUSTOMER_ID, value.data.id.toString())
-            dataToWrite.append(DataController.CUSTOMER_MOBILE, value.data.cust_number)
-            dataToWrite.append(DataController.BUFFER_TIME, value.data.configure_setting.buffered_schedule_time.toString())
-            dataToWrite.append(DataController.CONFIGURE_SETTING, JSON.stringify(value.data.configure_setting))
-            
-            dataToWrite.append(DataController.CUSTOMER_NAME, this.state.name)
-            dataToWrite.append(DataController.RATING, value.data.rating.toString())
-            dataToWrite.append(DataController.EMAIL, value.data.cust_email)
-            dataToWrite.append(DataController.ORG, value.data.cust_organization)
-            
-            // TODO: Decide on the basis of city_list
-            dataToWrite.append(DataController.CITY, "Indore")
+        await request.json().then(async value => {
+            if(value.success) {
+                const dataToWrite = new FormData()
+                dataToWrite.append(DataController.IS_PROFILE_COMPLETED, "true")
+                dataToWrite.append(DataController.IS_LOGIN, "true")
+                dataToWrite.append(DataController.CUSTOMER_ID, value.data.id.toString())
+                dataToWrite.append(DataController.CUSTOMER_MOBILE, value.data.cust_number)
+                dataToWrite.append(DataController.BUFFER_TIME, value.data.configure_setting.buffered_schedule_time.toString())
+                dataToWrite.append(DataController.CONFIGURE_SETTING, JSON.stringify(value.data.configure_setting))
+                
+                dataToWrite.append(DataController.CUSTOMER_NAME, this.state.name)
+                dataToWrite.append(DataController.RATING, value.data.rating.toString())
+                dataToWrite.append(DataController.EMAIL, value.data.cust_email)
+                dataToWrite.append(DataController.ORG, value.data.cust_organization)
+                
+                // TODO: Decide on the basis of city_list
+                dataToWrite.append(DataController.CITY, "Indore")
 
-            dataToWrite.append(DataController.CITY_ID, value.data.city_id.toString())
+                dataToWrite.append(DataController.CITY_ID, value.data.city_id.toString())
 
-            dataToWrite.append(DataController.ADDRESS, value.data.cust_address)
-            dataToWrite.append(DataController.GOODS_NAME, value.data.goods_name)
-            dataToWrite.append(DataController.GOODS_ID, value.data.goods_id.toString())
-            dataToWrite.append(DataController.TRIP_FREQ, value.data.selected_trip_frequency)
+                dataToWrite.append(DataController.ADDRESS, value.data.cust_address)
+                dataToWrite.append(DataController.GOODS_NAME, value.data.goods_name)
+                dataToWrite.append(DataController.GOODS_ID, value.data.goods_id.toString())
+                dataToWrite.append(DataController.TRIP_FREQ, value.data.selected_trip_frequency)
 
-            await DataController.setItems(dataToWrite)
+                dataToWrite.append(DataController.IS_PROFILE_UPDATED, "true");
 
-            console.log("Response: ", value)
-            console.log("Written Data: ", dataToWrite)
-            console.log("Profile Updated")
+                await DataController.setItems(dataToWrite)
+
+                console.log("Response: ", value)
+                console.log("Written Data: ", dataToWrite)
+                console.log("Profile Updated")
+
+                this.props.navigation.popToTop();
+            }
+            else {
+                this.showToast(value.message);
+            }
         })
         .catch(err => {
             console.log(err);
-            ToastAndroid.show(Constants.ERROR_UPDATE_PROFILE, ToastAndroid.SHORT);
+            this.showToast(Constants.ERROR_UPDATE_PROFILE);
         })
 
         this.setState(prevState => {
             prevState.isLoading = false
             return prevState
         })
-        this.props.navigation.popToTop();
     }
 
     showPopover(compFieldText, comp) {
@@ -232,7 +256,7 @@ export default class CreateProfile extends Component {
                                 this.showPopover(Constants.HINT_PROF_EMAIL, this.emailHint)
                             }}>
                                 <Image source={ICONS.info}
-                                style={{width: 20, height: 20, opacity: 0.5}}/>
+                                style={{width: 20, height: 20, opacity: 0.4}}/>
                             </TouchableOpacity>
                             
                         </View>
@@ -254,7 +278,7 @@ export default class CreateProfile extends Component {
                                 this.showPopover(Constants.HINT_PROF_ORG, this.orgHint)
                             }}>
                                 <Image source={ICONS.info}
-                                style={{width: 20, height: 20, opacity: 0.5}}/>
+                                style={{width: 20, height: 20, opacity: 0.4}}/>
                             </TouchableOpacity>
                             
                         </View>
@@ -404,7 +428,7 @@ export default class CreateProfile extends Component {
                 disabled={this.state.isLoading}
                 underlayColor={ACCENT_DARK}
                 onPress={() => {
-                    this.updateUserProfile()
+                    this.validateFields();
                 }}
                 style={{
                     backgroundColor: this.state.isLoading? 'gray' : ACCENT,
@@ -425,6 +449,9 @@ export default class CreateProfile extends Component {
                             this.props.navigation.getParam(Constants.IS_NEW_USER)? 'Create Profile' : 'Save'}
                     </Text>
                 </TouchableHighlight>
+
+                {/* Toast box */}
+                <ToastComp ref={t => this.toast = t}/>
             </View>
         )
     }

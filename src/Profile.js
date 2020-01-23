@@ -92,8 +92,7 @@ export default class Profile extends Component {
                     backgroundColor: ACCENT, padding: 20, overflow: 'visible', alignItems: 'center'
                 }}>
                     <Image source={Constants.ICONS.driver_search}
-                    style={{width: 80, height: 80, opacity: 0.8, alignSelf: 'center', }}
-                    tintColor='white'/>
+                    style={{width: 80, height: 80, opacity: 0.8, alignSelf: 'center', tintColor: 'white'}}/>
                     <Text style={{fontSize: 18, fontWeight: '700', color: 'white', marginTop: 15}}>{this.state.name}</Text>
                     <Text style={{fontSize: 13, color: 'white'}}>{"(+91 " + this.state.number + ")"}</Text>
                 </View>
