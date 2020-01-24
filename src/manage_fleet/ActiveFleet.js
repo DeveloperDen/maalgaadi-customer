@@ -21,7 +21,7 @@ import ToastComp from '../utils/ToastComp';
 
 const ACCENT = '#FFCB28' // 255, 203, 40 
 
-export default class RunningMyBookings extends Component {
+export default class ActiveFleet extends Component {
     constructor(props) {
         super(props)
         this.state = {
@@ -304,7 +304,8 @@ export default class RunningMyBookings extends Component {
                     justifyContent: 'center'
                     }}>
                         <View style={{backgroundColor: 'white', borderRadius: 5, overflow: 'hidden'}}>
-                            <View style={{
+                            {/* Currently ommiting Exclusive Driver switch */}
+                            {/* <View style={{
                                 flexDirection: 'row', alignItems: 'center',
                                 justifyContent: 'space-between', marginTop: 20, marginHorizontal: 20,
                             }}>
@@ -319,7 +320,7 @@ export default class RunningMyBookings extends Component {
                                         return prevState
                                     })
                                 }}/>
-                            </View>
+                            </View> */}
 
                             <View style={{
                                 flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',

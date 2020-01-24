@@ -28,6 +28,7 @@ import firebase from 'react-native-firebase';
 import {check, request, PERMISSIONS, RESULTS} from 'react-native-permissions';
 import ToastComp from './utils/ToastComp';
 import { getDeviceId } from 'react-native-device-info';
+import {getDistance} from 'geolib';
 
 const BookingModel = require('./models/bookings_model')
 const Constants = require('./utils/AppConstants')
@@ -719,8 +720,8 @@ export default class Home extends Component {
         }
     })
 
-    const response = await request.json().then(async value => {
-        console.log(value)
+    await request.json().then(async value => {
+        console.log("Vehicle Category response: ", value);
 
         if(!value.success){
             this.showToast(value.message);
@@ -753,8 +754,8 @@ export default class Home extends Component {
         }
     })
 
-    const response = await request.json().then(value => {
-        console.log(value)
+    await request.json().then(value => {
+        console.log("Free Drivers response: ", value);
 
         if(!value.success){
           this.showToast(value.message);
@@ -786,12 +787,73 @@ export default class Home extends Component {
     })
   }
 
-  // Not in use currently.
+  async getETA() {
+    console.log("Getting ETA...");
+
+    if (this.freeDrivers == null)
+        return;
+
+    let destination = {
+      latitude: 0,
+      longitude: 0
+    };
+
+    const camera = await this.mapView.getCamera();
+    const currentLatLng = camera.center;
+
+    if (this.freeDrivers.length != 0) {
+        for (let i = 0; i < this.freeDrivers.length; i++) {
+            destination.latitude = this.freeDrivers[i].lat;
+            destination.longitude = this.freeDrivers[i].lng;
+            this.freeDrivers[i].eta = this.calculateEta(getDistance(currentLatLng, destination) / 1000);
+        }
+    }
+
+    let check = false;
+    let etaCovered = 9999;
+    let etaUncovered = 9999;
+
+    this.setState(prevState => {
+      prevState.vehiclesList.forEach((vehicle) => {
+          this.freeDrivers.forEach((freeDriver) => {
+              if (vehicle.id  == freeDriver.vehicle_category_id) {
+                  if (vehicle.covered && freeDriver.covered) {
+                      if (etaCovered > freeDriver.eta) {
+                          etaCovered = freeDriver.eta;
+                          if (etaCovered == 0)
+                              vehicle.etaCovered = 1;
+                          else
+                              vehicle.etaCovered = etaCovered.toFixed(2);
+                          check = true;
+                      }
+                  } else if (!vehicle.covered && !freeDriver.covered) {
+                      if (etaUncovered > freeDriver.eta) {
+                          etaUncovered = freeDriver.eta;
+                          if (etaUncovered == 0)
+                              vehicle.etaUncovered = 1;
+                          else
+                              vehicle.etaUncovered = etaUncovered.toFixed(2);
+                          check = true;
+                      }
+                  }
+              }
+          })
+          etaCovered = 9999;
+          etaUncovered = 9999;
+      })
+
+      if (check) {
+        console.log("Returning ETA...");
+        return prevState;
+      }
+    })
+  }
+
   calculateEta(distanceKm) {
     const peakDistance = 80; // km
     const timePerKm = 4; // min
     const bufferTime = 240; // min
-    const returnTime = 0;
+    let returnTime = 0;
     if (distanceKm <= 80) {
         returnTime = ((timePerKm * distanceKm) + ((((distanceKm * 100) / peakDistance) * bufferTime) / 100));
     } else {
@@ -852,6 +914,7 @@ export default class Home extends Component {
     }
   };
 
+  // On Map Region change listener by any way, ie. by dragging or programmetically.
   mapRegionChangeCompleteListener = region => {
     Geocoder.from(region.latitude, region.longitude)
       .then(res => {
@@ -866,6 +929,8 @@ export default class Home extends Component {
           prevState.isActiveInput === ORIGIN? prevState.preLoc = region : prevState.destLoc = region
           return prevState
         })
+
+        this.getETA();
       })
       .catch(error => console.log(error));
   }
@@ -1162,6 +1227,8 @@ export default class Home extends Component {
                   prevState.vehiclesList[prevState.selectedVehicleIndex].covered = !prevState.isCoveredVehicle
                   return prevState
                 })
+
+                this.getETA();
               }
               else {
                 this.showPopover(DataController.TUT_COV_VEH, this.covVehSwitch)
@@ -1205,8 +1272,8 @@ export default class Home extends Component {
                 }}
                 style={{alignItems: "center", paddingHorizontal: 10, flex: 1}} key={vehicle.vehicle_name}>
                   <View style={{alignItems: "center"}}>
-                    {vehicle.distance > 0?
-                      <Text style={{fontSize: 10, height: 20}}>{vehicle.distance} min</Text>
+                  {(this.state.isCoveredVehicle? vehicle.etaCovered : vehicle.etaUncovered)?
+                      <Text style={{fontSize: 10, height: 20}}>{this.state.isCoveredVehicle? vehicle.etaCovered : vehicle.etaUncovered} min</Text>
                       :
                       <DotLoader/>}
 
@@ -1472,6 +1539,7 @@ export default class Home extends Component {
                   prevState.vehiclesList[prevState.selectedVehicleIndex].covered = !prevState.isCoveredVehicle
                   return prevState
                 })
+                this.getETA();
               }
               else {
                 this.showPopover(DataController.TUT_COV_VEH, this.covVehSwitch)
@@ -1515,8 +1583,8 @@ export default class Home extends Component {
                 }}
                 style={{alignItems: "center", paddingHorizontal: 10, flex: 1}} key={vehicle.vehicle_name}>
                   <View style={{alignItems: "center"}}>
-                    {vehicle.distance > 0?
-                      <Text style={{fontSize: 10, height: 20}}>{vehicle.distance} min</Text>
+                    {(this.state.isCoveredVehicle? vehicle.etaCovered : vehicle.etaUncovered)?
+                      <Text style={{fontSize: 10, height: 20}}>{this.state.isCoveredVehicle? vehicle.etaCovered : vehicle.etaUncovered} min</Text>
                       :
                       <DotLoader/>}
 
@@ -1650,7 +1718,7 @@ export default class Home extends Component {
           shadowColor: 'black', shadowOffset: {height: 2}, shadowOpacity: 0.2, shadowRadius: 2, elevation: 4}}>
             <Image source={this.state.isActiveInput === ORIGIN? greenPin : redPin}
             style={{width: 45, height: 45,}}/>
-            <View style={{backgroundColor: 'white', paddingVertical: 5, paddingHorizontal: 10, opacity: 0.8, borderRadius: 50, marginTop: 15}}>
+            <View style={{backgroundColor: 'white', borderWidth: 1, borderColor: 'rgba(0, 0, 0, 0.2)', paddingVertical: 5, paddingHorizontal: 10, opacity: 0.8, borderRadius: 50, marginTop: 15}}>
               <Text style={{fontSize: 11}}>
                 {this.state.isActiveInput === ORIGIN? "PICK UP" : "DROP"}
               </Text>

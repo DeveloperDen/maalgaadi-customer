@@ -128,7 +128,9 @@ export const NO_DRIVER_FOUND_D = "No drivers are available to accept your bookin
 export const CANCEL_EDIT_CONFIRM = "Cancellation charges may apply. Do you want to cancel or edit the trip?"
 export const NO_NETWORK = "Seems like you are Offline. Please connect to either a WiFi network or turn on your Cellular Data"
 export const NO_ACIVE_FLEET = "Currently, you do not have any favourite drivers in your list. Tap on Add button to manage driver on your fleet."
+export const NO_REQUEST_FLEET = "You don't have any pending favourite driver requests to show up here."
 export const ERR_ACTIVE_FLEET = "An error occured while upadating fleet members."
+export const ERR_REQUEST_FLEET = "An error occured while getting fleet requests."
 export const ERROR_LOGOUT = "An error occured while Logging Out. Please try restarting the application."
 export const TRANS_FAIL_GUIDE = "Due to bank\'s system and processes it may take approximately 4 hours to reflect money in your Maalgaadi Wallet. Maalgaadi has no control over the time taken by your bank"
 
@@ -240,6 +242,7 @@ export const T_C = [
 export const TERMSANDCONDITION = "http://maalgaadi.net/terms-and-condition.html";
 
 export const ICONS = {
+    ic_notifications: require('../../assets/ic_notification.png'),
     info: require('../../assets/info.png'),
     cancel: require('../../assets/cancel.png'),
     tick: require('../../assets/tick.png'),
