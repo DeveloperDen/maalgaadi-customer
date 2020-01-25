@@ -256,7 +256,7 @@ export default class Home extends Component {
       console.log("Transaction Params: ", params);
       DataController.setItem(DataController.PAYMENT_TRANS_DATA, JSON.stringify(params))
       .then(() => {
-        if(params.success) {
+        if(params.status) {
           this.props.navigation.navigate({
             routeName: "TransactionSuccess"
           })
