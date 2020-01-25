@@ -405,7 +405,7 @@ export default class Home extends Component {
               console.log('The permission is granted');
               Geolocation.getCurrentPosition(
                 (position) => {
-                    console.log(position);
+                    console.log("Geolocation current position: ", position);
                     this.mapView.animateToRegion({
                       latitude: position.coords.latitude,
                       longitude: position.coords.longitude,
@@ -414,7 +414,7 @@ export default class Home extends Component {
                     }, 500)
                 },
                 (error) => {
-                  console.log(error.code, error.message);
+                  console.log("Geolocation error: ", error.code, error.message);
                 },
                 { enableHighAccuracy: true, timeout: 15000, maximumAge: 10000 }
               );
@@ -821,20 +821,20 @@ export default class Home extends Component {
               if (vehicle.id  == freeDriver.vehicle_category_id) {
                   if (vehicle.covered && freeDriver.covered) {
                       if (etaCovered > freeDriver.eta) {
-                          etaCovered = freeDriver.eta;
-                          if (etaCovered == 0)
+                          etaCovered = freeDriver.eta.toFixed(0);
+                          if (etaCovered <= 1)
                               vehicle.etaCovered = 1;
                           else
-                              vehicle.etaCovered = etaCovered.toFixed(2);
+                              vehicle.etaCovered = etaCovered;
                           check = true;
                       }
                   } else if (!vehicle.covered && !freeDriver.covered) {
                       if (etaUncovered > freeDriver.eta) {
-                          etaUncovered = freeDriver.eta;
-                          if (etaUncovered == 0)
+                          etaUncovered = freeDriver.eta.toFixed(1);
+                          if (etaUncovered <= 1)
                               vehicle.etaUncovered = 1;
                           else
-                              vehicle.etaUncovered = etaUncovered.toFixed(2);
+                              vehicle.etaUncovered = etaUncovered;
                           check = true;
                       }
                   }
@@ -1680,8 +1680,7 @@ export default class Home extends Component {
           <MapView
             showsMyLocationButton={false}
             onRegionChangeComplete={this.mapRegionChangeCompleteListener}
-            showsUserLocation={true} 
-            // customMapStyle={this.state.mapStyle}
+            showsUserLocation={true}
             provider={PROVIDER_GOOGLE}
             style={styles.mapReg}
             initialRegion={{
@@ -1717,14 +1716,14 @@ export default class Home extends Component {
         {/* Pin on Map */}
         <View
         style={{
-          top: '50%', bottom: '50%', marginTop: -35, position: 'absolute', 
+          top: '50%', marginTop: -35, position: 'absolute', 
           alignSelf: "center", alignItems: 'center',
-          shadowColor: 'black', shadowOffset: {height: 2}, shadowOpacity: 0.2, shadowRadius: 2, elevation: 4
+          shadowColor: 'black', shadowOffset: {height: 2}, shadowOpacity: 0.2, shadowRadius: 2,
         }}>
             <Image source={this.state.isActiveInput === ORIGIN? greenPin : redPin}
             style={{width: 45, height: 45,}}/>
-            <View style={{backgroundColor: 'white', borderWidth: 1, borderColor: 'rgba(0, 0, 0, 0.2)', paddingVertical: 5, paddingHorizontal: 10, opacity: 0.8, borderRadius: 50, marginTop: 15, alignItems: 'center', justifyContent: 'center'}}>
-              <Text style={{fontSize: 11,}}>
+            <View style={{backgroundColor: 'white', borderWidth: 1, borderColor: 'rgba(0, 0, 0, 0.2)', opacity: 0.8, marginTop: 15, borderRadius: 50}}>
+              <Text style={{fontSize: 11, paddingVertical: 5, paddingHorizontal: 15}}>
                 {this.state.isActiveInput === ORIGIN? "PICK UP" : "DROP"}
               </Text>
             </View>
@@ -1938,8 +1937,8 @@ const styles = StyleSheet.create({
   },
   
   iconHamMenu: {
-    marginTop: 0,
-    padding: 25, 
+    marginTop: 10,
+    padding: 25,
     width:25,
     height:25, backgroundColor: 'transparent', alignItems:'center', justifyContent:'center'
   },

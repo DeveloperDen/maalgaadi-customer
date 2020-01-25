@@ -120,12 +120,21 @@ const PendingPODTabs = createMaterialTopTabNavigator({
 })
 
 const DrawerStackNavigator = createStackNavigator({
-  TransactionSuccess: {screen: TransactionSuccess},
-  TransactionFailed: {screen: TransactionFailed},
+  TransactionSuccess: {screen: TransactionSuccess,
+    navigationOptions: () => ({
+      gesturesEnabled: true,
+    })},
+  TransactionFailed: {screen: TransactionFailed,
+    navigationOptions: () => ({
+      gesturesEnabled: true,
+    })},
 
   RateScreen: {screen: RateScreen},
 
-  TrackDriver: {screen: TrackDriver},
+  TrackDriver: {screen: TrackDriver,
+    navigationOptions: () => ({
+      gesturesEnabled: true,
+    })},
   TripDetails: {screen: TripDetails},
   
   FareEstimation: {screen: FareEstimation},
@@ -133,10 +142,16 @@ const DrawerStackNavigator = createStackNavigator({
   Profile: {screen: Profile},
   CreateProfile: {screen: CreateProfile},
 
-  TermsConditions: {screen: TermsConditions},
+  TermsConditions: {screen: TermsConditions,
+    navigationOptions: () => ({
+      gesturesEnabled: true,
+    })},
 
   SettingsAll : {screen: SettingsAll},
-  Settings: {screen: Settings},
+  Settings: {screen: Settings,
+    navigationOptions: () => ({
+      gesturesEnabled: true,
+    })},
 
   TransactionHistory: {screen: TransactionHistory},
 
@@ -165,10 +180,21 @@ const DrawerStackNavigator = createStackNavigator({
   }},
 
   FavouriteLocations: {screen: FavouriteLocations},
-  GoodsList: {screen: GoodsList},
-  VehicleList: {screen: VehicleList},
+  GoodsList: {screen: GoodsList,
+    navigationOptions: () => ({
+      gesturesEnabled: true,
+    })
+  },
+  VehicleList: {screen: VehicleList,
+    navigationOptions: () => ({
+      gesturesEnabled: true,
+    })},
   AddBooking: {screen: AddBooking},
-  Search: {screen: Search},
+  Search: {screen: Search,
+    navigationOptions: () => ({
+      gesturesEnabled: true,
+    })
+  },
 
   Main: {screen: Home,
     navigationOptions: () => ({
@@ -176,7 +202,10 @@ const DrawerStackNavigator = createStackNavigator({
     })}
 
 }, {
-  initialRouteName: 'Main',
+    initialRouteName: 'Main',
+    defaultNavigationOptions: () => ({
+      gesturesEnabled: false,
+    }),
     transitionConfig: () => ({
     transitionSpec: {
       duration: 300,
@@ -222,21 +251,29 @@ const HomeStackNavigator = createStackNavigator({
     Home: { screen: DrawerNavigator,
       navigationOptions: () => ({
         headerStyle: {display: 'none'},
+        gesturesEnabled: false
     })},
-    RateCard: { screen: RateCard },
+    RateCard: { screen: RateCard,
+      navigationOptions: () => ({
+        gesturesEnabled: true,
+      })
+    },
     NoNetworkModal: {screen: NoNetworkModal,
       navigationOptions: () => ({
         headerStyle: {display: 'none'},
+        gesturesEnabled: false,
       })
     },
     PaymentWebview: {screen: PaymentWebview,
       navigationOptions: () => ({
         headerStyle: {display: 'none'},
+        gesturesEnabled: false,
       })
     },
     RatingDialog: {screen: RatingDialog,
       navigationOptions: () => ({
         headerStyle: {display: 'none'},
+        gesturesEnabled: false
       })
     },
   }, {
@@ -281,6 +318,7 @@ const RegistrationNavigator = createStackNavigator({
   Login: {screen: Login,
     navigationOptions: () => ({
       headerStyle: {display: 'none'},
+      gesturesEnabled: true
     })}
   },
   {

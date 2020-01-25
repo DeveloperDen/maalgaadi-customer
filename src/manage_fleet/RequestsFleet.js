@@ -152,7 +152,7 @@ export default class RequestsFleet extends Component {
                                     <Text style={{fontSize: 12, opacity: 0.4, marginVertical: 5}}>{member.vehicle_name}</Text>
                                     <Text style={{fontSize: 12, opacity: 0.4}}>{member.vehicle_reg_no}</Text>
 
-                                    <Text style={{borderColor: member.state == "Declined"? 'red' : ACCENT_DARK, borderWidth: 1, color: member.state == "Declined"? 'red' : ACCENT_DARK, textAlign: 'center', padding: 3, borderRadius: 100, marginTop: 10}}>
+                                    <Text style={{borderColor: member.state == "Declined"? 'red' : ACCENT_DARK, borderWidth: 1, color: member.state == "Declined"? 'red' : ACCENT_DARK, textAlign: 'center', padding: 3, borderRadius: 10, marginTop: 10}}>
                                         {member.status}
                                     </Text>
                                 </View>
