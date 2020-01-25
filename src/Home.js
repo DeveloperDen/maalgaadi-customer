@@ -247,15 +247,17 @@ export default class Home extends Component {
     // Page Finished Loading
     this.eventEmitter = new NativeEventEmitter(NativePaymentView);
     this.eventEmitter.addListener('PageFinished', (event) => {
-      console.log("URL: ", event.url)
-      this.showToast("URL: " + event.url)
+      console.log("Got URL message: ", event.url)
+      this.showToast(event.url)
     })
     // Transaction finished
     this.eventEmitter.addListener('TransFinished', (event) => {
       const params = event.transParams
       console.log("Transaction Params: ", params);
       DataController.setItem(DataController.PAYMENT_TRANS_DATA, JSON.stringify(params))
-      .then(() => {
+      .then((value) => {
+        console.log("Payment Data saved: ", value);
+
         if(params.status) {
           this.props.navigation.navigate({
             routeName: "TransactionSuccess"
@@ -1713,13 +1715,16 @@ export default class Home extends Component {
         {Platform.OS == "ios"? this.renderFooter() : null}
 
         {/* Pin on Map */}
-        <View style={{top: '50%', bottom: '50%', marginTop: -35, position: 'absolute', 
+        <View
+        style={{
+          top: '50%', bottom: '50%', marginTop: -35, position: 'absolute', 
           alignSelf: "center", alignItems: 'center',
-          shadowColor: 'black', shadowOffset: {height: 2}, shadowOpacity: 0.2, shadowRadius: 2, elevation: 4}}>
+          shadowColor: 'black', shadowOffset: {height: 2}, shadowOpacity: 0.2, shadowRadius: 2, elevation: 4
+        }}>
             <Image source={this.state.isActiveInput === ORIGIN? greenPin : redPin}
             style={{width: 45, height: 45,}}/>
-            <View style={{backgroundColor: 'white', borderWidth: 1, borderColor: 'rgba(0, 0, 0, 0.2)', paddingVertical: 5, paddingHorizontal: 10, opacity: 0.8, borderRadius: 50, marginTop: 15}}>
-              <Text style={{fontSize: 11}}>
+            <View style={{backgroundColor: 'white', borderWidth: 1, borderColor: 'rgba(0, 0, 0, 0.2)', paddingVertical: 5, paddingHorizontal: 10, opacity: 0.8, borderRadius: 50, marginTop: 15, alignItems: 'center', justifyContent: 'center'}}>
+              <Text style={{fontSize: 11,}}>
                 {this.state.isActiveInput === ORIGIN? "PICK UP" : "DROP"}
               </Text>
             </View>

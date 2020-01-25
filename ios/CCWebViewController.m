@@ -113,42 +113,58 @@
     
     RCTLogInfo(@"Transaction Output: %@", output);
     
-    NSData *webData = [output dataUsingEncoding:NSUTF8StringEncoding];
-    NSError *error;
-    NSDictionary *outputDict = [NSJSONSerialization JSONObjectWithData:webData options:0 error:&error];
-    
-    int success = 0;
-    if(outputDict[@"success"] == true) {
-      success = 1;
+    if(output != NULL || output != nil || ![output  isEqual: @""]) {
+      
+      NSData *webData = [output dataUsingEncoding:NSUTF8StringEncoding];
+      NSError *error;
+      NSDictionary *outputDict = [NSJSONSerialization JSONObjectWithData:webData options:0 error:&error];
+      
+      RCTLogInfo(@"Output Dict: %@", outputDict);
+      
+      int success = [outputDict[@"success"] integerValue];
+      
+      NSString *message = outputDict[@"message"];
+      
+      NSString *encResp = @"";
+      
+      NSDictionary *data = outputDict[@"data"];
+      
+      @try {
+        encResp = data[@"encResp"];
+      
+        NSDictionary *transParams = @{
+                                      @"booking_id": @"",
+                                      @"amount": self.amount,
+                                      @"order_id": self.orderId,
+                                      @"encResp": encResp,
+                                      @"message": message,
+                                      @"status": @(success)
+                                      };
+        NSDictionary *evParams = @{
+                                   @"transParams": transParams
+                                   };
+        // Sending event [START]
+        AppDelegate *appDelegate = (AppDelegate *) [UIApplication sharedApplication].delegate;
+        RCTBridge *reactBridge = [appDelegate reactBridge];
+        NativePaymentView *paymentView = [reactBridge moduleForName:@"NativePaymentView"];
+        [paymentView emitEvent:evParams :@"TransFinished"];
+        // Sending event [END]
+        
+        [appDelegate navigateToReactNative];
+      }
+      @catch(NSException *exception) {
+        // If Data is null, then just send the Message as URL message to show as toast.
+        
+        // Sending event [START]
+        AppDelegate *appDelegate = (AppDelegate *) [UIApplication sharedApplication].delegate;
+        RCTBridge *reactBridge = [appDelegate reactBridge];
+        NativePaymentView *paymentView = [reactBridge moduleForName:@"NativePaymentView"];
+        [paymentView emitEvent:@{@"url":message} :@"PageFinished"];
+        // Sending event [END]
+        
+        [appDelegate navigateToReactNative];
+      }
     }
-    NSString *message = outputDict[@"message"];
-    NSString *encResp = @"";
-    
-    NSDictionary *data = outputDict[@"data"];
-    if(data == nil) {
-      RCTLogInfo(@"data was null");
-      encResp = data[@"encResp"];
-    }
-
-    NSDictionary *transParams = @{
-                                 @"booking_id": @"",
-                                 @"amount": self.amount,
-                                 @"order_id": self.orderId,
-                                 @"encResp": encResp,
-                                 @"message": message,
-                                 @"status": @(success)
-                                 };
-    NSDictionary *evParams = @{
-                              @"transParams": transParams
-                              };
-    // Sending event [START]
-    AppDelegate *appDelegate = (AppDelegate *) [UIApplication sharedApplication].delegate;
-    RCTBridge *reactBridge = [appDelegate reactBridge];
-    NativePaymentView *paymentView = [reactBridge moduleForName:@"NativePaymentView"];
-    [paymentView emitEvent:evParams :@"TransFinished"];
-    // Sending event [END]
-    
-    [appDelegate navigateToReactNative];
   }
 }
 

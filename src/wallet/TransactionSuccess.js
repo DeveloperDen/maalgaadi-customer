@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import {
   StyleSheet,
   View,
-  ToastAndroid,
   TouchableHighlight, Image, Text,
   StatusBar,
   Animated, Easing,
@@ -12,6 +11,7 @@ import {
 } from 'react-native';
 import { getItem, PAYMENT_TRANS_DATA, setItem, WALLET_BALANCE, CUSTOMER_ID, removeItem } from '../utils/DataStorageController';
 import { BASE_URL, SEND_TRANSACTION_STATUS, KEY, ICONS, TRANS_PARAMS } from '../utils/AppConstants';
+import ToastComp from '../utils/ToastComp';
 
 const ACCENT = '#FFCB28' // 255, 203, 40
 const ACCENT_DARK = '#F1B800'
@@ -34,7 +34,8 @@ export default class TransactionStatus extends Component {
             walBalance: 100,
             date: new Date().toLocaleString(),
             amount: 50,
-            transId: "41355536663464",
+            message: '',
+            transId: "",
             translateY: new Animated.Value(300),
             opacity: new Animated.Value(0),
             scale: new Animated.Value(0)
@@ -47,6 +48,7 @@ export default class TransactionStatus extends Component {
         this.setState(prevState => {
             prevState.amount = this.transData.amount;
             prevState.transId = this.transData[TRANS_PARAMS.ORDER_ID];
+            prevState.message = this.transData.message;
             return prevState;
         })
 
@@ -75,6 +77,10 @@ export default class TransactionStatus extends Component {
         ]).start()
     }
 
+    showToast(message) {
+        this.toast.show(message);
+    }
+
     sendTransactionStatus = async () => {
         const id = await getItem(CUSTOMER_ID)
         this.transData[CUSTOMER_ID] = id
@@ -91,10 +97,10 @@ export default class TransactionStatus extends Component {
         })
 
         await request.json().then(value => {
-            console.log(value)
+            console.log("Sent transaction status: ", value)
 
             if(!value.success){
-                ToastAndroid.show(value.message, ToastAndroid.SHORT);
+                this.showToast(value.message);
             }
             else {
                 const data = value.data;
@@ -103,7 +109,6 @@ export default class TransactionStatus extends Component {
                 this.setState(prevState => {
                     prevState.walBalance = data.mg_balance
                     prevState.date = data.created_at
-                    prevState.isLoading = false
                     return prevState
                 })
                 this.startAnim()
@@ -113,7 +118,13 @@ export default class TransactionStatus extends Component {
             
         }).catch(err => {
             console.log(err)
-        }) 
+            this.showToast(err);
+        })
+
+        this.setState(prevState => {
+            prevState.isLoading = false;
+            return prevState;
+        })
     }
 
     render() {
@@ -150,7 +161,7 @@ export default class TransactionStatus extends Component {
                     shadowOpacity: 0.25, shadowRadius: 4,}}>
                         <View style={{alignItems: 'center',}}>
                             <Text style={{fontWeight: "700", fontSize: 50, color: ACCENT_DARK}}>{String.fromCharCode(8377) + ' ' + this.state.amount}</Text>
-                            <Text style={{fontSize: 15, textAlign: 'center', marginHorizontal: 30, marginTop: 5, color: 'black', opacity: 0.3,}}>added successfully to you MaalGaadi Wallet</Text>
+                            <Text style={{fontSize: 15, textAlign: 'center', marginHorizontal: 30, marginTop: 5, color: 'black', opacity: 0.3,}}>{this.state.message}</Text>
                         </View>
 
                         <View
@@ -197,6 +208,8 @@ export default class TransactionStatus extends Component {
                         <ActivityIndicator size="large" color='white'/>
                     </View>
                 </Modal>
+            
+                <ToastComp ref={t => this.toast = t}/>
             </View>
         )
     }
