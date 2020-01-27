@@ -288,7 +288,7 @@ const HomeStackNavigator = createStackNavigator({
     },
   }, {
     initialRouteName: "Home",
-    mode: Platform.OS == "ios"? 'modal' : 'card',
+    mode: 'modal',
     transparentCard: true,
     transitionConfig: (transProps) => ({
       transitionSpec: {
