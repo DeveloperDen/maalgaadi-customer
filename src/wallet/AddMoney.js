@@ -5,12 +5,12 @@ import {
   Text,
   TouchableHighlight, 
   Image,
-  ToastAndroid,
   TextInput,
 } from 'react-native';
-import { NavigationEvents, StackActions } from 'react-navigation';
+import { StackActions } from 'react-navigation';
 import { getItem,  CUSTOMER_ID} from '../utils/DataStorageController'
 import { TRANS_PARAMS, FIELDS, ICONS } from './../utils/AppConstants';
+import ToastComp from '../utils/ToastComp';
 
 const rupee = require('../../assets/rupee_outline.png')
 
@@ -37,6 +37,10 @@ export default class AddMoney extends Component {
 
         this.orderID = null
         this.custID = null
+    }
+
+    showToast(message) {
+        this.toast.show(message);
     }
 
     componentDidMount() {
@@ -83,8 +87,7 @@ export default class AddMoney extends Component {
                     }}>
                         <Image
                         source={ICONS.my_wallet}
-                        tintColor={BLUE}
-                        style={{width: 30, height: 30}}/>
+                        style={{width: 30, height: 30, tintColor: BLUE}}/>
 
                         <Text style={{fontSize: 18, color: BLUE, marginStart: 15}}>Wallet Balance</Text>
                     </View>
@@ -136,10 +139,10 @@ export default class AddMoney extends Component {
                 <TouchableHighlight
                 underlayColor={ACCENT_DARK}
                 onPress={() => {
-                    if(this.state.amount.length > 0)
+                    if(this.state.amount.length > 0 && !isNaN(this.state.amount))
                         this.initTrans()
                     else
-                        ToastAndroid.show('Please enter amount', ToastAndroid.SHORT)
+                        this.showToast('Please enter valid amount',)
                 }}
                 style={{
                     backgroundColor: this.state.amount.length > 0? ACCENT : '#C9C9C9',
@@ -149,6 +152,9 @@ export default class AddMoney extends Component {
                 }}>
                     <Text style={{color: 'white', fontSize: 15}}>ADD MONEY</Text>
                 </TouchableHighlight>
+
+                {/* Toast Box */}
+                <ToastComp ref={t => this.toast = t}/>
             </View>
         )
     }

@@ -22,6 +22,11 @@ const ACCENT_DARK = '#F1B800'
 const GREEN = '#24C800' // 36, 200, 0
 
 export default class RunningMyBookings extends Component {
+  static navigationOptions = ({navigation}) => {
+    navigation.isFocused() && navigation.getParam("getRunningTrip")?
+    navigation.getParam("getRunningTrip")() : null;
+  }
+
   constructor(props) {
     super(props)
 
@@ -32,6 +37,10 @@ export default class RunningMyBookings extends Component {
       bookings: [],
       isLoading: true
     }
+
+    props.navigation.setParams({
+      getRunningTrip: () => this.getRunningTrip()
+    })
   }
 
   componentDidMount() {

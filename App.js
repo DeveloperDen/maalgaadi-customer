@@ -17,7 +17,7 @@ import Notifications from './src/Notifications'
 import PendingPOD from './src/pod/PendingPOD'
 import TransactionHistory from './src/wallet/TransactionHistory'
 import Settings from './src/settings/Settings'
-import SettingsAll from './src/settings/SubSettings'
+import SubSettings from './src/settings/SubSettings'
 import TermsConditions from './src/TermsConditions'
 import Login from './src/sign_in_up/Login'
 import Signup from './src/sign_in_up/Signup'
@@ -129,7 +129,10 @@ const DrawerStackNavigator = createStackNavigator({
       gesturesEnabled: true,
     })},
 
-  RateScreen: {screen: RateScreen},
+  RateScreen: {screen: RateScreen,
+    navigationOptions: () => ({
+      gesturesEnabled: true,
+    })},
 
   TrackDriver: {screen: TrackDriver,
     navigationOptions: () => ({
@@ -147,22 +150,29 @@ const DrawerStackNavigator = createStackNavigator({
       gesturesEnabled: true,
     })},
 
-  SettingsAll : {screen: SettingsAll},
-  Settings: {screen: Settings,
+  SubSettings : {screen: SubSettings,
+    navigationOptions: () => ({
+      gesturesEnabled: true,
+    })},
+  Settings: {screen: Settings},
+
+  TransactionHistory: {screen: TransactionHistory,
     navigationOptions: () => ({
       gesturesEnabled: true,
     })},
 
-  TransactionHistory: {screen: TransactionHistory},
-
   PendingPOD: {screen: PendingPODTabs,
-    navigationOptions: {
+    navigationOptions: () => ({
+      gesturesEnabled: true,
       headerTitle: 'POD',
       headerStyle: {elevation: 0}
-    }
+    })
   },
 
-  Notifications: {screen: Notifications},
+  Notifications: {screen: Notifications,
+    navigationOptions: () => ({
+      gesturesEnabled: true,
+    })},
 
   AddMoney: {screen: AddMoney},
   MGWallet: {screen: MGWallet},

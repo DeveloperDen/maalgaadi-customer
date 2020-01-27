@@ -242,6 +242,7 @@ export const T_C = [
 export const TERMSANDCONDITION = "http://maalgaadi.net/terms-and-condition.html";
 
 export const ICONS = {
+    no_signal: require('../../assets/no_signal.png'),
     ic_notifications: require('../../assets/ic_notification.png'),
     info: require('../../assets/info.png'),
     cancel: require('../../assets/cancel.png'),

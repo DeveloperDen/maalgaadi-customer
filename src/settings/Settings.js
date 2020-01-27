@@ -141,7 +141,7 @@ export default class Settings extends Component {
                             underlayColor='rgba(0, 0, 0, 0.04)'
                             key={index}
                             onPress={() => {
-                                this.props.navigation.navigate('SettingsAll', 
+                                this.props.navigation.navigate('SubSettings', 
                                 {title: value.title, settings: this.settings, onGoBack: this.updateSettings.bind(this)})
                             }}>
                                 <View>

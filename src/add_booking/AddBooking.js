@@ -167,6 +167,7 @@ export default class AddBooking extends Component {
             this.bookingModel.physical_pod = this.state.isPhysicalSelected
             this.bookingModel.goods_id = this.state.goodsId
             this.bookingModel.goods_type = this.state.goodsType
+            this.bookingModel.allot_to_fav_driver = this.state.favDriverSelected
 
             const selectedVehicle = this.props.navigation.getParam('vehicle')
             this.bookingModel.selected_vehicle_category = selectedVehicle.id

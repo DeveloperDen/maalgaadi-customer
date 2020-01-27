@@ -22,7 +22,7 @@ const POD_INV = 'Proof of Delivery & Invoices'
 const POD_MAIL = 'Invoice and POD mail Subjects'
 const OTHERS = 'Others'
 
-export default class SettingsAll extends Component {
+export default class SubSettings extends Component {
     static navigationOptions = ({navigation}) => {
         return{
             headerTitle: navigation.getParam('title', 'Settings'),
