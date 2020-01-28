@@ -227,7 +227,7 @@ export default class CreateProfile extends Component {
                 
                 <ScrollView>
                     <View style={{marginTop: 140, backgroundColor: 'white', paddingHorizontal: 20, paddingTop: 30}}>
-                        <TextInput placeholder='NAME'
+                        <TextInput placeholder='NAME' returnKeyType="done"
                         defaultValue={this.state.name}
                         style={styles.inputs}
                         onChangeText={text => this.setState(prevState => {
@@ -242,7 +242,7 @@ export default class CreateProfile extends Component {
                         <View
                         style={[styles.inputs, {flexDirection: 'row', alignItems: 'center',}]}>
 
-                            <TextInput defaultValue={this.state.email}
+                            <TextInput defaultValue={this.state.email} returnKeyType="done"
                             placeholder='EMAIL' keyboardType='email-address' textContentType='emailAddress'
                             style={{flex: 1}}
                             onChangeText={text => this.setState(prevState => {
@@ -264,7 +264,7 @@ export default class CreateProfile extends Component {
                         <View
                         style={[styles.inputs, {flexDirection: 'row', alignItems: 'center',}]}>
 
-                            <TextInput defaultValue={this.state.org}
+                            <TextInput defaultValue={this.state.org} returnKeyType="done"
                             placeholder='ORGANIZATION'
                             style={{flex: 1}}
                             onChangeText={text => this.setState(prevState => {
@@ -286,7 +286,7 @@ export default class CreateProfile extends Component {
                         <TextInput placeholder='CITY' editable={false} defaultValue="Indore"
                         style={styles.inputs}/>
 
-                        <TextInput defaultValue={this.state.address}
+                        <TextInput defaultValue={this.state.address} returnKeyType="done"
                         placeholder='ADDRESS' textContentType='fullStreetAddress'
                         style={styles.inputs}
                         onChangeText={text => this.setState(prevState => {

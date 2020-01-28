@@ -10,7 +10,7 @@ import { TextInput, TouchableHighlight, TouchableOpacity } from 'react-native-ge
 import {getDeviceId} from 'react-native-device-info';
 import firebase from 'react-native-firebase'
 import ToastComp from '../utils/ToastComp';
-
+import SmsListener from 'react-native-android-sms-listener'
 
 const Constants = require('../utils/AppConstants')
 const DataController = require('../utils/DataStorageController')
@@ -43,6 +43,24 @@ export default class GetOTP extends Component {
         this.otp = this.props.navigation.getParam("otp").toString()
         this.refCode = this.props.navigation.getParam("refCode")
         this.pass = this.props.navigation.getParam("pass")
+
+        this.smsSubscriber = SmsListener.addListener(message => {
+            // Replace all the non numeric characters with empty character('');
+            const otp = message.body.replace(/^\D+/g, '')
+            console.log(message);
+
+            this.setState(prevState => {
+                prevState.otp = otp;
+                return prevState;
+            }, () => {
+                this.parent === Constants.ADD_CUSTOMER_SIGNUP?
+                this.signupUser() : this.resetPassword()
+            })
+        })
+    }
+
+    componentWillUnmount() {
+        this.smsSubscriber.remove();
     }
 
     // API call to Signup user and navigate to Main screen.
@@ -223,6 +241,7 @@ export default class GetOTP extends Component {
                     opacity: this.state.isLoading? 0.3 : 1, paddingBottom: Platform.OS == "ios"? 5 : 0
                 }}>
                     <TextInput editable={!this.state.isLoading} textContentType="oneTimeCode"
+                    value={this.state.otp}
                     placeholder="Enter OTP" keyboardType='decimal-pad' maxLength={5} returnKeyType="done"
                     style={{flex: 1, marginHorizontal: 10}}
                     onChangeText={text => {

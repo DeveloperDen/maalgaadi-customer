@@ -321,6 +321,7 @@ export default class FavouriteLocations extends Component {
                             style={styles.dialogInputs}/>
 
                             <TextInput placeholder="Name your favourite place"
+                            returnKeyType="done"
                             defaultValue={
                                 this.state.locations.length > 0?
                                 this.state.editedName:
@@ -335,6 +336,7 @@ export default class FavouriteLocations extends Component {
                             style={styles.dialogInputs}/>
 
                             <TextInput keyboardType="decimal-pad" maxLength={10} placeholder="Mobile number"
+                            returnKeyType="done"
                             onChangeText={(text) => {
                                 this.setState(prevState => {
                                     prevState.editedNumber = text

@@ -125,7 +125,7 @@ export default class Signup extends Component {
                     style={{width: 25, height: 25, opacity: 0.3}}/>
 
                     <TextInput 
-                    editable={!this.state.isLoading}
+                    editable={!this.state.isLoading} returnKeyType="done"
                     placeholder="Password" secureTextEntry={this.state.showPass? false : true}
                     style={{flex: 1, marginHorizontal: 10}}
                     onChangeText={(text) => {
@@ -159,6 +159,7 @@ export default class Signup extends Component {
                     }}>
                         <TextInput 
                         editable={!this.state.isLoading}
+                        returnKeyType="done"
                         placeholder="Referral Code"
                         style={{flex: 1, marginHorizontal: 5}}
                         onChangeText={text => {

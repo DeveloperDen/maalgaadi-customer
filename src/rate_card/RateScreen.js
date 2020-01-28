@@ -154,7 +154,32 @@ export default class RateCard extends Component {
                             }
                         </Picker>
                     :
-                        null
+                        <View
+                        style={{
+                            backgroundColor: '#FBFBFB', display: this.state.vehPickerOpen? 'flex' : 'none',
+                            shadowColor: 'rgb(0, 0, 0)', shadowOffset: {width: 0, height: -2},
+                            shadowOpacity: 0.07, shadowRadius: 1, position: 'absolute', bottom: 0, start: 0, end: 0,
+                        }}>
+                            <Picker
+                                selectedValue={this.state.selectedIndex}
+                                onValueChange={(itemValue, itemIndex) =>
+                                    this.setState(prevState => {
+                                        prevState.selectedIndex = itemValue
+                                        prevState.rates = prevState.vehicles[itemValue]
+                                        return prevState
+                                    })
+                                }>
+                                    {
+                                        this.state.vehicles !== ''?
+                                        this.state.vehicles.map((value, index) => {
+                                            return(
+                                                <Picker.Item label={value.vehicle_name} value={index} key={value.vehicle_name}/>
+                                            )
+                                        }) :
+                                        <Picker.Item label="Getting Vehicles..." value='none' />
+                                    }
+                            </Picker>
+                        </View>
                     }
                 </View>
 
@@ -200,34 +225,6 @@ export default class RateCard extends Component {
                         All other charges like Toll Tax etc. will be charged on actual basis.
                     </Text>
                 </ScrollView>
-            
-                {/* Veicle picker for iOS */}
-                <View
-                style={{
-                    backgroundColor: '#FBFBFB', display: this.state.vehPickerOpen? 'flex' : 'none',
-                    shadowColor: 'rgb(0, 0, 0)', shadowOffset: {width: 0, height: -2},
-                    shadowOpacity: 0.07, shadowRadius: 1, position: 'absolute', bottom: 0, start: 0, end: 0,
-                }}>
-                    <Picker
-                        selectedValue={this.state.selectedIndex}
-                        onValueChange={(itemValue, itemIndex) =>
-                            this.setState(prevState => {
-                                prevState.selectedIndex = itemValue
-                                prevState.rates = prevState.vehicles[itemValue]
-                                return prevState
-                            })
-                        }>
-                            {
-                                this.state.vehicles !== ''?
-                                this.state.vehicles.map((value, index) => {
-                                    return(
-                                        <Picker.Item label={value.vehicle_name} value={index} key={value.vehicle_name}/>
-                                    )
-                                }) :
-                                <Picker.Item label="Getting Vehicles..." value='none' />
-                            }
-                    </Picker>
-                </View>
 
                 {/* Vehicle Picker button for iOS */}
                 {Platform.OS == "ios"?

@@ -281,7 +281,7 @@ export default class RatingDialog extends Component {
                             marginTop: 15, backgroundColor: 'rgba(0, 0, 0, 0.05)', marginHorizontal: 15, borderRadius: 4, paddingHorizontal: 15, borderBottomColor: 'rgba(0, 0, 0, 0.2)', borderBottomWidth: 1, display: this.state.reason == "Others"? 'flex' : 'none'
                         }}>
                             <TextInput
-                            placeholder="What went wrong?" numberOfLines={1}
+                            placeholder="What went wrong?" numberOfLines={1} returnKeyType="done"
                             onChangeText={(text) => {
                                 this.setState(prevState => {
                                     prevState.comment = text;

@@ -4,13 +4,16 @@ import {
   View,
   Text,
   Image,
-  StatusBar
+  StatusBar,
+  PermissionsAndroid,
+  Alert
 } from 'react-native';
 import { TextInput, TouchableHighlight, TouchableOpacity } from 'react-native-gesture-handler';
 import {getDeviceId} from 'react-native-device-info';
 import firebase from 'react-native-firebase';
 import {NavigationEvents} from 'react-navigation';
 import ToastComp from '../utils/ToastComp';
+import { RESULTS } from 'react-native-permissions';
 
 const Constants = require('../utils/AppConstants')
 const DataController = require('../utils/DataStorageController')
@@ -45,6 +48,33 @@ export default class Login extends Component {
 
             this.showToast(Constants.LOGOUT_SUCCESS)
         }
+
+        // Ask for Permission to receive SMS and get the OTP
+        PermissionsAndroid.request(PermissionsAndroid.PERMISSIONS.RECEIVE_SMS)
+        .then(result => {
+            switch (result) {
+                case RESULTS.UNAVAILABLE:
+                  this.showAlert('You will have to manually enter the OTP, as reading the OTP is not supported on this device.');
+                  break;
+    
+                case RESULTS.DENIED:
+                  this.showAlert('MaalGaadi reads the received OTP and enters it for you. Next, you may give the permission to read OTP in Permission Settings of MaalGaadi.');
+                  break;
+    
+                case RESULTS.GRANTED:
+                  console.log('The permission is granted');
+                  break;
+    
+                case RESULTS.BLOCKED:
+                  console.log('The permission is denied and not requestable anymore');
+                  this.showAlert('MaalGaadi reads the received OTP and enters it for you. Next, you may give the permission to read OTP in Permission Settings of MaalGaadi.');
+                  break;
+              }
+        })
+    }
+
+    showAlert(message) {
+        Alert.alert("MaalGaadi", message);
     }
 
     callLoginAPI = async () => {
@@ -170,7 +200,8 @@ export default class Login extends Component {
                 }}>
                     <Image source={Constants.ICONS.device}
                     style={{width: 25, height: 25, opacity: 0.3}}/>
-                    <TextInput placeholder="Mobile Number" keyboardType='decimal-pad' maxLength={10} returnKeyType="done"
+                    <TextInput placeholder="Mobile Number" keyboardType='decimal-pad' maxLength={10}
+                    returnKeyType="done"
                     onChangeText={(text) => {
                         this.setState(prevState => {
                             prevState.phone = text
@@ -190,7 +221,7 @@ export default class Login extends Component {
                     style={{width: 25, height: 25, opacity: 0.3}}/>
 
                     <TextInput 
-                    editable={!this.state.isLoading}
+                    editable={!this.state.isLoading} returnKeyType="done"
                     placeholder="Password" secureTextEntry={this.state.showPass? false : true}
                     onChangeText={(text) => {
                         this.setState(prevState => {

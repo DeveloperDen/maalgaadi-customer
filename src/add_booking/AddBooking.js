@@ -436,7 +436,7 @@ export default class AddBooking extends Component {
                                     +91
                                 </Text>
                                 <TextInput editable={this.state.mobNumEnabled}
-                                keyboardType="number-pad"
+                                keyboardType="number-pad" returnKeyType="next"
                                 style={{
                                     flex: 1, backgroundColor: 'white',
                                     paddingHorizontal: 15, height: '100%'
@@ -453,7 +453,7 @@ export default class AddBooking extends Component {
                                     +91
                                 </Text>
                                 <TextInput editable={this.state.mobNumEnabled}
-                                keyboardType="number-pad"
+                                keyboardType="number-pad" returnKeyType="next"
                                 style={{
                                     flex: 1, backgroundColor: 'white',
                                     paddingHorizontal: 15, height: '100%'
@@ -723,7 +723,7 @@ export default class AddBooking extends Component {
                             borderRadius: 3,
                             marginTop: 10,
                         }}>
-                            <TextInput
+                            <TextInput returnKeyType="done"
                             multiline={true}
                             textAlignVertical="top"
                             placeholder='Description'

@@ -25,6 +25,7 @@
     "querystring-es3": "^0.2.1",
     "react": "16.9.0",
     "react-native": "0.61.2",
+    "react-native-android-sms-listener": "^0.7.0",
     "react-native-device-info": "^5.2.1",
     "react-native-easy-toast": "^1.2.0",
     "react-native-firebase": "^5.6.0",

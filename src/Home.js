@@ -341,7 +341,7 @@ export default class Home extends Component {
   async checkLocationPermission() {
     try {
       if(Platform.OS == "android") {
-        const granted = await PermissionsAndroid.request(
+        await PermissionsAndroid.request(
           PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
           {
             title: 'MapsGo',
@@ -1755,6 +1755,7 @@ export default class Home extends Component {
               style={styles.dialogInputs}/>
 
               <TextInput placeholder="Name your favourite place"
+              returnKeyType="done"
               style={styles.dialogInputs}
               onChangeText={(text) => {
                 this.setState(prevState => {
@@ -1764,6 +1765,7 @@ export default class Home extends Component {
               }}/>
 
               <TextInput maxLength={10} keyboardType="decimal-pad"
+              returnKeyType="done"
               placeholder="Mobile number"
               style={styles.dialogInputs}
               onChangeText={(text) => {

@@ -104,7 +104,7 @@ export default class ChangePassword extends Component {
                     opacity: this.state.isLoading? 0.3 : 1, paddingBottom: Platform.OS == "ios"? 5 : 0
                 }}>
                     <TextInput
-                    editable={!this.state.isLoading}
+                    editable={!this.state.isLoading} returnKeyType="done"
                     placeholder="New Password" secureTextEntry={this.state.showPass_New? false : true}
                     style={{flex: 1, marginHorizontal: 10}}
                     onChangeText={text => {
@@ -143,7 +143,7 @@ export default class ChangePassword extends Component {
                     borderBottomWidth: 1, width: '80%', marginTop: 10, paddingHorizontal: 5, alignSelf: 'center',
                     opacity: this.state.isLoading? 0.3 : 1, paddingBottom: Platform.OS == "ios"? 5 : 0
                 }}>
-                    <TextInput editable={!this.state.isLoading}
+                    <TextInput editable={!this.state.isLoading} returnKeyType="done"
                     placeholder="Confirm Password" secureTextEntry={this.state.showPass_NewConf? false : true}
                     style={{flex: 1, marginHorizontal: 10}}
                     onChangeText={text => {

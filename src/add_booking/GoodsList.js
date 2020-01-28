@@ -162,8 +162,7 @@ export default class GoodsList extends Component {
                                     })
                                 }}
                                 placeholder='Please provide the details of goods'
-                                multiline={false}
-                                numberOfLines={1}
+                                multiline={false} numberOfLines={1} returnKeyType="done"
                                 style={{marginVertical: 20, marginHorizontal: 10}}/>
 
                                 <TouchableHighlight

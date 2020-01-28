@@ -327,7 +327,7 @@ export default class ActiveFleet extends Component {
                                 marginHorizontal: 20,
                             }}>
                                 <View>
-                                    <TextInput maxLength={6}
+                                    <TextInput maxLength={6} returnKeyType="done"
                                     placeholder="Enter driver code"
                                     style={{
                                         marginTop: 20, borderWidth: 1, borderRadius: 3, borderColor: ACCENT,

@@ -113,7 +113,7 @@ export default class ForgotPassword extends Component {
                     <Image source={Constants.ICONS.device}
                     style={{width: 25, height: 25, opacity: 0.3}}/>
 
-                    <TextInput editable={!this.state.isLoading}
+                    <TextInput editable={!this.state.isLoading} returnKeyType="done"
                     placeholder="Enter your Mobile Number" keyboardType='decimal-pad' maxLength={10}
                     style={{flex: 1, marginHorizontal: 10}}
                     onChangeText={(text) => {
