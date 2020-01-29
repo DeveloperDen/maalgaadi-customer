@@ -1275,7 +1275,13 @@ export default class Home extends Component {
                 style={{alignItems: "center", paddingHorizontal: 10, flex: 1}} key={vehicle.vehicle_name}>
                   <View style={{alignItems: "center"}}>
                   {(this.state.isCoveredVehicle? vehicle.etaCovered : vehicle.etaUncovered)?
-                      <Text style={{fontSize: 10, height: 20}}>{this.state.isCoveredVehicle? vehicle.etaCovered : vehicle.etaUncovered} min</Text>
+                      <Text style={{fontSize: 10, height: 20}}>
+                        {this.state.isCoveredVehicle?
+                        vehicle.etaCovered >= 60? (vehicle.etaCovered / 60).toFixed(0)  + 'hrs' : vehicle.etaCovered + 'mins'
+                        :
+                        vehicle.etaUncovered >= 60? (vehicle.etaUncovered / 60).toFixed(0) + 'hrs' : vehicle.etaUncovered + 'mins'
+                        }
+                      </Text>
                       :
                       <DotLoader/>}
 
@@ -1586,7 +1592,13 @@ export default class Home extends Component {
                 style={{alignItems: "center", paddingHorizontal: 10, flex: 1}} key={vehicle.vehicle_name}>
                   <View style={{alignItems: "center"}}>
                     {(this.state.isCoveredVehicle? vehicle.etaCovered : vehicle.etaUncovered)?
-                      <Text style={{fontSize: 10, height: 20}}>{this.state.isCoveredVehicle? vehicle.etaCovered : vehicle.etaUncovered} min</Text>
+                      <Text style={{fontSize: 10, height: 20}}>
+                        {this.state.isCoveredVehicle?
+                        vehicle.etaCovered >= 60? (vehicle.etaCovered / 60).toFixed(0)  + 'hrs' : vehicle.etaCovered + 'mins'
+                        :
+                        vehicle.etaUncovered >= 60? (vehicle.etaUncovered / 60).toFixed(0) + 'hrs' : vehicle.etaUncovered + 'mins'
+                        }
+                      </Text>
                       :
                       <DotLoader/>}
 
@@ -1851,7 +1863,7 @@ const styles = StyleSheet.create({
   header: {
     backgroundColor: 'transparent',
     marginHorizontal: 20,
-    marginTop: 20
+    marginTop: 5
   },
 
   footer: {

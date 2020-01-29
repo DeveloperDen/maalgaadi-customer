@@ -8,7 +8,7 @@ import {
   Animated,
   Switch,
   TextInput,
-  TouchableOpacity,
+  TouchableOpacity, Modal,
 } from 'react-native';
 import DateTimePickerComp from '../utils/DateTimePickerComp';
 import { LandmarkModel } from '../models/landmark_model';
@@ -55,6 +55,7 @@ export default class AddBooking extends Component {
         this.formatDate = formatDate
         
         this.state = {
+            noFavDrivModalVisible: false,
             fromView: null,
             popOverText: '',
             tutCompFieldActive: null,
@@ -86,7 +87,8 @@ export default class AddBooking extends Component {
             podEnabled: true,
         }
 
-        this.bookingModel = ''
+        this.bookingModel = '';
+        this.favDrivers = [];
     }
 
     async componentDidMount() {
@@ -102,6 +104,50 @@ export default class AddBooking extends Component {
         })
         
         this.bookingModel.booking_event_type == BookingEventType.EDIT? this.setupFieldsForEdit() : null;
+
+        this.getFavDrivers();
+    }
+
+    getFavDrivers = async () => {
+        const customerId = await DataController.getItem(DataController.CUSTOMER_ID);
+
+        const reqURL = Constants.BASE_URL + Constants.GET_ACTIVE_DRIVER_LIST + '?' + 
+        Constants.FIELDS.CUSTOMER_ID + '=' + customerId
+        
+        console.log("Request: ", reqURL)
+
+        const request = await fetch(reqURL, {
+            method: 'GET',
+            headers: {
+                key: Constants.KEY
+            }
+        })
+
+        await request.json().then(value => {
+            console.log(value)
+
+            if(!value.success){
+                this.showToast(value.message)
+            }
+            else {
+                this.favDrivers = value.data;
+            }
+            
+        }).catch(err => {
+            console.log(err)
+            this.showToast(Constants.ERROR_GET_FAV_DRIV);
+        })
+    }
+
+    showToast(message) {
+        this.toast.show(message);
+    }
+
+    setModalVisible(show) {
+        this.setState(prevState => {
+            prevState.noFavDrivModalVisible = show;
+            return prevState;
+        })
     }
 
     setupFieldsForEdit() {
@@ -617,10 +663,18 @@ export default class AddBooking extends Component {
                             underlayColor='white'
                             style={{flex: 1, padding: 10}}
                             onPress={() => {
-                                this.setState(prevState => {
-                                    prevState.favDriverSelected = !prevState.favDriverSelected
-                                    return prevState
-                                })
+                                // Presently switch is off
+                                if(!this.state.favDriverSelected) {
+                                    if(this.favDrivers.length > 0) {
+                                        this.setState(prevState => {
+                                            prevState.favDriverSelected = !prevState.favDriverSelected
+                                            return prevState
+                                        })
+                                    }
+                                    else {
+                                        this.setModalVisible(true);
+                                    }
+                                }
                             }}>
                                 <Text style={{fontSize: 15, opacity: 0.5}}>Allot only favourite drivers</Text>
                             </TouchableHighlight>
@@ -630,10 +684,18 @@ export default class AddBooking extends Component {
                             style={{padding: 10, marginEnd: 10}}
                             value={this.state.favDriverSelected? true : false}
                             onChange={() => {
-                                this.setState(prevState => {
-                                    prevState.favDriverSelected = !prevState.favDriverSelected
-                                    return prevState
-                                })
+                                // Presently switch is off
+                                if(!this.state.favDriverSelected) {
+                                    if(this.favDrivers.length > 0) {
+                                        this.setState(prevState => {
+                                            prevState.favDriverSelected = !prevState.favDriverSelected
+                                            return prevState
+                                        })
+                                    }
+                                    else {
+                                        this.setModalVisible(true);
+                                    }
+                                }
                             }}/>
                         </View>
                     
@@ -758,6 +820,58 @@ export default class AddBooking extends Component {
                 {/* Tutorials popover */}
                 <PopOverComp isVisible={this.state.isVisible} fromView={this.state.fromView}
                 closePopover={this.closePopover.bind(this)} text={this.state.popOverText}/>
+
+                {/* Modal to show when no Favourite Drivers are found */}
+                <Modal
+                    animationType="fade"
+                    transparent={true}
+                    visible={this.state.noFavDrivModalVisible}
+                    onRequestClose={() => {
+                        this.setModalVisible(false, 0)
+                    }}>
+                        <View
+                        style={{
+                        backgroundColor: 'rgba(0, 0, 0, 0.7)',
+                        height: '100%',
+                        alignItems: "center",
+                        justifyContent: 'center'
+                        }}>
+                            <View style={{
+                            borderRadius: 5, backgroundColor: 'white', overflow: 'hidden',
+                            width: '75%'
+                            }}>
+                                <View style={{
+                                flexDirection: 'row', justifyContent: 'space-between', elevation: 2,
+                                backgroundColor: 'white'
+                                }}>
+                                    <Text style={{margin: 20, fontWeight: '700', fontSize: 15}}> Add Driver </Text>
+                                    <TouchableOpacity
+                                    onPress={() => {
+                                        this.setModalVisible(false)
+                                    }}>
+                                        <Image source={Constants.ICONS.close}
+                                        style={{width: 15, height: 15, margin: 20}}/>
+                                    </TouchableOpacity>
+                                </View>
+
+                                <Text style={{marginVertical: 20, marginHorizontal: 10}}>
+                                    {Constants.NO_FAV_DRIV}
+                                </Text>
+
+                                <TouchableHighlight
+                                underlayColor='rgba(255, 203, 40, 0.8)'
+                                onPress={() => {
+                                    this.setModalVisible(false);
+                                }}
+                                style={{
+                                    paddingVertical: 15, alignItems: 'center', justifyContent: 'center',
+                                    backgroundColor: ACCENT
+                                }}>
+                                    <Text style={{color: 'white'}}>OK</Text>
+                                </TouchableHighlight>
+                            </View>
+                        </View>
+                </Modal>
             </View>
         )
     }
