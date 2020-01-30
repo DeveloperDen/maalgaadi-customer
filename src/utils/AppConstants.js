@@ -102,6 +102,7 @@ export const RETROFIT_TIME_OUT = 60;
 export const MESSAGE_DURATION = 2000
 export const SPLASH_TIMEOUT = 3000
 
+export const UPDATE_APP_MESSAGE = "A new version of the App is available. Please update your App now"
 export const OTP_MISMATCH = "OTP did not match"
 export const PASS_CHANGE_SUCCESS = "Password changed successfully. Please Login to continue."
 export const PASS_MISMATCH = "Password and Confirm Password did not match"
@@ -244,6 +245,7 @@ export const T_C = [
 export const TERMSANDCONDITION = "http://maalgaadi.net/terms-and-condition.html";
 
 export const ICONS = {
+    new: require('../../assets/new.png'),
     no_signal: require('../../assets/no_signal.png'),
     ic_notifications: require('../../assets/ic_notification.png'),
     info: require('../../assets/info.png'),

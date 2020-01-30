@@ -22,6 +22,7 @@ public class NativePackage implements ReactPackage {
     List<NativeModule> modules = new ArrayList<>();
 
     modules.add(new NativePaymentView(reactContext));
+    modules.add(new VersionChecker(reactContext));
 
     return modules;
   }

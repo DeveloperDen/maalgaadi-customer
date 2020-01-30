@@ -18,9 +18,6 @@ import java.util.HashMap;
 public class NativePaymentView extends ReactContextBaseJavaModule {
   private static ReactApplicationContext reactContext;
 
-  private static final String DURATION_SHORT_KEY = "SHORT";
-  private static final String DURATION_LONG_KEY = "LONG";
-
   NativePaymentView(ReactApplicationContext context) {
     super(context);
     reactContext = context;
@@ -29,19 +26,6 @@ public class NativePaymentView extends ReactContextBaseJavaModule {
   @Override
   public String getName() {
     return "NativePaymentView";
-  }
-
-  @Override
-  public Map<String, Object> getConstants() {
-    final Map<String, Object> constants = new HashMap<>();
-    constants.put(DURATION_SHORT_KEY, Toast.LENGTH_SHORT);
-    constants.put(DURATION_LONG_KEY, Toast.LENGTH_LONG);
-    return constants;
-  }
-
-  @ReactMethod
-  public void show(String message, int duration) {
-    Toast.makeText(getReactApplicationContext(), message, duration).show();
   }
 
   @ReactMethod

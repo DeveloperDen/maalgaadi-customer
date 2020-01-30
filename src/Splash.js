@@ -3,11 +3,13 @@ import {
   StyleSheet,
   View,
   StatusBar,
-  Image,
+  Image, Text, TouchableHighlight, Modal,
   ActivityIndicator,
+  NativeModules, NativeEventEmitter, Linking, TouchableOpacity
 } from 'react-native';
 import firebase from 'react-native-firebase';
-import { getDeviceId } from 'react-native-device-info';
+import { getDeviceId, getVersion } from 'react-native-device-info';
+import { ICONS } from './utils/AppConstants';
 
 const Constants = require('./utils/AppConstants')
 const DataController = require('./utils/DataStorageController')
@@ -24,10 +26,16 @@ export default class Splash extends Component {
 
     constructor(props) {
         super(props)
-        this.state = {}
+        this.state = {
+            showAppUpdateModal: false,
+        }
+        this.isAppUpdated = true;
     }
 
     async componentDidMount() {
+        // Check present instance's build number with the live application on store.
+        this.checkBuildNumber()
+
         // Check for the permission and if not enabled, get the permission.
         const enabled = await firebase.messaging().hasPermission()
         console.log("Firebase Permission checked: ", enabled);
@@ -53,11 +61,28 @@ export default class Splash extends Component {
             this.updateFCMToken(token);
         })
 
+        
         setTimeout(async () => {
-            const screen = (await DataController.getItem(DataController.IS_LOGIN) === "true")? 
-            'HomeDrawerNavigator' : 'RegistrationNavigator'
-            this.props.navigation.navigate(screen)
+            if(this.isAppUpdated) {
+                const screen = (await DataController.getItem(DataController.IS_LOGIN) === "true")? 
+                'HomeDrawerNavigator' : 'RegistrationNavigator'
+                this.props.navigation.navigate(screen)
+            }else {
+                this.setState(prevState => {
+                    prevState.showAppUpdateModal = true;
+                    return prevState;
+                })
+            }
         }, Constants.SPLASH_TIMEOUT)
+    }
+
+    checkBuildNumber() {
+        NativeModules.VersionChecker.checkVersion(parseFloat(getVersion()));
+        this.eventEmitter = new NativeEventEmitter(NativeModules.VersionChecker);
+        this.eventEmitter.addListener("VersionCheck", (result) => {
+            console.log("App is updated: ", result.isUpdated)
+            this.isAppUpdated = result.isAppUpdated;
+        })
     }
 
     // Update FCM token on the server.
@@ -103,6 +128,7 @@ export default class Splash extends Component {
 
     componentWillUnmount() {
         this.unsubscribeFCMRefresh();
+        this.eventEmitter.removeAllListeners('VersionCheck');
     }
 
     render() {
@@ -116,6 +142,60 @@ export default class Splash extends Component {
                 style={{width: '80%'}}/>
 
                 <ActivityIndicator size="large" color='white'/>
+
+                {/* Modal to show when app is not updated */}
+                <Modal
+                    animationType="fade"
+                    transparent={true}
+                    visible={this.state.showAppUpdateModal}
+                    onRequestClose={() => {
+                        return;
+                    }}>
+                        <View
+                        style={{
+                        backgroundColor: 'rgba(0, 0, 0, 0.4)',
+                        height: '100%',
+                        alignItems: "center",
+                        justifyContent: 'center'
+                        }}>
+                            <View style={{
+                            borderRadius: 5, backgroundColor: 'white', overflow: 'hidden',
+                            width: '75%', elevation: 20
+                            }}>
+
+                                {/* TODO: Remove this CLOSE button and force user to update application */}
+                                <TouchableOpacity style={{margin: 15}}
+                                onPress={async () => {
+                                    const screen = (await DataController.getItem(DataController.IS_LOGIN) === "true")? 
+                                    'HomeDrawerNavigator' : 'RegistrationNavigator'
+                                    this.props.navigation.navigate(screen)
+                                }}>
+                                    <Image source={ICONS.close} style={{width: 20, height: 20, opacity: 0.4}}/>
+                                </TouchableOpacity>
+
+                                <Image source={ICONS.new}
+                                style={{
+                                    width: 100, height: 100, alignSelf: 'center', margin: 15, marginTop: 20
+                                }}/>
+                                <Text style={{marginBottom: 20, marginHorizontal: 10, fontSize: 13, textAlign: 'center', opacity: 0.4}}>
+                                    {Constants.UPDATE_APP_MESSAGE}
+                                </Text>
+
+                                <TouchableHighlight
+                                underlayColor='rgba(255, 203, 40, 0.8)'
+                                onPress={() => {
+                                    console.log("Will update application...")
+                                    Linking.openURL("market://details?id=avpstransort.maalgaadicustomerapp");
+                                }}
+                                style={{
+                                    paddingVertical: 15, alignItems: 'center', justifyContent: 'center',
+                                    backgroundColor: ACCENT
+                                }}>
+                                    <Text style={{color: 'white'}}>UPDATE</Text>
+                                </TouchableHighlight>
+                            </View>
+                        </View>
+                </Modal>
             </View>
         )
     }
