@@ -93,7 +93,7 @@ export default class Notifications extends Component {
                                         </Text>
 
                                         <View style={{alignItems: 'center', justifyContent: 'space-between', opacity: 0.4, marginTop: 10, flexDirection: 'row'}}>
-                                            <Text style={{fontSize: 12,}}>{formatDate(notif.created_at)}</Text>
+                                            <Text style={{fontSize: 12,}}>{notif.created_at}</Text>
                                             <Text style={{fontSize: 12,}}>PROMOTIONAL</Text>
                                         </View>
                                     </View>
