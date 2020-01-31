@@ -16,10 +16,10 @@ export const OTP_DELIMITER = ":";
 // Usable links starts from here
 export const CCAVENUE = CCAVENUE_IP_LIVE;
 
-export const BASE_URL = BASE_URL_IP_DEMO;
-export const IMAGE_BASE_URL = BASE_URL_DEMO;
-// export const BASE_URL = BASE_URL_IP_LIVE;
-// export const IMAGE_BASE_URL = BASE_URL_LIVE;
+// export const BASE_URL = BASE_URL_IP_DEMO;
+// export const IMAGE_BASE_URL = BASE_URL_DEMO;
+export const BASE_URL = BASE_URL_IP_LIVE;
+export const IMAGE_BASE_URL = BASE_URL_LIVE;
 
 export const KEY = "21db33e221e41d37e27094153b8a8a02";
 
