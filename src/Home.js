@@ -1364,7 +1364,7 @@ export default class Home extends Component {
   // For iOS
   renderHeader() {
     return(
-      <View style={[styles.header]}>
+      <View style={[styles.header, {marginTop: 20}]}>
           <TouchableHighlight 
           style={styles.iconHamMenu}
           underlayColor='rgba(255, 255, 255, 0.05)'

@@ -3,7 +3,6 @@ export const CITY_JAIPUR = 2;
 export const CITY_PUNE = 3;
 
 export const BASE_URL_LIVE = "http://dashboard.maalgaadi.net";
-// export const BASE_URL_DEMO = "http://dashboard.rubberducks.in";
 export const BASE_URL_DEMO = "http://54.255.142.232/"
 
 export const BASE_URL_IP_LIVE = BASE_URL_LIVE + "/api/v1/customerMobile/";
@@ -16,8 +15,12 @@ export const OTP_DELIMITER = ":";
 
 // Usable links starts from here
 export const CCAVENUE = CCAVENUE_IP_LIVE;
-export const BASE_URL = BASE_URL_IP_DEMO;
-export const IMAGE_BASE_URL = BASE_URL_DEMO;
+
+// export const BASE_URL = BASE_URL_IP_DEMO;
+// export const IMAGE_BASE_URL = BASE_URL_DEMO;
+export const BASE_URL = BASE_URL_IP_LIVE;
+export const IMAGE_BASE_URL = BASE_URL_LIVE;
+
 export const KEY = "21db33e221e41d37e27094153b8a8a02";
 
 export const PAYMENT_GATEWAY_URL = "https://secure.ccavenue.com/transaction/initTrans";
@@ -110,8 +113,8 @@ export const LOGOUT_MESSAGE = "Are you sure you want to Logout?"
 export const LOGOUT_SUCCESS = "Logged out successfully"
 export const ERROR_UPDATE_PROFILE = "Error while updating profile"
 export const ERROR_OTP = "Error while generating OTP"
-export const ERROR_SIGNUP = "Error while SignUp"
-export const ERROR_LOGIN = "Error while LogIn"
+export const ERROR_SIGNUP = "An error occured while Signing up, please try later"
+export const ERROR_LOGIN = "An error occured while Logging in, please try later"
 export const ERROR_GET_GOODS = "An error occured while getting Goods List"
 export const ERROR_GET_FAV_DRIV = "An error occured while getting Favourite Drivers"
 export const NO_FAV_DRIV = "Looks like you haven't added any favourite drivers for this vehicle category. Add a favourite driver from 'Manage My Fleet' tab."

@@ -6,7 +6,8 @@ import {
   Image,
   StatusBar,
   PermissionsAndroid,
-  Alert
+  Alert,
+  Platform
 } from 'react-native';
 import { TextInput, TouchableHighlight, TouchableOpacity } from 'react-native-gesture-handler';
 import {getDeviceId} from 'react-native-device-info';
@@ -49,28 +50,30 @@ export default class Login extends Component {
             this.showToast(Constants.LOGOUT_SUCCESS)
         }
 
-        // Ask for Permission to receive SMS and get the OTP
-        PermissionsAndroid.request(PermissionsAndroid.PERMISSIONS.RECEIVE_SMS)
-        .then(result => {
-            switch (result) {
-                case RESULTS.UNAVAILABLE:
-                  this.showAlert('You will have to manually enter the OTP, as reading the OTP is not supported on this device.');
-                  break;
-    
-                case RESULTS.DENIED:
-                  this.showAlert('MaalGaadi reads the received OTP and enters it for you. Next, you may give the permission to read OTP in Permission Settings of MaalGaadi.');
-                  break;
-    
-                case RESULTS.GRANTED:
-                  console.log('The permission is granted');
-                  break;
-    
-                case RESULTS.BLOCKED:
-                  console.log('The permission is denied and not requestable anymore');
-                  this.showAlert('MaalGaadi reads the received OTP and enters it for you. Next, you may give the permission to read OTP in Permission Settings of MaalGaadi.');
-                  break;
-              }
-        })
+        if(Platform.OS == "android") {
+            // Ask for Permission to receive SMS and get the OTP
+            PermissionsAndroid.request(PermissionsAndroid.PERMISSIONS.RECEIVE_SMS)
+            .then(result => {
+                switch (result) {
+                    case RESULTS.UNAVAILABLE:
+                    this.showAlert('You will have to manually enter the OTP, as reading the OTP is not supported on this device.');
+                    break;
+        
+                    case RESULTS.DENIED:
+                    this.showAlert('MaalGaadi reads the received OTP and enters it for you. Next, you may give the permission to read OTP in Permission Settings of MaalGaadi.');
+                    break;
+        
+                    case RESULTS.GRANTED:
+                    console.log('The permission is granted');
+                    break;
+        
+                    case RESULTS.BLOCKED:
+                    console.log('The permission is denied and not requestable anymore');
+                    this.showAlert('MaalGaadi reads the received OTP and enters it for you. Next, you may give the permission to read OTP in Permission Settings of MaalGaadi.');
+                    break;
+                }
+            })
+        }
     }
 
     showAlert(message) {
