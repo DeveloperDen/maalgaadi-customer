@@ -1809,13 +1809,14 @@ export default class Home extends Component {
                   <Text style={{color: '#004EC6', fontWeight: "700"}}> CANCEL </Text>
                 </TouchableHighlight>
 
-                <TouchableHighlight 
+                <TouchableHighlight
+                disabled={this.state.editedName == '' || this.state.editedNumber == ''}
                 underlayColor='#E8E8E8'
                 onPress={() => {
                   this.setModalVisible(false, true)
                 }}
                 style={{padding: 5, borderRadius: 5,
-                marginTop: 10, justifyContent: "center"}}>
+                marginTop: 10, justifyContent: "center", opacity: this.state.editedName == '' || this.state.editedNumber == ''? 0.4 : 1}}>
                   <Text style={{color: '#004EC6', fontWeight: "700",}}>
                     {this.state.isLoading? "SAVING..." : "SAVE"}
                   </Text>
