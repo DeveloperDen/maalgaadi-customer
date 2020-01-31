@@ -5,7 +5,7 @@ import {
   StatusBar,
   Image, Text, TouchableHighlight, Modal,
   ActivityIndicator,
-  NativeModules, NativeEventEmitter, Linking, TouchableOpacity
+  NativeModules, NativeEventEmitter, Linking, TouchableOpacity, Platform
 } from 'react-native';
 import firebase from 'react-native-firebase';
 import { getDeviceId, getVersion } from 'react-native-device-info';
@@ -33,8 +33,10 @@ export default class Splash extends Component {
     }
 
     async componentDidMount() {
-        // Check present instance's build number with the live application on store.
-        this.checkBuildNumber()
+        if(Platform.OS == "android") {
+            // Check present instance's build number with the live application on store.
+            this.checkBuildNumber()
+        }
 
         // Check for the permission and if not enabled, get the permission.
         const enabled = await firebase.messaging().hasPermission()
@@ -128,7 +130,9 @@ export default class Splash extends Component {
 
     componentWillUnmount() {
         this.unsubscribeFCMRefresh();
-        this.eventEmitter.removeAllListeners('VersionCheck');
+
+        if(Platform.OS == "android")
+            this.eventEmitter.removeAllListeners('VersionCheck');
     }
 
     render() {

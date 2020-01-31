@@ -495,6 +495,14 @@ export default class Home extends Component {
   }
 
   async componentDidMount() {
+    // Profile completed check
+    const isProfileCompleted = await DataController.getItem(DataController.IS_PROFILE_COMPLETED);
+    isProfileCompleted === "false" ? this.props.navigation.navigate("CreateProfile", {
+      [Constants.IS_NEW_USER] : true
+    }) 
+    : null
+    console.log("Profile completed: ", isProfileCompleted);
+
     // Listener for Network change
     this.netInfoSub = NetInfo.addEventListener((state) => {
       if(!state.isConnected)
@@ -505,7 +513,7 @@ export default class Home extends Component {
     
     // Will Focus listener
     this.willFocusListener = this.props.navigation.
-    addListener('willFocus', async () => {
+    addListener('didFocus', async () => {
       if(this.props.navigation.state.params){
         this.mapView.animateToRegion({
           latitude: this.props.navigation.getParam('latitude'),
