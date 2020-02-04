@@ -3,12 +3,12 @@ import {
     StyleSheet,
     View,
     Dimensions,
-    ToastAndroid,
     Image
 } from 'react-native';
 import MapView, { PROVIDER_GOOGLE, Marker } from 'react-native-maps';
 import MapViewDirections from 'react-native-maps-directions';
 import { BASE_URL, TRIP_ROUTE, FIELDS, KEY } from '../utils/AppConstants';
+import ToastComp from '../utils/ToastComp'
 
 const ACCENT = '#FFCB28' // 255, 203, 40
 const ACCENT_DARK = '#F1B800'
@@ -48,6 +48,10 @@ export default class Notifications extends Component {
         this.getTripData()
     }
 
+    showToast(message) {
+        this.toast.show(message);
+    }
+
     getTripData = async () => {
 
         const reqURL = BASE_URL + TRIP_ROUTE + '?' +
@@ -64,7 +68,7 @@ export default class Notifications extends Component {
             console.log(value)
 
             if (!value.success) {
-                ToastAndroid.show(value.message, ToastAndroid.SHORT);
+                this.showToast(value.message);
             }
             else {
                 if (value.data.routes.length > 2) {
@@ -88,13 +92,13 @@ export default class Notifications extends Component {
                     })
                 }
                 else {
-                    ToastAndroid.show("Showing default Route", ToastAndroid.SHORT)
+                    this.showToast("Showing default Route")
                 }
             }
 
         }).catch(err => {
             console.log(err)
-            ToastAndroid.show(Constants.ERROR_GET_DETAILS, ToastAndroid.SHORT);
+            this.showToast(Constants.ERROR_GET_DETAILS);
         })
     }
 
@@ -166,6 +170,8 @@ export default class Notifications extends Component {
                     />
 
                 </MapView>
+
+                <ToastComp ref={t => this.toast = t}/>
             </View>
         )
     }

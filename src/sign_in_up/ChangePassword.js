@@ -5,7 +5,6 @@ import {
   Text,
   Image,
   StatusBar,
-  ToastAndroid
 } from 'react-native';
 import { TextInput, TouchableHighlight, TouchableOpacity } from 'react-native-gesture-handler';
 import ToastComp from '../utils/ToastComp';
@@ -72,7 +71,7 @@ export default class ChangePassword extends Component {
                 prevState.isLoading = false
                 return prevState
             })
-            ToastAndroid.show(Constants.ERROR_UPDATE_PROFILE, ToastAndroid.SHORT);
+            this.showToast(Constants.ERROR_UPDATE_PROFILE);
         })
     }
 

@@ -10,6 +10,7 @@ import {
 import { ScrollView } from 'react-native-gesture-handler';
 import * as Constants from '../utils/AppConstants'
 import * as DataController from '../utils/DataStorageController'
+import ToastComp from '../utils/ToastComp';
 
 const ACCENT = '#FFCB28' // 255, 203, 40 
 const ACCENT_DARK = '#F1B800'
@@ -84,6 +85,10 @@ export default class RateCard extends Component {
         this.getVehicleCategory()
     }
 
+    showToast(message) {
+        this.toast.show(message);
+    }
+
     getVehicleCategory = async () => {
         const cityId = 1 // TODO: Remove this line, uncomment next line.
         // const cityId = await DataController.getItem(DataController.CITY_ID)
@@ -104,7 +109,7 @@ export default class RateCard extends Component {
             console.log(value)
     
             if(!value.success){
-                ToastAndroid.show(value.message, ToastAndroid.SHORT);
+                this.showToast(value.message);
             }
             else {
                 this.setState(prevState => {
@@ -117,7 +122,7 @@ export default class RateCard extends Component {
             
         }).catch(err => {
             console.log(err)
-            ToastAndroid.show(Constants.ERROR_GET_DETAILS, ToastAndroid.SHORT);
+            this.showToast(Constants.ERROR_GET_DETAILS);
         })
     }
 
@@ -154,32 +159,7 @@ export default class RateCard extends Component {
                             }
                         </Picker>
                     :
-                        <View
-                        style={{
-                            backgroundColor: '#FBFBFB', display: this.state.vehPickerOpen? 'flex' : 'none',
-                            shadowColor: 'rgb(0, 0, 0)', shadowOffset: {width: 0, height: -2},
-                            shadowOpacity: 0.07, shadowRadius: 1, position: 'absolute', bottom: 0, start: 0, end: 0,
-                        }}>
-                            <Picker
-                                selectedValue={this.state.selectedIndex}
-                                onValueChange={(itemValue, itemIndex) =>
-                                    this.setState(prevState => {
-                                        prevState.selectedIndex = itemValue
-                                        prevState.rates = prevState.vehicles[itemValue]
-                                        return prevState
-                                    })
-                                }>
-                                    {
-                                        this.state.vehicles !== ''?
-                                        this.state.vehicles.map((value, index) => {
-                                            return(
-                                                <Picker.Item label={value.vehicle_name} value={index} key={value.vehicle_name}/>
-                                            )
-                                        }) :
-                                        <Picker.Item label="Getting Vehicles..." value='none' />
-                                    }
-                            </Picker>
-                        </View>
+                        null
                     }
                 </View>
 
@@ -226,6 +206,35 @@ export default class RateCard extends Component {
                     </Text>
                 </ScrollView>
 
+                {/* Vehicle picker for iOS */}
+                {Platform.OS == "ios"?
+                    <View
+                    style={{
+                        backgroundColor: '#FBFBFB', display: this.state.vehPickerOpen? 'flex' : 'none',
+                        shadowColor: 'rgb(0, 0, 0)', shadowOffset: {width: 0, height: -2},
+                        shadowOpacity: 0.07, shadowRadius: 1, position: 'absolute', bottom: 0, start: 0, end: 0,
+                    }}>
+                        <Picker
+                            selectedValue={this.state.selectedIndex}
+                            onValueChange={(itemValue, itemIndex) =>
+                                this.setState(prevState => {
+                                    prevState.selectedIndex = itemValue
+                                    prevState.rates = prevState.vehicles[itemValue]
+                                    return prevState
+                                })
+                            }>
+                                {
+                                    this.state.vehicles !== ''?
+                                    this.state.vehicles.map((value, index) => {
+                                        return(
+                                            <Picker.Item label={value.vehicle_name} value={index} key={value.vehicle_name}/>
+                                        )
+                                    }) :
+                                    <Picker.Item label="Getting Vehicles..." value='none' />
+                                }
+                        </Picker>
+                    </View>
+                    : null}
                 {/* Vehicle Picker button for iOS */}
                 {Platform.OS == "ios"?
 
@@ -256,6 +265,8 @@ export default class RateCard extends Component {
                 </TouchableHighlight>
                 
                 : null}
+
+                <ToastComp ref={t => this.toast = t}/>
             </View>
         )
     }

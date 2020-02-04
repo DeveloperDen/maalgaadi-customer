@@ -6,8 +6,8 @@ import {
   Text,
   ScrollView,
   TouchableHighlight,
-  ToastAndroid
 } from 'react-native';
+import ToastComp from './utils/ToastComp';
 
 const ACCENT = '#FFCB28' // 255, 203, 40
 const ACCENT_DARK = '#F1B800'
@@ -57,6 +57,10 @@ export default class Profile extends Component {
         }
     }
 
+    showToast(message) {
+        this.toast.show(message);
+    }
+
     componentDidMount() {
         const toGet = new Array()
         toGet.push(DataController.CUSTOMER_NAME,
@@ -80,7 +84,7 @@ export default class Profile extends Component {
             })
             .catch(err => {
                 console.log(err)
-                ToastAndroid.show(Constants.ERROR_GET_DETAILS, ToastAndroid.SHORT);
+                this.showToast(Constants.ERROR_GET_DETAILS);
             })
     }
 
@@ -119,6 +123,8 @@ export default class Profile extends Component {
                         })
                     }
                 </ScrollView>
+
+                <ToastComp ref={t => this.toast = t}/>
             </View>
         )
     }

@@ -9,6 +9,7 @@ import {
 } from 'react-native';
 import { BookingEventType } from '../models/bookings_model';
 import { KEY } from '../utils/AppConstants';
+import ToastComp from '../utils/ToastComp';
 
 const ACCENT = '#FFCB28' // 255, 203, 40
 const GREEN = '#24C800' // 36, 200, 0
@@ -30,6 +31,10 @@ export default class PastMyBookings extends Component {
 
   async componentDidMount() {
     await this.getPastBookings()
+  }
+
+  showToast(message) {
+    this.toast.show(message);
   }
 
   getPastBookings = async () => {
@@ -55,13 +60,13 @@ export default class PastMyBookings extends Component {
         })
       }
       else {
-        ToastAndroid.show(value.message, ToastAndroid.SHORT);
+        this.showToast(value.message);
       }
       console.log("Response: ", JSON.stringify(value));
     })
     .catch(err => {
         console.log(err);
-        ToastAndroid.show(Constants.ERROR_GET_BOOKINGS, ToastAndroid.SHORT);
+        this.showToast(Constants.ERROR_GET_BOOKINGS);
     })
 
     this.setState(prevState => {
@@ -90,7 +95,7 @@ export default class PastMyBookings extends Component {
         console.log(value)
 
         if (!value.success) {
-            ToastAndroid.show(value.message, ToastAndroid.SHORT);
+            this.showToast(value.message);
         }
         else {
           let model = value.data;
@@ -118,7 +123,7 @@ export default class PastMyBookings extends Component {
 
     }).catch(err => {
         console.log(err)
-        ToastAndroid.show(Constants.ERROR_GET_DETAILS, ToastAndroid.SHORT);
+        this.showToast(Constants.ERROR_GET_DETAILS);
     })
   }
 
@@ -256,6 +261,8 @@ export default class PastMyBookings extends Component {
                 {this.state.isLoading? "Getting your Past Bookings..." : Constants.PAST_BOOK_EMPTY}
             </Text>
         </View>
+
+        <ToastComp ref={t => this.toast = t}/>
       </View>
     )
   }

@@ -118,7 +118,6 @@ export default class Splash extends Component {
             console.log("FCM update response: ", value)
         }).catch(err => {
             console.log(err)
-            ToastAndroid.show(Constants.UPDATE_CUSTOMER_PROFILE, ToastAndroid.SHORT);
         })
     }
 

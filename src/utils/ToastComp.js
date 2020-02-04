@@ -1,4 +1,4 @@
-import Toast, {DURATION} from 'react-native-easy-toast';
+import Toast from '../utils/Toast';
 import React, { Component } from 'react';
 
 const ACCENT = '#FFCB28' // 255, 203, 40
@@ -21,7 +21,7 @@ export default class ToastComp extends Component {
                     backgroundColor: ACCENT_DARK,
                     padding: 20,
                     marginHorizontal: '15%',
-                    elevation: 4,
+                    elevation: 8,
                     shadowColor: 'rgb(0, 0, 0)',
                     shadowOffset: {width: 0, height: 4},
                     shadowOpacity: 0.2,

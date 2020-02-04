@@ -29,6 +29,8 @@ RCT_EXPORT_METHOD(checkVersion:(RCTResponseSenderBlock)callback) {
     NSString* appStoreVersion = lookup[@"results"][0][@"version"];
     NSString* currentVersion = infoDictionary[@"CFBundleShortVersionString"];
     
+    RCTLogInfo(@"Versions - Current: %@ App Store: %@", currentVersion, appStoreVersion);
+    
     // If current version string is not equal to app store's version then ask to update
     if (![appStoreVersion isEqualToString:currentVersion]) {
       updated = false;

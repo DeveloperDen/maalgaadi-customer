@@ -1,8 +1,9 @@
 import React, {useState} from 'react';
 import {NavigationActions} from 'react-navigation';
-import { Text, View, StyleSheet, Image, Alert, ToastAndroid} from 'react-native'
+import { Text, View, StyleSheet, Image, Alert} from 'react-native'
 import { ScrollView, TouchableHighlight } from 'react-native-gesture-handler';
 import {getDeviceId} from 'react-native-device-info';
+import ToastComp from './utils/ToastComp'
 
 const ACCENT = '#FFCB28'
 const ACCENT_DARK = '#F1B800'
@@ -89,6 +90,12 @@ const screens = [
     }
 ]
 
+const showToast = (message) => {
+    toast.show(message);
+}
+
+let toast;
+
 const logoutUser = async (props) => {
     const deviceId = getDeviceId()
     const custId = await DataController.getItem(DataController.CUSTOMER_ID)
@@ -131,12 +138,12 @@ const logoutUser = async (props) => {
             else {
                 console.log(value.data.message);
                 props.navigation.closeDrawer()
-                ToastAndroid.show(Constants.ERROR_LOGOUT, ToastAndroid.SHORT);
+                showToast(Constants.ERROR_LOGOUT);
             }
         }).catch(err => {
             console.log(err)
             props.navigation.closeDrawer()
-            ToastAndroid.show(Constants.ERROR_LOGOUT, ToastAndroid.SHORT)
+            showToast(Constants.ERROR_LOGOUT)
         })
 }
 
@@ -228,6 +235,8 @@ const showAlert = (props) => {
                     )
                 })}
             </ScrollView>
+
+            <ToastComp ref={t => toast = t}/>
         </View>
     )
  }

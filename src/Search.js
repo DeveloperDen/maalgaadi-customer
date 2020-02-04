@@ -3,6 +3,7 @@ import {Text, View, Image, ActivityIndicator, Modal} from 'react-native';
 import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete';
 import { getItem, CUSTOMER_ID } from './utils/DataStorageController';
 import { BASE_URL, VIEW_FAV_LOCATION_URL, FIELDS, KEY, ICONS } from './utils/AppConstants';
+import ToastComp from './utils/ToastComp';
 
 const GOOGLE_MAPS_APIKEY = 'AIzaSyD3ZGOuuW3NDUNLPcJoBkAR0kpjP2dT4lA';
 const ACCENT = '#FFCB28' // 255, 203, 40
@@ -19,6 +20,10 @@ export default class Search extends Component {
 
     componentDidMount() {
         this.getFavLocations();
+    }
+
+    showToast(message) {
+        this.toast.show(message);
     }
 
     getFavLocations = async () => {
@@ -62,12 +67,12 @@ export default class Search extends Component {
             }
             else {
                 console.log(value.message);
-                ToastAndroid.show(value.message, ToastAndroid.SHORT);
+                this.showToast(value.message);
             }
             
         }).catch(err => {
             console.log(err)
-            ToastAndroid.show(err, ToastAndroid.SHORT);
+            this.showToast(err);
         })
         this.showLoadingModal(false);
     }
@@ -212,6 +217,8 @@ export default class Search extends Component {
                         <ActivityIndicator size="large" color={ACCENT} style={{alignSelf: 'center', margin: 15}}/>
                     </View>
                 </Modal>
+
+                <ToastComp ref={t => this.toast = t}/>
             </View>
         );
     }

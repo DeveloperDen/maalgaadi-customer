@@ -8,12 +8,12 @@ import {
   Text,
   Picker,
   TouchableOpacity,
-  ToastAndroid
 } from 'react-native';
 import { RATING_RESPONSE, CUSTOMER_ID, BOOKING_ID, RATING, getItem, DESCRIPTION} from '../utils/DataStorageController';
 import { AirbnbRating } from 'react-native-ratings';
 import { TouchableHighlight, TextInput} from 'react-native-gesture-handler';
 import { GET_CUSTOMER_RATING, BASE_URL, KEY } from './../utils/AppConstants';
+import ToastComp from '../utils/ToastComp'
 
 const ACCENT = '#FFCB28' // 255, 203, 40
 const ACCENT_DARK = '#F1B800'
@@ -49,6 +49,10 @@ export default class RatingDialog extends Component {
         this.backHandler = BackHandler.addEventListener("hardwareBackPress", () => {
             return true;
         })
+    }
+
+    showToast(message) {
+        this.toast.show(message);
     }
 
     componentDidMount() {
@@ -99,7 +103,7 @@ export default class RatingDialog extends Component {
 
         // Rating is less than average + reason is "Others" + no comment is given.
         if(this.state.rating < 3 && this.state.reason == "Others" && this.state.comment == '') {
-            ToastAndroid.show("Please add your comment", ToastAndroid.SHORT);
+            this.showToast("Please add your comment");
             console.log('Rating is less than average + reason is "Others" + no comment is given.');
         }
         else {
@@ -129,7 +133,7 @@ export default class RatingDialog extends Component {
     
         await request.json().then(value => {
             console.log(value)
-            ToastAndroid.show(value.message, ToastAndroid.SHORT);
+            this.showToast(value.message);
             
             if(value.success){
                 this.props.navigation.goBack();
@@ -137,7 +141,7 @@ export default class RatingDialog extends Component {
             
         }).catch(err => {
             console.log(err)
-            ToastAndroid.show(err, ToastAndroid.SHORT);
+            this.showToast(err);
         })
 
         this.setState(prevState => {
@@ -303,6 +307,8 @@ export default class RatingDialog extends Component {
                                 {this.state.isLoading? "Updating..." : "SUBMIT"}
                             </Text>
                         </TouchableHighlight>
+
+                        <ToastComp ref={t => this.toast = t}/>
                     </View>
                 </View>
             </View>

@@ -9,6 +9,7 @@ import {
   TouchableHighlight
 } from 'react-native';
 import {ScrollView, TextInput} from 'react-native-gesture-handler';
+import ToastComp from '../utils/ToastComp'
 
 const Constants = require('../utils/AppConstants')
 const DataController = require('../utils/DataStorageController')
@@ -32,6 +33,10 @@ export default class GoodsList extends Component {
         return{
             headerTitle: 'Goods List',
         }
+    }
+
+    showToast(message) {
+        this.toast.show(message);
     }
 
     setModalVisible = (visible, index) => {
@@ -80,7 +85,7 @@ export default class GoodsList extends Component {
             
         }).catch(err => {
             console.log(err)
-            ToastAndroid.show(Constants.ERROR_GET_GOODS, ToastAndroid.SHORT);
+            this.showToast(Constants.ERROR_GET_GOODS);
         }) 
     }
 
@@ -183,6 +188,8 @@ export default class GoodsList extends Component {
                             </View>
                         </View>
                 </Modal>
+            
+                <ToastComp ref={t => this.toast = t}/>
             </View>
         )
     }

@@ -8,12 +8,12 @@ import {
     TouchableOpacity,
     TouchableHighlight,
     ActivityIndicator,
-    ToastAndroid,
     Linking,
     StatusBar
 } from 'react-native';
 import { ScrollView, } from 'react-native-gesture-handler';
 import firebase from 'react-native-firebase'
+import ToastComp from '../utils/ToastComp'
 const DataController = require('../utils/DataStorageController')
 const Constants = require('../utils/AppConstants')
 const ACCENT = '#FFCB28' // 255, 203, 40
@@ -228,6 +228,10 @@ export default class TripDetails extends Component {
         })
     }
 
+    showToast(message) {
+        this.toast.show(message);
+    }
+
     cancelBooking = async () => {
         this.setState(prevState => {
             prevState.isLoading = true
@@ -254,12 +258,12 @@ export default class TripDetails extends Component {
         })
         const response = await request.json().then(async value => {
             this.props.navigation.goBack()
-            ToastAndroid.show(value.message, ToastAndroid.SHORT);
+            this.showToast(value.message);
             console.log("Response: ", value)
         })
             .catch(err => {
                 console.log(err);
-                ToastAndroid.show(Constants.ERROR_GET_BOOKINGS, ToastAndroid.SHORT);
+                this.showToast(Constants.ERROR_GET_BOOKINGS);
             })
 
         this.showCancelModal(false)
@@ -488,6 +492,8 @@ export default class TripDetails extends Component {
                         </View>
                     </View>
                 </Modal>
+
+                <ToastComp ref={t => this.toast = t}/>
             </View>
         )
     }

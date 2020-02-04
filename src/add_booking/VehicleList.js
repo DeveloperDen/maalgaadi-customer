@@ -4,9 +4,9 @@ import {
   View,
   Text,
   Image,
-  ToastAndroid
 } from 'react-native';
 import { TouchableOpacity, ScrollView } from 'react-native-gesture-handler';
+import ToastComp from '../utils/ToastComp'
 
 const DataController = require('../utils/DataStorageController')
 const Constants = require('../utils/AppConstants')
@@ -31,6 +31,10 @@ export default class VehicleList extends Component {
 
     componentDidMount() {
       this.getVehicleCategory()
+    }
+
+    showToast(message) {
+      this.toast.show(message);
     }
 
     getVehicleCategory = async () => {
@@ -68,7 +72,7 @@ export default class VehicleList extends Component {
           
       }).catch(err => {
           console.log(err)
-          ToastAndroid.show(Constants.ERROR_GET_DETAILS, ToastAndroid.SHORT);
+          this.showToast(Constants.ERROR_GET_DETAILS);
       })
     }
 
@@ -103,6 +107,8 @@ export default class VehicleList extends Component {
                   <Text style={{fontSize: 20, opacity: 0.3}}>{this.state.waitText}</Text>
               </View>
             }
+
+            <ToastComp ref={t => this.toast = t}/>
           </View>
         )
     }

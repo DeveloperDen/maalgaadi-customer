@@ -6,6 +6,7 @@ import {
   Image
 } from 'react-native';
 import { TouchableHighlight } from 'react-native-gesture-handler';
+import ToastComp from '../utils/ToastComp';
 
 const notification = require('../../assets/notification.png')
 const Constants = require('../utils/AppConstants')
@@ -61,6 +62,10 @@ export default class Settings extends Component {
         this.getSettings();
     }
 
+    showToast(message) {
+        this.toast.show(message);
+    }
+
     getSettings = async () => {
         const reqBody = new FormData()
         const custId = await DataController.getItem(DataController.CUSTOMER_ID)
@@ -88,7 +93,7 @@ export default class Settings extends Component {
         })
         .catch(err => {
             console.log(err);
-            ToastAndroid.show(Constants.ERROR_GET_SETTINGS, ToastAndroid.SHORT);
+            this.showToast(Constants.ERROR_GET_SETTINGS);
         })
 
         this.setState(prevState => {
@@ -122,7 +127,7 @@ export default class Settings extends Component {
         })
         .catch(err => {
             console.log(err);
-            ToastAndroid.show(Constants.ERROR_GET_SETTINGS, ToastAndroid.SHORT);
+            this.showToast(Constants.ERROR_GET_SETTINGS);
         })
 
         this.setState(prevState => {
@@ -177,6 +182,8 @@ export default class Settings extends Component {
                     position: 'absolute', backgroundColor: 'white', width: '100%',
                     opacity: 0.8, height: this.state.isLoading? '100%' : 0,
                 }}/>
+
+                <ToastComp ref={t => this.toast = t}/>
             </View>
         );
     }

@@ -5,10 +5,10 @@ import {
   Text,
   TouchableHighlight, 
   Image,
-  ToastAndroid,
   Animated
 } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
+import ToastComp from '../utils/ToastComp';
 
 const Constants = require('../utils/AppConstants')
 const DataController = require('../utils/DataStorageController')
@@ -52,6 +52,10 @@ export default class MGWallet extends Component {
         }
     }
 
+    showToast(message) {
+        this.toast.show(message);
+    }
+
     async componentDidMount() {
         await this.getWalletList()
     }
@@ -82,7 +86,7 @@ export default class MGWallet extends Component {
                     prevState.isLoading = false
                     return prevState
                 })
-                ToastAndroid.show(value.message, ToastAndroid.SHORT);
+                this.showToast(value.message);
             }
             else {
                 DataController.setItem(DataController.WALLET_BALANCE, value.data[0].final_balance.toString())
@@ -104,7 +108,7 @@ export default class MGWallet extends Component {
                 prevState.isLoading = false
                 return prevState
             })
-            ToastAndroid.show(Constants.ERROR_GET_DETAILS, ToastAndroid.SHORT);
+            this.showToast(Constants.ERROR_GET_DETAILS);
         }) 
     }
 
@@ -240,6 +244,8 @@ export default class MGWallet extends Component {
                         {this.state.isLoading? "Getting Wallet Details..." : Constants.WALLET_EMPTY}
                     </Text>
                 </View>
+            
+                <ToastComp ref={t => this.toast = t}/>
             </View>
         )
     }

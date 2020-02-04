@@ -1,10 +1,11 @@
 import React, {Component} from 'react'
 import {createAppContainer} from 'react-navigation'
-import {Text, View, ToastAndroid} from 'react-native'
+import {Text, View} from 'react-native'
 import {createMaterialTopTabNavigator} from 'react-navigation-tabs'
 import * as Constants from '../utils/AppConstants'
 import * as DataController from '../utils/DataStorageController'
 import RateScreen from './RateCardScreen'
+import ToastComp from '../utils/ToastComp';
 
 export default class RateTabNavigator extends Component{
     constructor(props) {
@@ -17,6 +18,10 @@ export default class RateTabNavigator extends Component{
 
     componentDidMount() {
         this.getVehicleCategory()
+    }
+
+    showToast(message) {
+        this.toast.show(message);
     }
 
     getVehicleCategory = async () => {
@@ -38,7 +43,7 @@ export default class RateTabNavigator extends Component{
             console.log(value)
     
             if(!value.success){
-                ToastAndroid.show(value.message, ToastAndroid.SHORT);
+                this.showToast(value.message);
             }
             else {
                 this.setState(prevState => {
@@ -49,7 +54,7 @@ export default class RateTabNavigator extends Component{
             
         }).catch(err => {
             console.log(err)
-            ToastAndroid.show(Constants.ERROR_GET_DETAILS, ToastAndroid.SHORT);
+            this.showToast(Constants.ERROR_GET_DETAILS);
         })
     }
 
@@ -87,6 +92,8 @@ export default class RateTabNavigator extends Component{
                 :
                 <Text>Getting Vehicles Category...</Text>
             }
+
+            <ToastComp ref={t => this.toast = t}/>
         </View>
         )
     }

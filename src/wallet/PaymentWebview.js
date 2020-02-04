@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import {
   StyleSheet,
   View,
-  ToastAndroid,
   NativeModules,
   Text, ActivityIndicator,
   StatusBar,
@@ -11,6 +10,7 @@ import {
 import { StackActions } from 'react-navigation';
 import { BASE_URL, FIELDS, GET_CUSTOMER_BILLING_INFO, CCAVENUE, GET_RSA, TRANS_PARAMS } from './../utils/AppConstants';
 import * as Constants from '../utils/AppConstants'
+import ToastComp from '../utils/ToastComp';
 
 const ACCENT = '#FFCB28' // 255, 203, 40
 const ACCENT_DARK = '#F1B800' 
@@ -36,6 +36,10 @@ export default class PaymentWebview extends Component {
         this.getBillingInfo()
     }
 
+    showToast(message) {
+        this.toast.show(message);
+    }
+
     getBillingInfo = async () => {
         console.log("Getting billing info...", this.props.navigation.getParam(FIELDS.CUSTOMER_ID))
         this.setState(prevState => {
@@ -59,7 +63,7 @@ export default class PaymentWebview extends Component {
             console.log(value)
 
             if(!value.success){
-                ToastAndroid.show(value.message, ToastAndroid.SHORT);
+                this.showToast(value.message);
             }
             else {
                 this.custNum = value.data.cust_number
@@ -81,7 +85,7 @@ export default class PaymentWebview extends Component {
             
         }).catch(err => {
             console.log(err)
-            ToastAndroid.show(err, ToastAndroid.SHORT);
+            this.showToast(err);
         })
     }
 
@@ -125,7 +129,7 @@ export default class PaymentWebview extends Component {
             this.NativePaymentView.navigateToPaymentScreen(Platform.OS == "ios"? params : JSON.stringify(params))
         }).catch(err => {
             console.log(err)
-            ToastAndroid.show(err, ToastAndroid.SHORT);
+            this.showToast(err);
         })
     }
 
@@ -155,6 +159,8 @@ export default class PaymentWebview extends Component {
                         </Text>
                     </View>
                 </View>
+            
+                <ToastComp ref={t => this.toast = t}/>
             </View>
         );
     }
