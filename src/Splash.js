@@ -33,10 +33,8 @@ export default class Splash extends Component {
     }
 
     async componentDidMount() {
-        if(Platform.OS == "android") {
-            // Check present instance's build number with the live application on store.
-            this.checkBuildNumber()
-        }
+        // Check present instance's build number with the live application on store.
+        this.checkBuildNumber()
 
         // Check for the permission and if not enabled, get the permission.
         const enabled = await firebase.messaging().hasPermission()
@@ -79,12 +77,19 @@ export default class Splash extends Component {
     }
 
     checkBuildNumber() {
-        NativeModules.VersionChecker.checkVersion(parseFloat(getVersion()));
-        this.eventEmitter = new NativeEventEmitter(NativeModules.VersionChecker);
-        this.eventEmitter.addListener("VersionCheck", (result) => {
-            console.log("App is updated: ", result.isUpdated)
-            this.isAppUpdated = result.isAppUpdated;
-        })
+        if(Platform.OS == "android") {
+            NativeModules.VersionChecker.checkVersion(parseFloat(getVersion()));
+            this.eventEmitter = new NativeEventEmitter(NativeModules.VersionChecker);
+            this.eventEmitter.addListener("VersionCheck", (result) => {
+                console.log("App is updated: ", result.isUpdated)
+                this.isAppUpdated = result.isAppUpdated;
+            })
+        }else {
+            NativeModules.VersionChecker.checkVersion((updated) => {
+                console.log("App is updated: ", updated)
+                this.isAppUpdated = updated;
+            });
+        }
     }
 
     // Update FCM token on the server.
@@ -189,7 +194,8 @@ export default class Splash extends Component {
                                 underlayColor='rgba(255, 203, 40, 0.8)'
                                 onPress={() => {
                                     console.log("Will update application...")
-                                    Linking.openURL("market://details?id=avpstransort.maalgaadicustomerapp");
+                                    const url = Platform.OS == "ios"? "itms-apps://itunes.apple.com/in/app/id1493757012?mt=8" : "market://details?id=avpstransort.maalgaadicustomerapp"
+                                    Linking.openURL(url);
                                 }}
                                 style={{
                                     paddingVertical: 15, alignItems: 'center', justifyContent: 'center',

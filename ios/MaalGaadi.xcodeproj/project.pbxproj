@@ -45,6 +45,7 @@
 		C037FEF723C5F33600E70A4E /* AIRGoogleMapPolygon.m in Sources */ = {isa = PBXBuildFile; fileRef = C037FEDC23C5F33600E70A4E /* AIRGoogleMapPolygon.m */; };
 		C037FEF823C5F33600E70A4E /* AIRGMSMarker.m in Sources */ = {isa = PBXBuildFile; fileRef = C037FEDD23C5F33600E70A4E /* AIRGMSMarker.m */; };
 		C037FEF923C5F33600E70A4E /* AIRGoogleMapCalloutSubview.m in Sources */ = {isa = PBXBuildFile; fileRef = C037FEDE23C5F33600E70A4E /* AIRGoogleMapCalloutSubview.m */; };
+		C0413D5523E84AD100D236B5 /* VersionChecker.m in Sources */ = {isa = PBXBuildFile; fileRef = C0413D5423E84AD100D236B5 /* VersionChecker.m */; };
 		C0517F8A23D2CA93004FCDEB /* logo_splash.png in Resources */ = {isa = PBXBuildFile; fileRef = C0517F8923D2CA92004FCDEB /* logo_splash.png */; };
 		C069A9A123D6EC6600A40EA5 /* NativePaymentView.h in Headers */ = {isa = PBXBuildFile; fileRef = C09B28DC23C9DC960020C191 /* NativePaymentView.h */; };
 		C0722BC823D07E0000C59126 /* RSA.m in Sources */ = {isa = PBXBuildFile; fileRef = C0722BC123D07E0000C59126 /* RSA.m */; };
@@ -166,6 +167,8 @@
 		C037FEDC23C5F33600E70A4E /* AIRGoogleMapPolygon.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AIRGoogleMapPolygon.m; sourceTree = "<group>"; };
 		C037FEDD23C5F33600E70A4E /* AIRGMSMarker.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AIRGMSMarker.m; sourceTree = "<group>"; };
 		C037FEDE23C5F33600E70A4E /* AIRGoogleMapCalloutSubview.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AIRGoogleMapCalloutSubview.m; sourceTree = "<group>"; };
+		C0413D5423E84AD100D236B5 /* VersionChecker.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = VersionChecker.m; sourceTree = "<group>"; };
+		C0413D5623E84AE500D236B5 /* VersionChecker.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = VersionChecker.h; sourceTree = "<group>"; };
 		C0517F8923D2CA92004FCDEB /* logo_splash.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = logo_splash.png; path = ../assets/logo_splash.png; sourceTree = "<group>"; };
 		C0722BC123D07E0000C59126 /* RSA.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RSA.m; sourceTree = "<group>"; };
 		C0722BC223D07E0000C59126 /* CCWebViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCWebViewController.h; sourceTree = "<group>"; };
@@ -255,6 +258,8 @@
 				C09B28DC23C9DC960020C191 /* NativePaymentView.h */,
 				C09B28DD23C9DCBA0020C191 /* NativePaymentView.m */,
 				C01B21BF23CC924D00BFF410 /* Launch Screen.storyboard */,
+				C0413D5423E84AD100D236B5 /* VersionChecker.m */,
+				C0413D5623E84AE500D236B5 /* VersionChecker.h */,
 			);
 			name = MaalGaadi;
 			sourceTree = "<group>";
@@ -800,6 +805,7 @@
 				C037FEE523C5F33600E70A4E /* AIRGoogleMapWMSTileManager.m in Sources */,
 				C037FEE823C5F33600E70A4E /* AIRGoogleMapCalloutManager.m in Sources */,
 				C037FEEC23C5F33600E70A4E /* AIRGoogleMapWMSTile.m in Sources */,
+				C0413D5523E84AD100D236B5 /* VersionChecker.m in Sources */,
 				C09B28DE23C9DCBA0020C191 /* NativePaymentView.m in Sources */,
 				13B07FBC1A68108700A75B9A /* AppDelegate.m in Sources */,
 				13B07FC11A68108700A75B9A /* main.m in Sources */,
