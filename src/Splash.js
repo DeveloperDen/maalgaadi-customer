@@ -171,7 +171,7 @@ export default class Splash extends Component {
                             width: '75%', elevation: 20
                             }}>
 
-                                {/* TODO: Remove this CLOSE button and force user to update application */}
+                                {/* CLOSE button to force user to update application */}
                                 <TouchableOpacity style={{margin: 15}}
                                 onPress={async () => {
                                     const screen = (await DataController.getItem(DataController.IS_LOGIN) === "true")? 

@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import {Text, View, Image, ActivityIndicator, Modal} from 'react-native';
-import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete';
+import { GooglePlacesAutocomplete } from './GooglePlacesAutocomplete';
 import { getItem, CUSTOMER_ID } from './utils/DataStorageController';
 import { BASE_URL, VIEW_FAV_LOCATION_URL, FIELDS, KEY, ICONS } from './utils/AppConstants';
 import ToastComp from './utils/ToastComp';

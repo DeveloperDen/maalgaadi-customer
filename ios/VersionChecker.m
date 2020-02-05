@@ -18,6 +18,8 @@ RCT_EXPORT_METHOD(checkVersion:(RCTResponseSenderBlock)callback) {
   NSDictionary* infoDictionary = [[NSBundle mainBundle] infoDictionary];
   NSString* appID = infoDictionary[@"CFBundleIdentifier"]; // Get Bundle Id
   
+  RCTLogInfo(@"Checking on URL: http://itunes.apple.com/lookup?bundleId=%@", appID);
+  
   // Look for the Bundle Id's information from App Store
   NSURL* url = [NSURL URLWithString:[NSString stringWithFormat:@"http://itunes.apple.com/lookup?bundleId=%@", appID]];
   NSData* data = [NSData dataWithContentsOfURL:url];
