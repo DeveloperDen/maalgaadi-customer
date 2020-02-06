@@ -23,7 +23,7 @@
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
   // Modules' initializations [START]
-  [GMSServices provideAPIKey:@"AIzaSyD3ZGOuuW3NDUNLPcJoBkAR0kpjP2dT4lA"];
+  [GMSServices provideAPIKey:@"AIzaSyAlXNEaJtPf7o61Kby_DdlTvWZGqr8CZKQ"];
   [FIRApp configure];
   [[UNUserNotificationCenter currentNotificationCenter] setDelegate:self];
   [RNFirebaseNotifications configure];

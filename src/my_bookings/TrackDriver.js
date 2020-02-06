@@ -7,12 +7,11 @@ import {
 } from 'react-native';
 import MapView, { PROVIDER_GOOGLE, Marker } from 'react-native-maps';
 import MapViewDirections from 'react-native-maps-directions';
-import { BASE_URL, TRIP_ROUTE, FIELDS, KEY } from '../utils/AppConstants';
+import { BASE_URL, TRIP_ROUTE, FIELDS, KEY, GOOGLE_MAPS_APIKEY } from '../utils/AppConstants';
 import ToastComp from '../utils/ToastComp'
 
 const ACCENT = '#FFCB28' // 255, 203, 40
 const ACCENT_DARK = '#F1B800'
-const GOOGLE_MAPS_APIKEY = 'AIzaSyCJYc7hsuiHCwUQWQ0NTk0TW0ne0y43NAE';
 const { width, height } = Dimensions.get('window');
 const ASPECT_RATIO = width / height;
 const LATITUDE_DELTA = 0.0030;

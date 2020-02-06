@@ -43,7 +43,6 @@ const { width, height } = Dimensions.get('window');
 const ASPECT_RATIO = width / height;
 const LATITUDE_DELTA = 0.0030;
 const LONGITUDE_DELTA = LATITUDE_DELTA * ASPECT_RATIO;
-const GOOGLE_MAPS_APIKEY = 'AIzaSyD3ZGOuuW3NDUNLPcJoBkAR0kpjP2dT4lA';
 const YOUR_LOCATION = 'Your location'
 const CHO_DEST = 'Choose destination'
 const DESTINATION = 'destination'
@@ -63,7 +62,7 @@ export default class Home extends Component {
   constructor(props) {
     super(props)
 
-    Geocoder.init(GOOGLE_MAPS_APIKEY)
+    Geocoder.init(Constants.GOOGLE_MAPS_APIKEY)
 
     this.requestLocationPermission = this.requestLocationPermission.bind(this);
     this.checkLocationPermission = this.checkLocationPermission.bind(this);

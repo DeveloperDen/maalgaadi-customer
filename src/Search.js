@@ -2,10 +2,9 @@ import React, { Component } from 'react';
 import {Text, View, Image, ActivityIndicator, Modal} from 'react-native';
 import { GooglePlacesAutocomplete } from './GooglePlacesAutocomplete';
 import { getItem, CUSTOMER_ID } from './utils/DataStorageController';
-import { BASE_URL, VIEW_FAV_LOCATION_URL, FIELDS, KEY, ICONS } from './utils/AppConstants';
+import { BASE_URL, VIEW_FAV_LOCATION_URL, FIELDS, KEY, ICONS, GOOGLE_MAPS_APIKEY } from './utils/AppConstants';
 import ToastComp from './utils/ToastComp';
 
-const GOOGLE_MAPS_APIKEY = 'AIzaSyD3ZGOuuW3NDUNLPcJoBkAR0kpjP2dT4lA';
 const ACCENT = '#FFCB28' // 255, 203, 40
  
 export default class Search extends Component {
