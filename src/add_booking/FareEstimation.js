@@ -319,7 +319,7 @@ export default class FareEstimation extends Component {
             }
         })
 
-        const response = await request.json().then(async value => {
+        await request.json().then(async value => {
             console.log("Response: ", value);
             this.setModalVisible(false, true)
             this.showNoDriverAvailableDialog(false)
@@ -678,9 +678,7 @@ export default class FareEstimation extends Component {
                                     this.confirmBooking();
                                 }
                             } else {
-                                // TODO
-                                // this.confirmBooking();
-                                this.showToast("Will book later.")
+                                this.confirmBooking();
                             }
 
                             this.startFindDrivInterval();

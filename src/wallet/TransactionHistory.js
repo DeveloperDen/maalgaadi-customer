@@ -119,8 +119,7 @@ export default class TransactionHistory extends Component {
         const endDate = this.formatDate(this.state.endDate.date, true)
         console.log(stDate, '\n', endDate)
 
-        const id = 3 // TODO: Remove this line. Uncomment below line
-        // const id = await DataController.getItem(DataController.CUSTOMER_ID)
+        const id = await DataController.getItem(DataController.CUSTOMER_ID)
 
         const reqURL = Constants.BASE_URL + Constants.GET_WALLET_LIST + '?' + 
                         Constants.FIELDS.CUSTOMER_ID + '=' + id + '&' +

@@ -16,7 +16,7 @@ const DataController = require('../utils/DataStorageController')
 const ACCENT = '#FFCB28' // 255, 203, 40
 const ACCENT_DARK = '#F1B800'
 const GREEN = '#24C800' // 36, 200, 0
-const GREEN_DARK = '#1EA500' 
+const GREEN_DARK = '#1EA500'
 const BLUE = '#00B0C8' // 0, 176, 200
 
 export default class MGWallet extends Component {
@@ -26,7 +26,7 @@ export default class MGWallet extends Component {
             headerRight: 
             <TouchableHighlight disabled={navigation.state.params? false : true}
             onPress={() => {
-                navigation.navigate('AddMoney', {balance: navigation.state.params? navigation.state.params.balance : 0})
+                navigation.navigate('AddMoney', {balance: navigation.state.params.balance? navigation.state.params.balance : 0})
             }}
             underlayColor={GREEN_DARK}
             style={{
@@ -65,8 +65,7 @@ export default class MGWallet extends Component {
             prevState.isLoading = true
             return prevState
         })
-        const id = 3 // TODO: Uncomment the line below, and remove this line
-        // const id = await DataController.getItem(DataController.CUSTOMER_ID)
+        const id = await DataController.getItem(DataController.CUSTOMER_ID)
 
         const reqURL = Constants.BASE_URL + Constants.GET_WALLET_LIST + '?' + 
                         Constants.FIELDS.CUSTOMER_ID + '=' + id
@@ -78,13 +77,17 @@ export default class MGWallet extends Component {
             }
         })
 
-        const response = await request.json().then(value => {
+        await request.json().then(value => {
             console.log(value)
 
             if(!value.success){
                 this.setState(prevState => {
                     prevState.isLoading = false
                     return prevState
+                })
+
+                this.props.navigation.setParams({
+                    isLoading: false
                 })
                 this.showToast(value.message);
             }

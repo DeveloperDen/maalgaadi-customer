@@ -167,6 +167,7 @@ export default class ActiveFleet extends Component {
             console.log(value)
 
             if(!value.success){
+                this.setModalVisible(false);
                 this.showToast(value.message)
             }
             else {
