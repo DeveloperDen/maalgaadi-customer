@@ -8,7 +8,7 @@ import {
   NativeModules, NativeEventEmitter, Linking, TouchableOpacity, Platform
 } from 'react-native';
 import firebase from 'react-native-firebase';
-import { getDeviceId, getVersion } from 'react-native-device-info';
+import { getDeviceId, getVersion, } from 'react-native-device-info';
 import { ICONS } from './utils/AppConstants';
 
 const Constants = require('./utils/AppConstants')
@@ -34,7 +34,7 @@ export default class Splash extends Component {
 
     async componentDidMount() {
         // Check present instance's build number with the live application on store.
-        this.checkBuildNumber()
+         await this.checkBuildNumber()
 
         // Check for the permission and if not enabled, get the permission.
         const enabled = await firebase.messaging().hasPermission()
@@ -76,7 +76,7 @@ export default class Splash extends Component {
         }, Constants.SPLASH_TIMEOUT)
     }
 
-    checkBuildNumber() {
+    async checkBuildNumber() {
         if(Platform.OS == "android") {
             NativeModules.VersionChecker.checkVersion(parseFloat(getVersion()));
             this.eventEmitter = new NativeEventEmitter(NativeModules.VersionChecker);
@@ -85,10 +85,21 @@ export default class Splash extends Component {
                 this.isAppUpdated = result.isAppUpdated;
             })
         }else {
-            NativeModules.VersionChecker.checkVersion((updated) => {
-                console.log("App is updated: ", updated)
-                this.isAppUpdated = updated;
-            });
+            const request = await fetch("https://itunes.apple.com/lookup?bundleId=avpstransort.maalgaadicustomerapp", {
+                method: 'GET',
+            })
+    
+            await request.json().then(value => {
+                const storeVersion = value.results[0].version.toString();
+                const installedVersion = getVersion();
+                console.log("App Store Version: ", storeVersion);
+                console.log("Installed Version: ", installedVersion)
+
+                if(storeVersion !== installedVersion)
+                    this.isAppUpdated = false;
+            }).catch(err => {
+                console.log(err)
+            })
         }
     }
 
