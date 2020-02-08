@@ -199,7 +199,7 @@ export default class ActiveFleet extends Component {
         const reqURL = BASE_URL + ADD_FAVORITE_DRIVER + '?' + 
                         FIELDS.CUSTOMER_ID + '=' + customerId + '&' +
                         FIELDS.MG_CODE + '=' + this.state.drivCode + '&' +
-                        FIELDS.STATUS_EXC + '=' + 0
+                        FIELDS.STATUS_EXC + '=' + this.state.excDriverSelected? 1 : 0;
         
         console.log("Request: ", reqURL)
 
@@ -305,8 +305,7 @@ export default class ActiveFleet extends Component {
                     justifyContent: 'center'
                     }}>
                         <View style={{backgroundColor: 'white', borderRadius: 5, overflow: 'hidden'}}>
-                            {/* Currently ommiting Exclusive Driver switch */}
-                            {/* <View style={{
+                            <View style={{
                                 flexDirection: 'row', alignItems: 'center',
                                 justifyContent: 'space-between', marginTop: 20, marginHorizontal: 20,
                             }}>
@@ -314,14 +313,14 @@ export default class ActiveFleet extends Component {
                                 <Switch
                                 trackColor= {{false: 'rgba(0, 0, 0, 0.3', true: 'rgba(255, 203, 40, 0.5)'}}
                                 thumbColor= {this.state.excDriverSelected? ACCENT : '#F0F0F0'}
-                                value={this.state.excDriverSelected? true : false}
+                                value={this.state.excDriverSelected}
                                 onChange={() => {
                                     this.setState(prevState => {
                                         prevState.excDriverSelected = !prevState.excDriverSelected
                                         return prevState
                                     })
                                 }}/>
-                            </View> */}
+                            </View>
 
                             <View style={{
                                 flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
