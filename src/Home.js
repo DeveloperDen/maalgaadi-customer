@@ -1284,7 +1284,7 @@ export default class Home extends Component {
                 style={{alignItems: "center", paddingHorizontal: 10, flex: 1}} key={vehicle.vehicle_name}>
                   <View style={{alignItems: "center"}}>
                   {(this.state.isCoveredVehicle? vehicle.etaCovered : vehicle.etaUncovered)?
-                      <Text style={{fontSize: 10, height: 20}}>
+                      <Text style={{fontSize: 10, marginVertical: 5}}>
                         {this.state.isCoveredVehicle?
                         vehicle.etaCovered >= 60? (vehicle.etaCovered / 60).toFixed(0)  + 'hrs' : vehicle.etaCovered + 'mins'
                         :
@@ -1601,7 +1601,7 @@ export default class Home extends Component {
                 style={{alignItems: "center", paddingHorizontal: 10, flex: 1}} key={vehicle.vehicle_name}>
                   <View style={{alignItems: "center"}}>
                     {(this.state.isCoveredVehicle? vehicle.etaCovered : vehicle.etaUncovered)?
-                      <Text style={{fontSize: 10, height: 20}}>
+                      <Text style={{fontSize: 10, marginVertical: 5}}>
                         {this.state.isCoveredVehicle?
                         vehicle.etaCovered >= 60? (vehicle.etaCovered / 60).toFixed(0)  + 'hrs' : vehicle.etaCovered + 'mins'
                         :

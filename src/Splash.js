@@ -179,10 +179,10 @@ export default class Splash extends Component {
                         }}>
                             <View style={{
                             borderRadius: 5, backgroundColor: 'white', overflow: 'hidden',
-                            width: '75%', elevation: 10,
+                            width: '75%'
                             }}>
 
-                                {/* TODO: Remove CLOSE button to force user to update application
+                                {/* TODO: Remove CLOSE button to force user to update application */}
                                 <TouchableOpacity style={{margin: 15}}
                                 onPress={async () => {
                                     const screen = (await DataController.getItem(DataController.IS_LOGIN) === "true")? 
@@ -190,7 +190,7 @@ export default class Splash extends Component {
                                     this.props.navigation.navigate(screen)
                                 }}>
                                     <Image source={ICONS.close} style={{width: 20, height: 20, opacity: 0.4}}/>
-                                </TouchableOpacity> */}
+                                </TouchableOpacity>
 
                                 <Image source={ICONS.new}
                                 style={{
