@@ -776,6 +776,7 @@ export default class Home extends Component {
             return prevState
           })
           this.showFreeDrivOnMap()
+          this.getETA();
         }
         
     }).catch(err => {
@@ -925,6 +926,7 @@ export default class Home extends Component {
 
   // On Map Region change listener by any way, ie. by dragging or programmetically.
   mapRegionChangeCompleteListener = region => {
+    console.log(region);
     Geocoder.from(region.latitude, region.longitude)
       .then(res => {
         var address = res.results[0].formatted_address;
@@ -1697,6 +1699,11 @@ export default class Home extends Component {
 
         <View style={styles.map}>
           <MapView
+            rotateEnabled={true}
+            scrollEnabled={true}
+            zoomEnabled={true}
+            zoomTapEnabled={true}
+            showsCompass={false}
             showsMyLocationButton={false}
             onRegionChangeComplete={this.mapRegionChangeCompleteListener}
             showsUserLocation={true}

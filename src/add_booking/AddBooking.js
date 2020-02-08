@@ -482,7 +482,7 @@ export default class AddBooking extends Component {
                                     +91
                                 </Text>
                                 <TextInput editable={this.state.mobNumEnabled}
-                                keyboardType="number-pad" returnKeyType="next"
+                                keyboardType="number-pad" returnKeyType="done"
                                 style={{
                                     flex: 1, backgroundColor: 'white',
                                     paddingHorizontal: 15, height: '100%'
@@ -499,7 +499,7 @@ export default class AddBooking extends Component {
                                     +91
                                 </Text>
                                 <TextInput editable={this.state.mobNumEnabled}
-                                keyboardType="number-pad" returnKeyType="next"
+                                keyboardType="number-pad" returnKeyType="done"
                                 style={{
                                     flex: 1, backgroundColor: 'white',
                                     paddingHorizontal: 15, height: '100%'
@@ -854,7 +854,7 @@ export default class AddBooking extends Component {
                                     </TouchableOpacity>
                                 </View>
 
-                                <Text style={{marginVertical: 20, marginHorizontal: 10}}>
+                                <Text style={{marginBottom: 20, marginHorizontal: 10}}>
                                     {Constants.NO_FAV_DRIV}
                                 </Text>
 
