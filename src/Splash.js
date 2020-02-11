@@ -90,12 +90,12 @@ export default class Splash extends Component {
             })
     
             await request.json().then(value => {
-                const storeVersion = value.results[0].version.toString();
-                const installedVersion = getVersion();
+                const storeVersion = parseFloat(value.results[0].version);
+                const installedVersion = parseFloat(getVersion());
                 console.log("App Store Version: ", storeVersion);
                 console.log("Installed Version: ", installedVersion)
 
-                if(storeVersion !== installedVersion)
+                if(storeVersion > installedVersion)
                     this.isAppUpdated = false;
             }).catch(err => {
                 console.log(err)

@@ -14,7 +14,7 @@ import {
   NativeEventEmitter, NativeModules,
   PermissionsAndroid, Alert, Platform,
 } from 'react-native';
-import MapView, {PROVIDER_GOOGLE, Marker } from 'react-native-maps';
+import MapView, {PROVIDER_GOOGLE, Marker, PROVIDER_DEFAULT } from 'react-native-maps';
 import Geolocation from 'react-native-geolocation-service';
 import Geocoder from 'react-native-geocoding';
 import { TextInput } from 'react-native-gesture-handler';
@@ -1707,7 +1707,7 @@ export default class Home extends Component {
             showsMyLocationButton={false}
             onRegionChangeComplete={this.mapRegionChangeCompleteListener}
             showsUserLocation={true}
-            provider={PROVIDER_GOOGLE}
+            provider={PROVIDER_DEFAULT}
             style={styles.mapReg}
             initialRegion={{
               latitude: this.state.coordinates.latitude,

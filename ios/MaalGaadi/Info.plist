@@ -21,7 +21,7 @@
 	<key>CFBundleSignature</key>
 	<string>????</string>
 	<key>CFBundleVersion</key>
-	<string>2</string>
+	<string>3</string>
 	<key>FirebaseAppDelegateProxyEnabled</key>
 	<false/>
 	<key>LSApplicationQueriesSchemes</key>
@@ -43,10 +43,12 @@
 			</dict>
 		</dict>
 	</dict>
+	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+	<string>MaalGaadi uses your location to get the list of appropriate drivers around you and provide you an amazing experience. The location we get is only used by us to fetch the drivers around you and is not saved anywhere.</string>
 	<key>NSLocationAlwaysUsageDescription</key>
 	<string>MaalGaadi uses your location to get the list of appropriate drivers around you and provide you an amazing experience. The location we get is only used by us to fetch the drivers around you and is not saved anywhere.</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>MaalGaadi will access your location to locate drivers near you and provide you an amazing transportation experience. Tap OK to allow us.</string>
+	<string>MaalGaadi uses your location to get the list of appropriate drivers around you and provide you an amazing experience. The location we get is only used by us to fetch the drivers around you and is not saved anywhere.</string>
 	<key>UIBackgroundModes</key>
 	<array>
 		<string>fetch</string>

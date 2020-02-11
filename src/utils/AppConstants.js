@@ -23,7 +23,7 @@ export const BASE_URL = BASE_URL_IP_LIVE;
 export const IMAGE_BASE_URL = BASE_URL_LIVE;
 
 export const KEY = "21db33e221e41d37e27094153b8a8a02";
-export const GOOGLE_MAPS_APIKEY = Platform.OS == "ios"? "AIzaSyC4YrHXpl0tQhpDXGVt3WU7_bYyaHd0ZbQ" : "AIzaSyC4YrHXpl0tQhpDXGVt3WU7_bYyaHd0ZbQ";
+export const GOOGLE_MAPS_APIKEY = Platform.OS == "ios"? "AIzaSyAlXNEaJtPf7o61Kby_DdlTvWZGqr8CZKQ" : "AIzaSyC4YrHXpl0tQhpDXGVt3WU7_bYyaHd0ZbQ";
 
 export const PAYMENT_GATEWAY_URL = "https://secure.ccavenue.com/transaction/initTrans";
 export const PAYMENT_GATEWAY_ACCESS_CODE = "AVHR74EK06AD66RHDA";

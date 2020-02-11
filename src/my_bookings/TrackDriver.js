@@ -5,7 +5,7 @@ import {
     Dimensions,
     Image
 } from 'react-native';
-import MapView, { PROVIDER_GOOGLE, Marker } from 'react-native-maps';
+import MapView, { PROVIDER_GOOGLE, Marker, PROVIDER_DEFAULT } from 'react-native-maps';
 import MapViewDirections from 'react-native-maps-directions';
 import { BASE_URL, TRIP_ROUTE, FIELDS, KEY, GOOGLE_MAPS_APIKEY } from '../utils/AppConstants';
 import ToastComp from '../utils/ToastComp'
@@ -17,7 +17,7 @@ const ASPECT_RATIO = width / height;
 const LATITUDE_DELTA = 0.0030;
 const LONGITUDE_DELTA = LATITUDE_DELTA * ASPECT_RATIO;
 
-export default class Notifications extends Component {
+export default class TrackDriver extends Component {
     static navigationOptions = ({ navigation }) => {
         return {
             headerTitle: 'Track Driver',
@@ -114,7 +114,7 @@ export default class Notifications extends Component {
                 <MapView
                 showsMyLocationButton={false}
                 showsUserLocation={true}
-                provider={PROVIDER_GOOGLE}
+                provider={PROVIDER_DEFAULT}
                 style={styles.mapReg}
                 initialRegion={{
                     latitude: (this.state.pickup.latitude),
