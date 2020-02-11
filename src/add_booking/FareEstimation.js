@@ -206,6 +206,8 @@ export default class FareEstimation extends Component {
             console.log(value)
             if(value.success) {
                 const bookingID = value.data.booking_id
+                this.bookingModel.booking_id = bookingID;
+
                 DataController.setItem(DataController.BOOKING_ID, bookingID.toString());
 
                 const dataObj = value.data
@@ -248,6 +250,7 @@ export default class FareEstimation extends Component {
             console.log(value)
             if(value.success) {
                 const bookingID = value.data.booking_id
+                this.bookingModel.booking_id = bookingID;
                 DataController.setItem(DataController.BOOKING_ID, bookingID.toString());
 
                 const dataObj = value.data
@@ -275,6 +278,7 @@ export default class FareEstimation extends Component {
                 this.showNoDriverAvailableDialog(true, message)
                 break;
             case 1:
+            case 3:
                 this.showToast(message);
                 await DataController.setItem(DataController.RUNNING_TRIP_DATA, JSON.stringify(tripObj))
                 this.props.navigation.reset([
@@ -285,18 +289,15 @@ export default class FareEstimation extends Component {
                 }})])
                 break;
             case 2:
+                this.showNoDriverAvailableDialog(true, message)
                 // this.showNoFavDriverAvailableDialog()
                 break;
-            case 3:
-                // Same as case 1
-                break;
             case 4:
-                // TODO
-                // this.props.navigation.replace("MyBookings")
+                this.props.navigation.replace("MyBookings")
                 break;
             case 5:
-                    this.showNoDriverAvailableDialog(true, message)
-                    break;
+                this.showNoDriverAvailableDialog(true, message)
+                break;
         }
 
         this.setModalVisible(false, true);
@@ -856,6 +857,18 @@ export default class FareEstimation extends Component {
                                 Constants.NO_DRIVER_FOUND_D : this.state.noDrivAvailModalMessage}
                             </Text>
 
+                            <TouchableHighlight
+                                underlayColor={ACCENT_DARK}
+                                onPress={() => {
+                                    this.showNoDriverAvailableDialog(false);
+                                }}
+                                style={{
+                                    paddingVertical: 15, alignItems: 'center', justifyContent: 'center',
+                                    backgroundColor: ACCENT, marginTop: 10, marginHorizontal: 15
+                                }}>
+                                    <Text style={{color: 'white'}}>CHANGE PRICE</Text>
+                            </TouchableHighlight>
+                            
                             <View style={{flexDirection: 'row', marginTop: 20, justifyContent: 'space-between'}}>
                                 <TouchableHighlight
                                     underlayColor={ACCENT_DARK}

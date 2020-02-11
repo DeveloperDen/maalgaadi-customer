@@ -91,7 +91,7 @@ export default class PastMyBookings extends Component {
         }
     })
 
-    const response = await request.json().then(async value => {
+    await request.json().then(async value => {
         console.log(value)
 
         if (!value.success) {
@@ -235,7 +235,7 @@ export default class PastMyBookings extends Component {
                         {value.status}
                       </Text>
                       
-                      {!value.status === COMPLETED?
+                      {value.status !== COMPLETED?
                       <TouchableOpacity
                       style={{
                         borderWidth: 1, borderColor: ACCENT, borderRadius: 3,
