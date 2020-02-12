@@ -120,6 +120,7 @@ export const ERROR_LOGIN = "An error occured while Logging in, please retry late
 export const ERROR_GET_GOODS = "An error occured while getting Goods List, please retry later"
 export const ERROR_GET_FAV_DRIV = "An error occured while getting Favourite Drivers, please retry later"
 export const NO_FAV_DRIV = "Looks like you haven't added any favourite drivers for this vehicle category. Add a favourite driver from 'Manage My Fleet' tab."
+export const NO_EXC_DRIV = "Looks like you haven't added any exclusive drivers for this vehicle category. Add a exclusive driver from 'Manage My Fleet' tab."
 export const ERROR_GET_DETAILS = "An error occured while getting User Details, please retry later"
 export const ERROR_GET_SETTINGS = "An error occured while getting User Settings, please retry later"
 export const PAST_BOOK_EMPTY = "Looks like you have not booked any MaalGaadi yet. Make your first booking today!"

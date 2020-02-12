@@ -10,6 +10,7 @@ import {
 import { BookingEventType } from '../models/bookings_model';
 import { KEY } from '../utils/AppConstants';
 import ToastComp from '../utils/ToastComp';
+import { formatDate } from './../utils/UtilFunc';
 
 const ACCENT = '#FFCB28' // 255, 203, 40
 const GREEN = '#24C800' // 36, 200, 0
@@ -100,7 +101,7 @@ export default class PastMyBookings extends Component {
         else {
           let model = value.data;
           model.booking_event_type = BookingEventType.EDIT
-          model.booking_time = this.formatDate()
+          model.booking_time = formatDate();
 
           DataController.getItem(DataController.VEHICLE).then((vehicles) => {
             vehicles = JSON.parse(vehicles)

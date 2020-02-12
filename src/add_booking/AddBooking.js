@@ -55,6 +55,7 @@ export default class AddBooking extends Component {
         this.formatDate = formatDate
         
         this.state = {
+            favExcDialogMessage: '',
             noFavDrivModalVisible: false,
             fromView: null,
             popOverText: '',
@@ -89,6 +90,8 @@ export default class AddBooking extends Component {
 
         this.bookingModel = '';
         this.favDrivers = [];
+        this.excDrivers = [];
+        this.favExcDrivList = [];
     }
 
     async componentDidMount() {
@@ -130,7 +133,15 @@ export default class AddBooking extends Component {
                 this.showToast(value.message)
             }
             else {
-                this.favDrivers = value.data;
+                this.favExcDrivList = value.data;
+                if(value.data.length != 0)
+                    value.data.forEach((val, i, arr) => {
+                        if(this.props.navigation.getParam('vehicle').id == val.vehicle_id)
+                            val.status_exclusive?
+                            this.excDrivers.push(val)
+                            :
+                            this.favDrivers.push(val);
+                    })
             }
             
         }).catch(err => {
@@ -143,9 +154,11 @@ export default class AddBooking extends Component {
         this.toast.show(message);
     }
 
-    setModalVisible(show) {
+    setModalVisible(show, excDriv = false) {
         this.setState(prevState => {
             prevState.noFavDrivModalVisible = show;
+            prevState.favExcDialogMessage = excDriv? Constants.NO_EXC_DRIV : Constants.NO_FAV_DRIV
+                
             return prevState;
         })
     }
@@ -179,7 +192,23 @@ export default class AddBooking extends Component {
     setVehicle = (vehicle) => {
         this.props.navigation.setParams({
             vehicle: vehicle
-        })
+        });
+
+        this.updateFavExcDrivList();
+    }
+
+    updateFavExcDrivList() {
+        this.excDrivers = [];
+        this.favDrivers = [];
+        
+        if(this.favExcDrivList.length != 0)
+            this.favExcDrivList.forEach((val, i, arr) => {
+                if(this.props.navigation.getParam('vehicle').id == val.vehicle_id)
+                    val.status_exclusive?
+                    this.excDrivers.push(val)
+                    :
+                    this.favDrivers.push(val);
+            })
     }
 
     setGoodsType = (goods) => {
@@ -711,10 +740,18 @@ export default class AddBooking extends Component {
                             underlayColor='white'
                             style={{flex: 1, padding: 10}}
                             onPress={() => {
-                                this.setState(prevState => {
-                                    prevState.excDriverSelected = !prevState.excDriverSelected
-                                    return prevState
-                                })
+                                // Presently switch is off
+                                if(!this.state.excDriverSelected) {
+                                    if(this.excDrivers.length > 0) {
+                                        this.setState(prevState => {
+                                            prevState.excDriverSelected = !prevState.excDriverSelected
+                                            return prevState
+                                        })
+                                    }
+                                    else {
+                                        this.setModalVisible(true, true);
+                                    }
+                                }
                             }}>
                                 <Text style={{fontSize: 15, opacity: 0.5}}>Allot only exclusive drivers</Text>
                             </TouchableHighlight>
@@ -855,7 +892,7 @@ export default class AddBooking extends Component {
                                 </View>
 
                                 <Text style={{marginBottom: 20, marginHorizontal: 10}}>
-                                    {Constants.NO_FAV_DRIV}
+                                    {this.state.favExcDialogMessage}
                                 </Text>
 
                                 <TouchableHighlight
