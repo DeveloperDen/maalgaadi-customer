@@ -199,7 +199,7 @@ export default class ActiveFleet extends Component {
         const reqURL = BASE_URL + ADD_FAVORITE_DRIVER + '?' + 
                         FIELDS.CUSTOMER_ID + '=' + customerId + '&' +
                         FIELDS.MG_CODE + '=' + this.state.drivCode + '&' +
-                        FIELDS.STATUS_EXC + '=' + this.state.excDriverSelected? 1 : 0;
+                        FIELDS.STATUS_EXC + '=' + (this.state.excDriverSelected? 1 : 0);
         
         console.log("Request: ", reqURL)
 

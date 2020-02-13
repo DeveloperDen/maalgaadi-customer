@@ -46,12 +46,12 @@
   
   
   NSString *encVal = [RSA encryptString:myRequestString publicKey:rsaKey];
-  
-  encVal = (NSString *)CFBridgingRelease(CFURLCreateStringByAddingPercentEscapes(NULL,
-                                                                                 (CFStringRef)encVal,
-                                                                                 NULL,
-                                                                                 (CFStringRef)@"!*'();:@&=+$,/?%#[]",
-                                                                                 kCFStringEncodingUTF8 ));
+  encVal = [encVal stringByAddingPercentEncodingWithAllowedCharacters: [NSCharacterSet URLQueryAllowedCharacterSet]];
+//  encVal = (NSString *)CFBridgingRelease(CFURLCreateStringByAddingPercentEscapes(NULL,
+//                                                                                 (CFStringRef)encVal,
+//                                                                                 NULL,
+//                                                                                 (CFStringRef)@"!*'();:@&=+$,/?%#[]",
+//                                                                                 kCFStringEncodingUTF8 ));
   
   //Preparing for a webview call
   RCTLogInfo(@"Preparing for a webview call.");
@@ -121,7 +121,7 @@
       
       RCTLogInfo(@"Output Dict: %@", outputDict);
       
-      int success = [outputDict[@"success"] integerValue];
+      int success = (int)[outputDict[@"success"] integerValue];
       
       NSString *message = outputDict[@"message"];
       

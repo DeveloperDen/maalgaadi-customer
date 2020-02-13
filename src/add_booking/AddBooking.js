@@ -203,11 +203,13 @@ export default class AddBooking extends Component {
         
         if(this.favExcDrivList.length != 0)
             this.favExcDrivList.forEach((val, i, arr) => {
-                if(this.props.navigation.getParam('vehicle').id == val.vehicle_id)
+                console.log(this.props.navigation.getParam('vehicle').id, val.vehicle_id)
+                if(this.props.navigation.getParam('vehicle').id == val.vehicle_id) {
                     val.status_exclusive?
                     this.excDrivers.push(val)
                     :
                     this.favDrivers.push(val);
+                }
             })
     }
 
