@@ -460,11 +460,11 @@ export default class Home extends Component {
   getCurrentLocation(input) {
     Geolocation.getCurrentPosition(
       (position) => {
-          console.log(position);
+          console.log("Current position: ", position);
           Geocoder.from(position.coords.latitude, position.coords.longitude)
           .then(res => {
             var address = res.results[0].formatted_address;
-            console.log(address);
+            console.log("Current address: ", address);
 
             this.setState(prevState => {
               if(input === ORIGIN) {

@@ -95,9 +95,16 @@ export default class AddBooking extends Component {
     }
 
     async componentDidMount() {
+        this.selectedVehicleId = this.props.navigation.getParam('vehicle').id;
+
+        const goodsType = await DataController.getItem(DataController.GOODS_NAME);
+        const goodsId = await DataController.getItem(DataController.GOODS_ID);
+
         const num = await DataController.getItem(DataController.CUSTOMER_MOBILE)
         this.bookingModel = JSON.parse(await DataController.getItem(DataController.BOOKING_MODEL))
         this.setState(prevState => {
+            prevState.goodsType = goodsType;
+            prevState.goodsId = goodsId;
             prevState.number = num
             prevState.physicalPODCharge = this.bookingModel.vehicle.pod_charge
             prevState.origin = this.props.navigation.getParam('origin')
@@ -190,6 +197,7 @@ export default class AddBooking extends Component {
     }
 
     setVehicle = (vehicle) => {
+        this.selectedVehicleId = vehicle.id
         this.props.navigation.setParams({
             vehicle: vehicle
         });
@@ -203,8 +211,8 @@ export default class AddBooking extends Component {
         
         if(this.favExcDrivList.length != 0)
             this.favExcDrivList.forEach((val, i, arr) => {
-                console.log(this.props.navigation.getParam('vehicle').id, val.vehicle_id)
-                if(this.props.navigation.getParam('vehicle').id == val.vehicle_id) {
+                console.log(this.selectedVehicleId, val.vehicle_id)
+                if(this.selectedVehicleId == val.vehicle_id) {
                     val.status_exclusive?
                     this.excDrivers.push(val)
                     :
@@ -285,10 +293,10 @@ export default class AddBooking extends Component {
     }
 
     isValidModel = (model) => {
-        const list = this.state.locations
-
+        console.log(model.booking_type)
+        console.log(this.state.locations.length < 1)
         if (model.booking_type == BookingModel.BookingType.NORMAL) {
-            if (list.length < 1) {
+            if (this.state.locations[0] == '') {
                 return false;
             }
         }
@@ -705,6 +713,11 @@ export default class AddBooking extends Component {
                                     else {
                                         this.setModalVisible(true);
                                     }
+                                }else {
+                                    this.setState(prevState => {
+                                        prevState.favDriverSelected = !prevState.favDriverSelected
+                                        return prevState
+                                    })
                                 }
                             }}>
                                 <Text style={{fontSize: 15, opacity: 0.5}}>Allot only favourite drivers</Text>
@@ -753,6 +766,11 @@ export default class AddBooking extends Component {
                                     else {
                                         this.setModalVisible(true, true);
                                     }
+                                }else {
+                                    this.setState(prevState => {
+                                        prevState.excDriverSelected = !prevState.excDriverSelected
+                                        return prevState
+                                    })
                                 }
                             }}>
                                 <Text style={{fontSize: 15, opacity: 0.5}}>Allot only exclusive drivers</Text>

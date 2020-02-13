@@ -315,7 +315,7 @@ PODS:
     - ReactCommon/jscallinvoker (= 0.61.2)
   - RNCAsyncStorage (1.6.2):
     - React
-  - RNCPushNotificationIOS (1.0.3):
+  - RNCPushNotificationIOS (1.0.6):
     - React
   - RNDateTimePicker (2.1.0):
     - React
@@ -537,7 +537,7 @@ SPEC CHECKSUMS:
   React-RCTVibration: fb54c732fd20405a76598e431aa2f8c2bf527de9
   ReactCommon: 5848032ed2f274fcb40f6b9ec24067787c42d479
   RNCAsyncStorage: 5ae4d57458804e99f73d427214442a6b10a53856
-  RNCPushNotificationIOS: 5403d137a49c55f0dc2273be8473873e934359cd
+  RNCPushNotificationIOS: aebf40b34047cf24642f68a79efd8d3347795ec8
   RNDateTimePicker: 68e542a59ff1b73563744145bfc45c2b88a3deea
   RNDeviceInfo: 223aea06c561ce99ae2045b621882bd7b7db1e59
   RNFirebase: 37daa9a346d070f9f6ee1f3b4aaf4c8e3b1d5d1c

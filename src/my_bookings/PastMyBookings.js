@@ -6,11 +6,12 @@ import {
   Text,
   ScrollView,
   TouchableHighlight,
+  ActivityIndicator,
 } from 'react-native';
 import { BookingEventType } from '../models/bookings_model';
 import { KEY } from '../utils/AppConstants';
 import ToastComp from '../utils/ToastComp';
-import { formatDate } from './../utils/UtilFunc';
+import { formatDate, unFormatDate } from './../utils/UtilFunc';
 
 const ACCENT = '#FFCB28' // 255, 203, 40
 const GREEN = '#24C800' // 36, 200, 0
@@ -24,10 +25,12 @@ export default class PastMyBookings extends Component {
   constructor(props) {
     super(props)
     this.state = {
-      page: 1,
+      gettingPages: false,
       isLoading: true,
       bookings: []
     }
+
+    this.page = 1;
   }
 
   async componentDidMount() {
@@ -39,10 +42,14 @@ export default class PastMyBookings extends Component {
   }
 
   getPastBookings = async () => {
+    this.setState(prevState => {
+      prevState.gettingPages = true;
+      return prevState;
+    })
     const reqBody = new FormData()
     const custId = await DataController.getItem(DataController.CUSTOMER_ID)
     reqBody.append(Constants.FIELDS.CUSTOMER_ID, custId)
-    reqBody.append(Constants.FIELDS.PAGE, this.state.page)
+    reqBody.append(Constants.FIELDS.PAGE, this.page)
 
     console.log('Request: ', reqBody)
 
@@ -53,10 +60,10 @@ export default class PastMyBookings extends Component {
             key: KEY
         }
     })
-    const response = await request.json().then(async value => {
+    await request.json().then(async value => {
       if(value.success) {
         this.setState(prevState => {
-          prevState.bookings = value.data.data
+          prevState.bookings.push(...value.data.data);
           return prevState
         })
       }
@@ -71,8 +78,9 @@ export default class PastMyBookings extends Component {
     })
 
     this.setState(prevState => {
-        prevState.isLoading = false
-        return prevState
+        prevState.isLoading = false;
+        prevState.gettingPages = false;
+        return prevState;
     })
   }
 
@@ -93,7 +101,8 @@ export default class PastMyBookings extends Component {
     })
 
     await request.json().then(async value => {
-        console.log(value)
+        console.log("Booking details: ", value)
+        console.log("Landmark list: ", value.data.landmark_list)
 
         if (!value.success) {
             this.showToast(value.message);
@@ -103,7 +112,9 @@ export default class PastMyBookings extends Component {
           model.booking_event_type = BookingEventType.EDIT
           model.booking_time = formatDate();
 
-          DataController.getItem(DataController.VEHICLE).then((vehicles) => {
+          model.booking_id = 0;
+
+          await DataController.getItem(DataController.VEHICLE).then((vehicles) => {
             vehicles = JSON.parse(vehicles)
             vehicles.forEach((veh, index) => {
               if(model.selected_vehicle_category == veh.id)
@@ -112,10 +123,20 @@ export default class PastMyBookings extends Component {
             })
           })
 
+          let landmarkList = [];
+          value.data.landmark_list.forEach((landmark, ind) => {
+            landmarkList.push({
+              address: landmark.landmark,
+              latitude: landmark.latitude,
+              longitude: landmark.longitude,
+            })
+          })
+          model.landmark_list = landmarkList;
+
           await DataController.setItem(DataController.BOOKING_MODEL, JSON.stringify(model))
           this.props.navigation.navigate('AddBooking', {
             covered: model.covered? 'Covered' : 'Uncovered',
-            origin: model.landmark_list[0].landmark,
+            origin: model.landmark_list[0],
             destination: model.landmark_list.slice(1),
             vehicle: model.vehicle,
             dateTime: unFormatDate(model.booking_time)
@@ -131,7 +152,13 @@ export default class PastMyBookings extends Component {
   render() {
     return(
       <View style={{flex: 1}}>
-        <ScrollView style={{display: this.state.bookings.length > 0? 'flex' : 'none'}}>
+        <ScrollView style={{display: this.state.bookings.length > 0? 'flex' : 'none'}}
+        onMomentumScrollEnd={(event) => {
+          if(event.nativeEvent.layoutMeasurement.height + event.nativeEvent.contentOffset.y >= event.nativeEvent.contentSize.height) {
+            this.page += 1
+            this.getPastBookings();
+          }
+        }}>
           {
             this.state.bookings.map((value, index) => {
               return(
@@ -236,7 +263,7 @@ export default class PastMyBookings extends Component {
                         {value.status}
                       </Text>
                       
-                      {value.status !== COMPLETED?
+                      {value.status === COMPLETED?
                       <TouchableOpacity
                       style={{
                         borderWidth: 1, borderColor: ACCENT, borderRadius: 3,
@@ -261,6 +288,13 @@ export default class PastMyBookings extends Component {
             <Text style={{textAlign: "center", fontSize: 20,}}>
                 {this.state.isLoading? "Getting your Past Bookings..." : Constants.PAST_BOOK_EMPTY}
             </Text>
+        </View>
+
+        <View style={{
+          display: this.state.bookings.length > 0 && this.state.gettingPages? 'flex' : 'none',
+          alignSelf: 'center', margin: 15
+        }}>
+            <ActivityIndicator size='small' color={ACCENT} animating={true}/>
         </View>
 
         <ToastComp ref={t => this.toast = t}/>
