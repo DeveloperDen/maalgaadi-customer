@@ -7,7 +7,6 @@ import {
   Image,
   Animated
 } from 'react-native';
-import { ScrollView } from 'react-native-gesture-handler';
 import ToastComp from '../utils/ToastComp';
 
 const Constants = require('../utils/AppConstants')

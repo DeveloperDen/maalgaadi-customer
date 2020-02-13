@@ -1218,7 +1218,7 @@ export default class Home extends Component {
         </View>
 
         <View style={[styles.footer]}>  
-          <TouchableHighlight
+          {/* <TouchableHighlight
           ref={covVeh => {this.covVehSwitch = covVeh}}
           underlayColor={this.state.isCoveredVehicle? ACCENT : 'transparent'}
           style={{
@@ -1247,7 +1247,6 @@ export default class Home extends Component {
             })
             .catch(err => {console.log(err)})
           }}>
-
             <View style={{flexDirection: "row",
                           justifyContent:"space-between"}}>
               <Text style={{fontSize: 12, 
@@ -1260,7 +1259,7 @@ export default class Home extends Component {
                 style={{width: 15, height: 15, tintColor: this.state.isCoveredVehicle? 'white' : 'black'}}
                 />
             </View>
-          </TouchableHighlight>
+          </TouchableHighlight> */}
 
           <ScrollView 
           style={{marginVertical: 10, display: this.state.vehiclesList.length > 0? 'flex' : 'none'}}
@@ -1536,7 +1535,7 @@ export default class Home extends Component {
             </TouchableHighlight>
           </View>
         <View style={[styles.footer]}>  
-          <TouchableHighlight
+          {/* <TouchableHighlight
           ref={covVeh => {this.covVehSwitch = covVeh}}
           underlayColor={this.state.isCoveredVehicle? ACCENT : 'transparent'}
           style={{
@@ -1577,7 +1576,7 @@ export default class Home extends Component {
                 style={{width: 15, height: 15, tintColor: this.state.isCoveredVehicle? 'white' : 'black'}}
                 />
             </View>
-          </TouchableHighlight>
+          </TouchableHighlight> */}
 
           <ScrollView 
           style={{marginVertical: 10, display: this.state.vehiclesList.length > 0? 'flex' : 'none'}}

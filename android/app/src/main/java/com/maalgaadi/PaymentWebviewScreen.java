@@ -3,6 +3,7 @@ package avpstransort.maalgaadicustomerapp;
 import avpstransort.maalgaadicustomerapp.RSAUtility;
 
 import android.content.Intent;
+import android.util.Log;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -124,6 +125,13 @@ public final class PaymentWebviewScreen extends ReactActivity {
                         }
                     } catch (JSONException e) {
                         e.printStackTrace();
+                        Log.e("Error in output: ", output);
+
+                        // Sending event to JS, on page loading is finished.
+                        WritableMap evParams = Arguments.createMap();
+                        evParams.putString("url", "An error occured while processing the response, please retry if not successfull, or check your balance");
+                        sendEvent(reactContext,
+                        "PageFinished", evParams);
                     }
                 }
             }

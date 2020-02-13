@@ -248,6 +248,14 @@ export const T_C = [
     `The courts of Indore, India shall have the sole and exclusive jurisdiction in respect of any matters arising from the use of the services offered by MaalGaadi or the agreement or arrangement between MaalGaadi and the Customer.`
 ]
 
+export const T_C_RATES = String.fromCharCode('8226') + 
+' Loading and unloading charges apply only to ground floor up to a distance of 40 ft and goods with unit weight up to 50 Kgs.' + '\n' +
+String.fromCharCode('8226') + ' Extra loading and unloading charges may apply to different category of goods.' + '\n' +
+String.fromCharCode('8226') + ' Any other charge including toll tax, permits, etc shall be chargeable on actual basis.' + '\n' +
+String.fromCharCode('8226') + ' Loading goods over permissible limits will attract penalty charges as applicable.' + '\n' +
+String.fromCharCode('8226') + ' Waiting charges are applicable beyond permissible time for loading and unloading.' + '\n' +
+String.fromCharCode('8226') + ' Additional surge may apply according to supply availability at the time of billing.'
+
 export const TERMSANDCONDITION = "http://maalgaadi.net/terms-and-condition.html";
 
 export const ICONS = {

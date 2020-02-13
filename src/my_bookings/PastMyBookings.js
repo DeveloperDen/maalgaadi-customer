@@ -7,6 +7,7 @@ import {
   ScrollView,
   TouchableHighlight,
   ActivityIndicator,
+  Modal,
 } from 'react-native';
 import { BookingEventType } from '../models/bookings_model';
 import { KEY } from '../utils/AppConstants';
@@ -152,7 +153,7 @@ export default class PastMyBookings extends Component {
   render() {
     return(
       <View style={{flex: 1}}>
-        <ScrollView style={{display: this.state.bookings.length > 0? 'flex' : 'none'}}
+        <ScrollView style={{display: this.state.bookings.length > 0? 'flex' : 'none', opacity: this.state.gettingPages? 0.07 : 1}}
         onMomentumScrollEnd={(event) => {
           if(event.nativeEvent.layoutMeasurement.height + event.nativeEvent.contentOffset.y >= event.nativeEvent.contentSize.height) {
             this.page += 1
@@ -290,12 +291,23 @@ export default class PastMyBookings extends Component {
             </Text>
         </View>
 
-        <View style={{
-          display: this.state.bookings.length > 0 && this.state.gettingPages? 'flex' : 'none',
-          alignSelf: 'center', margin: 15
-        }}>
-            <ActivityIndicator size='small' color={ACCENT} animating={true}/>
-        </View>
+        {/* Modal to show when no Favourite Drivers are found */}
+        <Modal
+          animationType="fade"
+          transparent={true}
+          visible={this.state.gettingPages}
+          onRequestClose={() => {
+              return;
+          }}>
+            <View
+            style={{
+            height: '100%',
+            alignItems: "center",
+            justifyContent: 'center'
+            }}>
+                <ActivityIndicator color={ACCENT} size="large"/>
+            </View>
+        </Modal>
 
         <ToastComp ref={t => this.toast = t}/>
       </View>
