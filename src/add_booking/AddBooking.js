@@ -738,6 +738,11 @@ export default class AddBooking extends Component {
                                     else {
                                         this.setModalVisible(true);
                                     }
+                                }else {
+                                    this.setState(prevState => {
+                                        prevState.favDriverSelected = !prevState.favDriverSelected
+                                        return prevState
+                                    })
                                 }
                             }}/>
                         </View>
@@ -780,10 +785,23 @@ export default class AddBooking extends Component {
                             style={{padding: 10, marginEnd: 10}}
                             value={this.state.excDriverSelected? true : false}
                             onChange={() => {
-                                this.setState(prevState => {
-                                    prevState.excDriverSelected = !prevState.excDriverSelected
-                                    return prevState
-                                })
+                                // Presently switch is off
+                                if(!this.state.excDriverSelected) {
+                                    if(this.excDrivers.length > 0) {
+                                        this.setState(prevState => {
+                                            prevState.excDriverSelected = !prevState.excDriverSelected
+                                            return prevState
+                                        })
+                                    }
+                                    else {
+                                        this.setModalVisible(true, true);
+                                    }
+                                }else {
+                                    this.setState(prevState => {
+                                        prevState.excDriverSelected = !prevState.excDriverSelected
+                                        return prevState
+                                    })
+                                }
                             }}/>
                         </View>
                     

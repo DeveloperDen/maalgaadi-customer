@@ -54,13 +54,13 @@ export default class NoNetworkModal extends React.Component {
                 width: '75%',
                 }}>
                     <Image source={ICONS.no_signal} style={{
-                        tintColor: 'black', height: 100, width: 100, alignSelf: 'center',
+                        height: 100, width: 100, alignSelf: 'center',
                         margin: 15
                     }}/>
 
                     <Text
                     style={{
-                        marginHorizontal: 15, marginTop: 15, marginBottom: Platform.OS == "ios"? 15 : 0,
+                        marginHorizontal: 15, marginTop: 0, marginBottom: Platform.OS == "ios"? 15 : 0,
                         fontSize: 13, alignSelf: 'center', textAlign: 'center'
                     }}>{NO_NETWORK}</Text>
 
@@ -70,7 +70,7 @@ export default class NoNetworkModal extends React.Component {
                             BackHandler.exitApp()
                         }}
                         style={{
-                            width: '100%', backgroundColor: 'gray', alignItems: 'center',
+                            width: '100%', backgroundColor: '#808080', alignItems: 'center',
                             justifyContent: 'center', paddingVertical: 15, marginTop: 20
                         }}>
                             <Text style={{color: 'white'}}>Exit</Text>
