@@ -300,7 +300,7 @@ export default class RateCard extends Component {
                     {
                         this.state.vehicles !== ''?
                         this.state.vehicles.map((value, i) => (
-                            <TouchableHighlight underlayColor='transparent'
+                            <TouchableHighlight underlayColor='transparent' key={i}
                             onPress={() => {
                                 this.setState(prevState => {
                                     prevState.rates = value;

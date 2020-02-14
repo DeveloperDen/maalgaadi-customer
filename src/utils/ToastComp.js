@@ -13,6 +13,10 @@ export default class ToastComp extends Component {
         this.toast.show(text, 3000);
     }
 
+    close() {
+        this.toast.close(5);
+    }
+
     render() {
         return(
             <Toast

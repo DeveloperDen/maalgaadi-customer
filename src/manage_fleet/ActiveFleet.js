@@ -22,6 +22,11 @@ import ToastComp from '../utils/ToastComp';
 const ACCENT = '#FFCB28' // 255, 203, 40 
 
 export default class ActiveFleet extends Component {
+    static navigationOptions = ({navigation}) => {
+        navigation.isFocused() && navigation.getParam("getFavDrivers")?
+        navigation.getParam("getFavDrivers")() : null;
+    }
+
     constructor(props) {
         super(props)
         this.state = {
@@ -34,6 +39,10 @@ export default class ActiveFleet extends Component {
             drivCode: '',
             driverDetail: ''
         }
+
+        props.navigation.setParams({
+            getFavDrivers: () => this.getFavDrivers()
+        })
     }
 
     setModalVisible = (visible, add=true) => {

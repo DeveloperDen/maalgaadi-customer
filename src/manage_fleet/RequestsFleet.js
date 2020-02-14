@@ -18,6 +18,11 @@ const ACCENT = '#FFCB28' // 255, 203, 40
 const ACCENT_DARK = '#F1B800'
 
 export default class RequestsFleet extends Component {
+    static navigationOptions = ({navigation}) => {
+        navigation.isFocused() && navigation.getParam("getDrivRequests")?
+        navigation.getParam("getDrivRequests")() : null;
+    }
+
     constructor(props) {
         super(props)
         this.state = {
@@ -28,6 +33,10 @@ export default class RequestsFleet extends Component {
             requestFleet: [],
             activeIndex: 0,
         }
+
+        props.navigation.setParams({
+            getDrivRequests: () => this.getDrivRequests()
+        })
     }
 
     setModalVisible = (visible) => {

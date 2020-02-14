@@ -538,14 +538,6 @@ export default class FareEstimation extends Component {
                             borderTopColor:'rgba(0, 0, 0, 0.1)',
                             borderTopWidth: 1}}/>
 
-                            <Text
-                            style={{
-                                alignSelf: 'center', color: 'red', fontStyle: 'italic', fontSize: 12,
-                                marginTop: 15, display: this.state.inValidPrice? 'flex' : 'none'
-                            }}>
-                                Entered Price is too Low. Please update it.
-                            </Text>
-
                             <View
                             style={{
                                 flexDirection: 'row', alignItems: "center", alignSelf: 'center', marginVertical: 15,
@@ -564,6 +556,8 @@ export default class FareEstimation extends Component {
                                             prevState.yourPrice = text
                                             return prevState
                                         })
+
+                                        this.showToast("Entered Price is too Low. Please update it.");
                                     }
                                     else {
                                         let inValidPrice = false
@@ -597,6 +591,11 @@ export default class FareEstimation extends Component {
                                             prevState.inValidPrice = inValidPrice
                                             return prevState
                                         })
+
+                                        if(inValidPrice)
+                                            this.showToast("Entered Price is too Low. Please update it.");
+                                        else
+                                            this.toast.close();
                                     }
                                 }}/>
                             </View>
@@ -651,7 +650,7 @@ export default class FareEstimation extends Component {
                 underlayColor={ACCENT_DARK}
                 onPress={() => {
                     if(this.state.inValidPrice || this.state.yourPrice === ''){
-                        this.showToast("Please Upgrade your price")
+                        this.showToast("Entered Price is too Low. Please update it.")
                     }
                     else {
                         let isBookingAllow = false;

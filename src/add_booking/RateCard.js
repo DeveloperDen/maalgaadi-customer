@@ -7,7 +7,7 @@ import {
   Image,
 } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
-import { ICONS } from '../utils/AppConstants';
+import { ICONS, T_C_RATES } from '../utils/AppConstants';
 
 
 const ACCENT = '#FFCB28' // 255, 203, 40 
@@ -127,6 +127,13 @@ export default class RateCard extends Component {
                     <Text style={{textAlign: 'center', alignSelf: 'center', opacity: 0.4, fontSize: 10, padding: 15}}>
                         *Loading/Unloading charges applicable only for fround floor goods with unit weight upto 60Kgs.
                         All other charges like Toll Tax etc. will be charged on actual basis.
+                    </Text>
+
+                    <Text style={{textAlign: 'center', alignSelf: 'flex-start', fontWeight: '700', opacity: 0.4, fontSize: 13, marginTop: 15, paddingHorizontal: 15}}>
+                        Terms and Conditions:
+                    </Text>
+                    <Text style={{textAlign: 'left', alignSelf: 'flex-start', fontWeight: '700', opacity: 0.4, fontSize: 13, paddingHorizontal: 15, marginTop: 5, marginBottom: 15}}>
+                        {T_C_RATES}
                     </Text>
                 </ScrollView>
             </View>

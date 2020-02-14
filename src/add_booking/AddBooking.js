@@ -293,10 +293,9 @@ export default class AddBooking extends Component {
     }
 
     isValidModel = (model) => {
-        console.log(model.booking_type)
-        console.log(this.state.locations.length < 1)
+        console.log("Locations: ", this.state.locations)
         if (model.booking_type == BookingModel.BookingType.NORMAL) {
-            if (this.state.locations[0] == '') {
+            if (this.state.locations[0] == '' || this.state.locations.length == 0) {
                 return false;
             }
         }
