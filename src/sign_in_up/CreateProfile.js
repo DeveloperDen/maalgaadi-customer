@@ -19,6 +19,7 @@ const DataController = require('../utils/DataStorageController')
 
 const ACCENT = '#FFCB28' // 255, 203, 40
 const ACCENT_DARK = '#F1B800'
+const DEFAULT_GOODS = 'Select Goods Type';
 
 export default class CreateProfile extends Component {
     static navigationOptions = ({navigation}) => {
@@ -57,7 +58,7 @@ export default class CreateProfile extends Component {
             number: '',
             email: '',
             org: '',
-            goodsType: 'Select Goods Type',
+            goodsType: DEFAULT_GOODS,
             goodsId: 0,
             tripPickerOpen: false
         }
@@ -67,7 +68,7 @@ export default class CreateProfile extends Component {
         if(this.state.tripFreq != 0 && this.state.name != "" &&
         this.state.address != "" && this.state.number != "" &&
         this.state.email != "" && this.state.org != "" &&
-        this.state.goodsType != 'Select Goods Type' && this.state.goodsId != 0) {
+        this.state.goodsType != DEFAULT_GOODS && this.state.goodsId != 0) {
             this.updateUserProfile()
         }
         else {
@@ -87,16 +88,15 @@ export default class CreateProfile extends Component {
 
         DataController.getItems(toGet)
         .then(res => {
-            console.log(res)
             this.setState(prevState => {
                 prevState.name = res[0][1]
                 prevState.number = res[1][1]
                 prevState.email = res[2][1]
                 prevState.org = res[3][1]
                 prevState.address = res[4][1]
-                prevState.goodsType = res[5][1]
-                prevState.goodsId = res[6][1]
-                prevState.tripFreq = this.tripFreqArray.indexOf(res[7][1])
+                prevState.goodsType = res[5][1] !== ""? res[5][1] : DEFAULT_GOODS
+                prevState.goodsId = res[6][1] !== ""? res[6][1] : 0
+                prevState.tripFreq = res[7][1] == ""? 0 : this.tripFreqArray.indexOf(res[7][1])
                 return(prevState)
             })
         })
