@@ -339,10 +339,10 @@ export default class TripDetails extends Component {
                         <View style={{ flexDirection: 'row', marginTop: 15, justifyContent: 'space-between', alignItems: 'center' }}>
                             <Image source={driverIc}
                                 style={{
-                                    width: 60, height: 60, opacity: 0.4, marginStart: 20,
+                                    width: 60, height: 60, opacity: 0.4, marginStart: 20, marginEnd: 10
                                 }} />
-                            <View style={{marginEnd: 20}}>
-                                <Text style={{ fontWeight: "700", fontSize: 15 }}>
+                            <View style={{marginEnd: 20, flex: 2}}>
+                                <Text style={{ fontWeight: "700", fontSize: 15 }} ellipsizeMode="tail" numberOfLines={1}>
                                     {this.state.drivName}
                                 </Text>
                                 <Text style={{ opacity: 0.4, fontSize: 12, marginTop: 5 }}>
@@ -359,7 +359,7 @@ export default class TripDetails extends Component {
                                     Linking.openURL(`tel: ${this.tripData.driver_number}`)
                                 }}
                                 style={{
-                                    backgroundColor: GREEN,
+                                    backgroundColor: GREEN, flex: 1, alignItems: 'center',
                                     paddingVertical: 10, marginEnd: 15, borderRadius: 3
                                 }}>
                                 <View

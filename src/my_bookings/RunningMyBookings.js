@@ -154,7 +154,7 @@ export default class RunningMyBookings extends Component {
         }
     })
 
-    const response = await request.json().then(async value => {
+    await request.json().then(async value => {
         console.log(value)
 
         if (!value.success) {
@@ -165,7 +165,7 @@ export default class RunningMyBookings extends Component {
           model.booking_event_type = BookingEventType.EDIT
           model.booking_time = this.formatDate()
 
-          DataController.getItem(DataController.VEHICLE).then((vehicles) => {
+          await DataController.getItem(DataController.VEHICLE).then((vehicles) => {
             vehicles = JSON.parse(vehicles)
             vehicles.forEach((veh, index) => {
               if(model.selected_vehicle_category == veh.id)
@@ -174,10 +174,20 @@ export default class RunningMyBookings extends Component {
             })
           })
 
+          let landmarkList = [];
+          value.data.landmark_list.forEach((landmark, ind) => {
+            landmarkList.push({
+              address: landmark.landmark,
+              latitude: landmark.latitude,
+              longitude: landmark.longitude,
+            })
+          })
+          model.landmark_list = landmarkList;
+
           await DataController.setItem(DataController.BOOKING_MODEL, JSON.stringify(model))
           this.props.navigation.navigate('AddBooking', {
             covered: model.covered? 'Covered' : 'Uncovered',
-            origin: model.landmark_list[0].landmark,
+            origin: model.landmark_list[0],
             destination: model.landmark_list.slice(1),
             vehicle: model.vehicle,
             dateTime: unFormatDate(model.booking_time)

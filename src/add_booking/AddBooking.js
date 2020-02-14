@@ -78,6 +78,7 @@ export default class AddBooking extends Component {
             dateTimePickerMode: 'date',
             selectedDateTime: props.navigation.getParam('dateTime'),
 
+            pickupEnabled: true,
             favDrivEnabled: true,
             excDrivEnabled: true,
             loadEnabled: true,
@@ -86,6 +87,8 @@ export default class AddBooking extends Component {
             mobNumEnabled: true,
             goodsTypeEnabled: true,
             podEnabled: true,
+            vehicleEnabled: true,
+            dropPointsEnabled: true,
         }
 
         this.bookingModel = '';
@@ -180,6 +183,9 @@ export default class AddBooking extends Component {
             prevState.mobNumEnabled = this.bookingModel.is_contact_edit
             prevState.goodsTypeEnabled = this.bookingModel.is_goods_type_edit
             prevState.podEnabled = this.bookingModel.pod_edit
+            prevState.pickupEnabled = this.bookingModel.pickup_address_edit
+            prevState.vehicleEnabled = this.bookingModel.is_vehicle_edit
+            prevState.dropPointsEnabled = this.bookingModel.drop_address_edit
             return prevState
         })
     }
@@ -347,15 +353,15 @@ export default class AddBooking extends Component {
                 <Animated.View style={[styles.header, {opacity: headerOpacity, transform: [{translateY: headerTransY}]}]}>
                     <View style={[styles.bar, {paddingTop: 20, paddingBottom: 35}]}>
                         <View>
-                            <TouchableHighlight
+                            <TouchableHighlight disabled={!this.state.vehicleEnabled}
                             underlayColor='white'
                             onPress={() => {
                                 this.props.navigation.navigate('VehicleList', {setVehicle: this.setVehicle.bind(this)})
                             }}>
-                                <Image source={vehicleIcon} style={{width: 50, height: 50}}/>
+                                <Image source={vehicleIcon} style={{width: 50, height: 50, opacity: this.state.vehicleEnabled? 1 : 0.4}}/>
                             </TouchableHighlight>
                         </View>
-                        <Text style={{fontSize: 22, fontWeight: '700', marginTop: 10}}>
+                        <Text style={{fontSize: 22, fontWeight: '700', marginTop: 10, opacity: this.state.vehicleEnabled? 1 : 0.4}}>
                             {this.props.navigation.getParam('vehicle').vehicle_name}
                         </Text>
                         <Text style={{fontSize: 10, opacity: 0.4, marginTop: 5}}>
@@ -396,14 +402,14 @@ export default class AddBooking extends Component {
                             backgroundColor: 'white', paddingVertical: 10, paddingStart: 20,
                             borderRadius: 3
                         }}>
-                            <TouchableHighlight
+                            <TouchableHighlight disabled={!this.state.pickupEnabled}
                             underlayColor='white'
                             onPress={() => {
                                 this.props.navigation.navigate('Search', {type: 'origin', setOrigin: this.setOrigin.bind(this)})
                             }}>
                                 <View
                                 style={{
-                                    flexDirection: 'row',
+                                    flexDirection: 'row', opacity: this.state.pickupEnabled? 1 : 0.4,
                                     alignItems: "center",
                                     marginVertical: 12,
                                     paddingEnd: 20
@@ -426,7 +432,7 @@ export default class AddBooking extends Component {
                             
                             {this.state.locations !== [] && this.state.locations.map((item, index) => {
                                 return(
-                                    <TouchableHighlight
+                                    <TouchableHighlight disabled={!this.state.dropPointsEnabled}
                                     key={index}
                                     underlayColor='white'
                                     onPress={() => {
@@ -440,7 +446,7 @@ export default class AddBooking extends Component {
                                             borderTopWidth: index < (this.state.locations.length)? 1 : 0}}/>
                                             <View 
                                             style={{
-                                                flexDirection: 'row',
+                                                flexDirection: 'row', opacity: this.state.dropPointsEnabled? 1 : 0.4,
                                                 alignItems: "center",
                                                 marginVertical: 12,
                                                 paddingEnd: 20
@@ -454,7 +460,7 @@ export default class AddBooking extends Component {
                                                     style={{flex: 1, marginStart: 12, fontSize: 15}}>
                                                         {!item.address? `Drop off location` : item.address}
                                                     </Text>
-                                                    <TouchableOpacity
+                                                    <TouchableOpacity disabled={!this.state.dropPointsEnabled}
                                                     style={{width: 30, height: 30, opacity: 0.3, 
                                                         justifyContent: 'center',
                                                         alignItems: 'center'}}
@@ -475,7 +481,7 @@ export default class AddBooking extends Component {
                                 )
                             })}
 
-                            <TouchableOpacity
+                            <TouchableOpacity disabled={!this.state.dropPointsEnabled}
                             onPress={() => {
                                 let index = this.state.locations.length
                                 this.props.navigation
@@ -489,7 +495,7 @@ export default class AddBooking extends Component {
                                     borderTopWidth: 1}}/>
                                     <View 
                                         style={{
-                                            flexDirection: 'row',
+                                            flexDirection: 'row',  opacity: this.state.dropPointsEnabled? 1 : 0.4,
                                             alignItems: "center",
                                             marginVertical: 12,
                                             paddingEnd: 20
