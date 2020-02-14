@@ -32,7 +32,7 @@ export default class RateCard extends Component {
             scrollY: new Animated.Value(1),
             fabItemTranslate: new Animated.Value(0),
             fabItemOpacity: new Animated.Value(0),
-            fabScale: new Animated.Value(1),
+            fabScale: new Animated.Value(0),
             scrollOpacity: new Animated.Value(1),
         }
 
@@ -122,6 +122,13 @@ export default class RateCard extends Component {
                     prevState.rates = value.data[0]
                     prevState.selectedIndex = 0
                     return prevState
+                }, () => {
+                    Animated.timing(this.state.fabScale, {
+                        toValue: 1,
+                        duration: ANIM_DURATION,
+                        easing: Easing.bounce,
+                        useNativeDriver: true,
+                    }).start()
                 })
             }
             

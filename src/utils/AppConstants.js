@@ -259,6 +259,7 @@ String.fromCharCode('8226') + ' Additional surge may apply according to supply a
 export const TERMSANDCONDITION = "http://maalgaadi.net/terms-and-condition.html";
 
 export const ICONS = {
+    star: require('../../assets/star.png'),
     new: require('../../assets/new.png'),
     no_signal: require('../../assets/no_signal.png'),
     ic_notifications: require('../../assets/ic_notification.png'),

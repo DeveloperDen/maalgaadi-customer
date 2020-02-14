@@ -256,11 +256,21 @@ export default class ActiveFleet extends Component {
                 {this.state.activeFleet.map((member, index) => {
                     return(
                         <View key={index}>
-                            <View style={{flexDirection: 'row', alignItems: 'center', marginVertical: 10}}>
-                                <Image source={ICONS.driver_fleet}
-                                style={{
-                                    width: 45, height: 45, margin: 15
-                                }}/>
+                            <View style={{flexDirection: 'row', alignItems: 'center', marginVertical: 15}}>
+                                <View style={{alignItems: 'center'}}>
+                                    <Image source={ICONS.driver_fleet}
+                                    style={{
+                                        width: 45, height: 45, marginHorizontal: 15
+                                    }}/>
+
+                                    {member.status_exclusive?
+                                    <Image source={ICONS.star}
+                                    style={{
+                                        width: 15, height: 15, tintColor: ACCENT, marginTop: 5
+                                    }}/>
+                                    : null}
+                                </View>
+
                                 <View style={{flex: 1}}>
                                     <Text style={{fontSize: 16, fontWeight: "700"}}>
                                         {member.name}
@@ -268,6 +278,7 @@ export default class ActiveFleet extends Component {
                                     <Text style={{fontSize: 12, opacity: 0.4, marginVertical: 5}}>{member.vehicle_name}</Text>
                                     <Text style={{fontSize: 12, opacity: 0.4}}>{member.vehicle_reg_no}</Text>
                                 </View>
+
                                 <TouchableOpacity
                                 onPress={() => {
                                     this.setState(prevState => {

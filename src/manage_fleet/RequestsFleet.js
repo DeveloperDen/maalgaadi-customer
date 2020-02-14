@@ -149,10 +149,19 @@ export default class RequestsFleet extends Component {
                     return(
                         <View key={index}>
                             <View style={{flexDirection: 'row', alignItems: 'center', marginVertical: 10}}>
-                                <Image source={ICONS.driver_search}
-                                style={{
-                                    width: 45, height: 45, margin: 15
-                                }}/>
+                                <View style={{alignItems: 'center'}}>
+                                    <Image source={ICONS.driver_search}
+                                    style={{
+                                        width: 45, height: 45, marginHorizontal: 15
+                                    }}/>
+
+                                    {member.status_exclusive?
+                                    <Image source={ICONS.star}
+                                    style={{
+                                        width: 15, height: 15, tintColor: ACCENT, marginTop: 5
+                                    }}/>
+                                    : null}
+                                </View>
                                 
                                 <View style={{flex: 1}}>
                                     <Text style={{fontSize: 16, fontWeight: "700"}}>
