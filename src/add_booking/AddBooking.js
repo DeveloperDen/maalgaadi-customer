@@ -921,7 +921,7 @@ export default class AddBooking extends Component {
                             width: '75%'
                             }}>
                                 <View style={{
-                                flexDirection: 'row', justifyContent: 'space-between', elevation: 2,
+                                flexDirection: 'row', justifyContent: 'space-between',
                                 backgroundColor: 'white'
                                 }}>
                                     <Text style={{margin: 20, fontWeight: '700', fontSize: 15}}> Add Driver </Text>

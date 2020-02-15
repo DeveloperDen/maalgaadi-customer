@@ -8,7 +8,7 @@ import {
   NativeModules, NativeEventEmitter, Linking, TouchableOpacity, Platform
 } from 'react-native';
 import firebase from 'react-native-firebase';
-import { getDeviceId, getVersion, } from 'react-native-device-info';
+import { getDeviceId, getVersion,} from 'react-native-device-info';
 import { ICONS } from './utils/AppConstants';
 
 const Constants = require('./utils/AppConstants')
@@ -30,6 +30,12 @@ export default class Splash extends Component {
             showAppUpdateModal: false,
         }
         this.isAppUpdated = true;
+
+        // checkedVersion will be true only when the result of checkVersion is returned
+        this.checkedVersion = false;
+
+        // processCompleted will be true only when the time have completed(or when all the processed before the start of timer have completed)
+        this.processesCompleted = false;
     }
 
     async componentDidMount() {
@@ -63,26 +69,49 @@ export default class Splash extends Component {
 
         
         setTimeout(async () => {
-            if(this.isAppUpdated) {
-                const screen = (await DataController.getItem(DataController.IS_LOGIN) === "true")? 
-                'HomeDrawerNavigator' : 'RegistrationNavigator'
-                this.props.navigation.navigate(screen)
-            }else {
-                this.setState(prevState => {
-                    prevState.showAppUpdateModal = true;
-                    return prevState;
-                })
+            this.processesCompleted = true;
+
+            // Proceed only if the version is checked
+            if(this.checkedVersion) {
+                console.log("Proceeding on time!")
+                if(this.isAppUpdated) {
+                    const screen = (await DataController.getItem(DataController.IS_LOGIN) === "true")? 
+                    'HomeDrawerNavigator' : 'RegistrationNavigator'
+                    this.props.navigation.navigate(screen)
+                }else {
+                    this.setState(prevState => {
+                        prevState.showAppUpdateModal = true;
+                        return prevState;
+                    })
+                }
             }
         }, Constants.SPLASH_TIMEOUT)
     }
 
     async checkBuildNumber() {
         if(Platform.OS == "android") {
-            NativeModules.VersionChecker.checkVersion(parseFloat(getVersion()));
+            NativeModules.VersionChecker.checkVersion(getVersion());
             this.eventEmitter = new NativeEventEmitter(NativeModules.VersionChecker);
-            this.eventEmitter.addListener("VersionCheck", (result) => {
-                console.log("App is updated: ", result.isUpdated)
-                this.isAppUpdated = result.isAppUpdated;
+            this.eventEmitter.addListener("VersionCheck", async (result) => {
+                this.isAppUpdated = result.isUpdated;
+
+                console.log("App is updated: ", this.isAppUpdated)
+                this.checkedVersion = true;
+
+                // If all the process except version checking are completed, proceed to next screen/dialog.
+                if(this.processesCompleted) {
+                    console.log("Proceeding after all the processes...");
+                    if(this.isAppUpdated) {
+                        const screen = (await DataController.getItem(DataController.IS_LOGIN) === "true")? 
+                        'HomeDrawerNavigator' : 'RegistrationNavigator'
+                        this.props.navigation.navigate(screen)
+                    }else {
+                        this.setState(prevState => {
+                            prevState.showAppUpdateModal = true;
+                            return prevState;
+                        })
+                    }
+                }
             })
         }else {
             const request = await fetch("https://itunes.apple.com/lookup?bundleId=avpstransort.maalgaadicustomerapp", {
@@ -90,6 +119,7 @@ export default class Splash extends Component {
             })
     
             await request.json().then(value => {
+                this.checkedVersion = true;
                 const storeVersion = parseFloat(value.results[0].version);
                 const installedVersion = parseFloat(getVersion());
                 console.log("App Store Version: ", storeVersion);

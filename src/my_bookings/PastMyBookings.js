@@ -153,7 +153,7 @@ export default class PastMyBookings extends Component {
   render() {
     return(
       <View style={{flex: 1}}>
-        <ScrollView style={{display: this.state.bookings.length > 0? 'flex' : 'none', opacity: this.state.gettingPages? 0.07 : 1}}
+        <ScrollView style={{display: this.state.bookings.length > 0? 'flex' : 'none', opacity: this.state.gettingPages? 0.05 : 1}}
         onMomentumScrollEnd={(event) => {
           if(event.nativeEvent.layoutMeasurement.height + event.nativeEvent.contentOffset.y >= event.nativeEvent.contentSize.height) {
             this.page += 1
@@ -291,11 +291,11 @@ export default class PastMyBookings extends Component {
             </Text>
         </View>
 
-        {/* Modal to show when no Favourite Drivers are found */}
+        {/* Progress circle */}
         <Modal
           animationType="fade"
           transparent={true}
-          visible={this.state.gettingPages}
+          visible={this.state.gettingPages && this.state.bookings.length > 0}
           onRequestClose={() => {
               return;
           }}>

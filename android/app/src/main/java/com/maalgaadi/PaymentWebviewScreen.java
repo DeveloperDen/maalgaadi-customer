@@ -13,6 +13,7 @@ import android.webkit.JavascriptInterface;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Toast;
+import android.widget.ProgressBar;
 
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
@@ -42,6 +43,7 @@ import com.facebook.react.bridge.Arguments;
 
 public final class PaymentWebviewScreen extends ReactActivity {
     private WebView webview;
+    private ProgressBar progressbar;
     private JSONObject params;
     private ReactContext reactContext;
     private static final String TRANS_URL = "https://secure.ccavenue.com/transaction/initTrans";
@@ -51,9 +53,10 @@ public final class PaymentWebviewScreen extends ReactActivity {
     @CallSuper
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_example);
+        setContentView(R.layout.webview_screen);
 
         webview = this.<WebView>findViewById(R.id.webview);
+        progressbar = this.findViewById(R.id.progressbar);
         MainApplication application = (MainApplication) PaymentWebviewScreen.this.getApplication();
         ReactNativeHost reactNativeHost = application.getReactNativeHost();
         ReactInstanceManager reactInstanceManager = reactNativeHost.getReactInstanceManager();
@@ -143,6 +146,9 @@ public final class PaymentWebviewScreen extends ReactActivity {
                 @Override
                 public void onPageFinished(WebView view, String url) {
                     super.onPageFinished(webview, url);
+
+                    progressbar.setVisibility(View.GONE);
+                    webview.setAlpha(1.0f);
                     
                     // Sending event to JS, on page loading is finished.
                     WritableMap evParams = Arguments.createMap();

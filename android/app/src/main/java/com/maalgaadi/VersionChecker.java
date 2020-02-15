@@ -1,6 +1,7 @@
 package avpstransort.maalgaadicustomerapp;
 
 import android.os.AsyncTask;
+import android.util.Log;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.Context;
@@ -31,7 +32,7 @@ import java.util.HashMap;
 
 public class VersionChecker extends ReactContextBaseJavaModule {
     private static ReactApplicationContext reactContext;
-    private double latestVersion, currentVersion;
+    private float latestVersion, currentVersion;
     
     VersionChecker(ReactApplicationContext context) {
         super(context);
@@ -44,14 +45,16 @@ public class VersionChecker extends ReactContextBaseJavaModule {
     }
     
     @ReactMethod
-    void checkVersion(double currentVersion) {
+    void checkVersion(String curVer) {
         new GetLatestVersion().execute();
-        currentVersion = currentVersion;
+        currentVersion = Float.parseFloat(curVer);
     }
     
     private void sendEvent(@Nullable boolean versionResult) {
         WritableMap evParams = Arguments.createMap();
         evParams.putBoolean("isUpdated", versionResult);
+
+        Log.d("Sending event", "" + versionResult);
         
         reactContext
         .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
@@ -59,7 +62,7 @@ public class VersionChecker extends ReactContextBaseJavaModule {
     }
     
     private class GetLatestVersion
-    extends AsyncTask<String, String, Double> {
+    extends AsyncTask<String, String, Float> {
         
         @Override
         protected void onPreExecute() {
@@ -67,7 +70,7 @@ public class VersionChecker extends ReactContextBaseJavaModule {
         }
         
         @Override
-        protected Double doInBackground(String... params) {
+        protected Float doInBackground(String... params) {
             try {
                 Document document = Jsoup.connect("https://play.google.com/store/apps/details?id=avpstransort.maalgaadicustomerapp")
                 .timeout(30000)
@@ -80,7 +83,7 @@ public class VersionChecker extends ReactContextBaseJavaModule {
                         if (ele.siblingElements() != null) {
                             Elements sibElemets = ele.siblingElements();
                             for (Element sibElemet : sibElemets) {
-                                return Double.parseDouble(sibElemet.text());
+                                return Float.parseFloat(sibElemet.text());
                             }
                         }
                     }
@@ -94,10 +97,11 @@ public class VersionChecker extends ReactContextBaseJavaModule {
         
         
         @Override
-        protected void onPostExecute(Double latestVersion) {
+        protected void onPostExecute(Float latestVersion) {
             super.onPostExecute(latestVersion);
+            Log.d("Versions", "Installed: " + currentVersion + " On Store: " + latestVersion);
             
-            if (latestVersion != 0) {
+            if (latestVersion != 0f) {
                 if (currentVersion >= latestVersion) {
                     // Application is up to date.
                     sendEvent(true);
