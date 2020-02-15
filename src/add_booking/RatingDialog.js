@@ -135,7 +135,6 @@ export default class RatingDialog extends Component {
     
         await request.json().then(value => {
             console.log(value)
-            this.showToast(value.message);
             
             if(value.success){
                 this.props.navigation.goBack();
@@ -262,7 +261,8 @@ export default class RatingDialog extends Component {
                                     <Picker
                                     selectedValue={this.state.selectedIndex}
                                     style={{
-                                        height: 50, marginHorizontal: 15, display: this.state.rating < 3 && this.state.reasonList !== 'NA'? 'flex' : 'none'
+                                        height: 50, marginHorizontal: 15,
+                                        display: this.state.rating < 3 && this.state.reasonList !== 'NA'? 'flex' : 'none'
                                     }}
                                     onValueChange={(itemValue, itemIndex) =>
                                         this.setState(prevState => {
@@ -271,7 +271,8 @@ export default class RatingDialog extends Component {
                                             return prevState
                                         })
                                     }>
-                                        { 
+                                        {
+                                            this.state.reasonList !== 'NA' && this.state.rating < 3 &&
                                             this.state.reasonList.map((value, index) => {
                                                 return(
                                                     <Picker.Item label={value} value={index} key={value}/>

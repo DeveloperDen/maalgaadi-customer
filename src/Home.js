@@ -690,7 +690,7 @@ export default class Home extends Component {
   showPaymentDialog() {
     Alert.alert("Make Payment", "Please complete the payment to MaalGaadi driver",
     [
-      {text: "OK", style: "default", onPress: async () => {
+      {text: "PAY ONLINE", style: "default", onPress: async () => {
         const orderID = await this.generateOrderID();
 
         console.log("Completing booking payment, order ID: ", orderID);
@@ -706,7 +706,6 @@ export default class Home extends Component {
       {
         text: "PAID", style: "cancel", onPress: () => {
           console.log("Deleting transaction data.");
-          this.showToast("Deleting transaction data.");
           DataController.removeItem(DataController.PAYMENT_TRANS_DATA);
         }
       }

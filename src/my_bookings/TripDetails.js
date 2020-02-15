@@ -33,7 +33,9 @@ export default class TripDetails extends Component {
                     navigation.getParam('status', '-') == "Cancelled"? 'red' : 
                     navigation.getParam('status', '-') == "Unknown"? 'gray' : GREEN,
                     paddingHorizontal: 12, paddingVertical: 6, marginEnd: 16, borderRadius: 3,
-                    color: navigation.getParam('status', '-') == "Unknown"? 'rgba(255, 255, 255, 0.4)' : 'white'
+                    color: navigation.getParam('status', '-') == "Unknown"? 'rgba(255, 255, 255, 0.4)' : 'white',
+                    display: (navigation.getParam('status', '-') !== "Cancelled" ||
+                        navigation.getParam('status', '-') !== "Completed")? 'none' : 'flex'
                 }}>
                     {navigation.getParam('status', '-')}
                 </Text>
@@ -288,7 +290,8 @@ export default class TripDetails extends Component {
             <View style={{ flex: 1, backgroundColor: 'rgba(0, 0, 0, 0.05)' }}>
                 <StatusBar backgroundColor='white' barStyle='dark-content'/>
 
-                <ScrollView>
+                <ScrollView style={{marginTop: (this.props.navigation.getParam('status', '-') == "Cancelled" ||
+                        this.props.navigation.getParam('status', '-') == "Completed")? 0 : 30}}>
                     <View style={styles.container}>
                         <View style={{ flexDirection: 'row', alignItems: 'center', marginHorizontal: 15 }}>
                             <View style={{
@@ -368,7 +371,7 @@ export default class TripDetails extends Component {
                                         alignItems: 'center', paddingHorizontal: 15
                                     }}>
                                     <Image source={Constants.ICONS.call}
-                                        style={{ width: 18, height: 18, marginEnd: 15, tintColor: 'white'}}/>
+                                        style={{ width: 18, height: 18, marginEnd: 5, tintColor: 'white'}}/>
                                     <Text style={{ color: 'white', fontWeight: '700' }}>Call</Text>
                                 </View>
                             </TouchableHighlight>}
@@ -492,6 +495,19 @@ export default class TripDetails extends Component {
                         </View>
                     </View>
                 </Modal>
+
+                {/* Status text */}
+                <Text style={{
+                    position: 'absolute', width: '100%', height: 25, textAlign: 'center', textAlignVertical: 'center',
+                    backgroundColor: this.props.navigation.getParam('status', '-') == "Pending" ? ACCENT :
+                    this.props.navigation.getParam('status', '-') == "Cancelled"? 'red' : 
+                    this.props.navigation.getParam('status', '-') == "Unknown"? 'gray' : GREEN,
+                    color: this.props.navigation.getParam('status', '-') == "Unknown"? 'rgba(255, 255, 255, 0.4)' : 'white',
+                    display: (this.props.navigation.getParam('status', '-') == "Cancelled" ||
+                        this.props.navigation.getParam('status', '-') == "Completed")? 'none' : 'flex'
+                }}>
+                    {this.props.navigation.getParam('status', '-')}
+                </Text>
 
                 <ToastComp ref={t => this.toast = t}/>
             </View>

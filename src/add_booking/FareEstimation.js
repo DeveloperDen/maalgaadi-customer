@@ -11,7 +11,7 @@ import {
 import { TextInput, ScrollView} from 'react-native-gesture-handler';
 import uuid from 'uuid-random'
 import { TripEstimateDataModel } from '../models/trip_estimate_model';
-import { NavigationActions } from 'react-navigation';
+import { NavigationActions, StackActions } from 'react-navigation';
 import ProgressCircle from 'react-native-progress-circle'
 import ToastComp from '../utils/ToastComp'
 
@@ -32,6 +32,8 @@ export default class FareEstimation extends Component {
     constructor(props) {
         super(props)
         this.state = {
+            responseMessage: '',
+            responseModalVisible: false,
             loadingModalVisible: true,
             modalVisible: false,
             noDrivAvailModalVisible: false,
@@ -326,14 +328,19 @@ export default class FareEstimation extends Component {
                 // this.showNoFavDriverAvailableDialog()
                 break;
             case 4:
-                this.props.navigation.replace("MyBookings")
+                this.setState(prevState => {
+                    prevState.responseMessage = message;
+                    prevState.responseModalVisible = true;
+                    return prevState;
+                })
                 break;
             case 5:
                 this.showNoDriverAvailableDialog(true, message)
                 break;
         }
 
-        this.setModalVisible(false, true);
+        this.bookingModel.booking_event_type == BookingModel.BookingEventType.EDIT?
+        this.setModalVisible(false, false, true) : this.setModalVisible(false, true);
         clearInterval(this.findDrivInterval);
         clearTimeout(this.findDrivTimeout);
     }
@@ -730,7 +737,10 @@ export default class FareEstimation extends Component {
                     shadowOpacity: 0.2,
                     shadowRadius: 4,
                 }}>
-                    <Text style={{fontSize: 18, fontWeight: '700', color: 'white'}}>Confirm Booking</Text>
+                    <Text style={{fontSize: 18, fontWeight: '700', color: 'white'}}>
+                        {this.bookingModel.booking_event_type == BookingModel.BookingEventType.EDIT? 
+                        'Confirm' : 'Confirm Booking'}
+                    </Text>
                 </TouchableHighlight>
 
                 {/* Dialog to show Drop Points */}
@@ -1032,6 +1042,78 @@ export default class FareEstimation extends Component {
                     </View>
                 </Modal>
             
+                {/* Response Dialog  */}
+                <Modal
+                animationType="fade"
+                transparent={true}
+                visible={this.state.responseModalVisible}
+                onRequestClose={() => {
+                    this.setState(prevState => {
+                        prevState.responseModalVisible = false;
+                        return prevState;
+                    }, () => {
+                        const navAction = StackActions.reset({
+                            index: 1,
+                            actions: [
+                                NavigationActions.navigate({
+                                    routeName: 'Main',
+                                }),
+                                NavigationActions.navigate({
+                                    routeName: 'MyBookings',
+                                })
+                            ]
+                        })
+                        this.props.navigation.dispatch(navAction)
+                    })
+                }}>
+                    <View style={{
+                    backgroundColor: 'rgba(0, 0, 0, 0.7)',
+                    height: '100%',
+                    alignItems: "center",
+                    justifyContent: 'center'
+                    }}>
+                        <View
+                        style={{backgroundColor: 'white', width: '70%',
+                        paddingTop: 20, borderRadius: 3,
+                        elevation: 10, overflow: 'hidden'}}>
+                            <Text style={{
+                                textAlign: 'center', alignSelf: 'center',
+                                marginHorizontal: 15
+                            }}>
+                                {this.state.responseMessage}
+                            </Text>
+
+                            <TouchableHighlight
+                                underlayColor={ACCENT_DARK}
+                                onPress={() => {
+                                    this.setState(prevState => {
+                                        prevState.responseModalVisible = false;
+                                        return prevState;
+                                    }, () => {
+                                        const navAction = StackActions.reset({
+                                            index: 1,
+                                            actions: [
+                                                NavigationActions.navigate({
+                                                    routeName: 'Main',
+                                                }),
+                                                NavigationActions.navigate({
+                                                    routeName: 'MyBookings',
+                                                })
+                                            ]
+                                        })
+                                        this.props.navigation.dispatch(navAction)
+                                    })
+                                }}
+                                style={{
+                                    paddingVertical: 15, alignItems: 'center', justifyContent: 'center',
+                                    backgroundColor: ACCENT, marginTop: 15
+                                }}>
+                                    <Text style={{color: 'white'}}>OK</Text>
+                            </TouchableHighlight>
+                        </View>
+                    </View>
+                </Modal>
+                
                 <ToastComp ref={t => this.toast = t}/>
             </View>
         )

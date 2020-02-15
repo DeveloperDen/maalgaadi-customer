@@ -13,6 +13,7 @@ import {
 import {BookingEventType} from '../models/bookings_model'
 import { formatDate, unFormatDate } from './../utils/UtilFunc';
 import ToastComp from '../utils/ToastComp';
+import firebase from 'react-native-firebase';
 
 const Constants = require('../utils/AppConstants')
 const DataController = require('../utils/DataStorageController')
@@ -46,6 +47,24 @@ export default class RunningMyBookings extends Component {
   componentDidMount() {
     this.props.navigation.dangerouslyGetParent().getParam('quickBook')?
     this.props.navigation.navigate("Past") : this.getRunningTrip();
+
+    // Subscribe to FCM Message listener
+    this.unsubscribeFCM = firebase.messaging().onMessage(async message => {
+      let notifMessage = message.data.message;
+      const title = message.data.title;
+
+      console.log("Got message: ", message.data);
+
+      const data = message.data;
+      const type = data.type;
+      if(type == "booking_notification") {
+        this.getRunningTrip();
+      }
+    })
+  }
+
+  componentWillUnmount() {
+    this.unsubscribeFCM();
   }
 
   showToast(text) {
@@ -66,10 +85,11 @@ export default class RunningMyBookings extends Component {
             key: Constants.KEY
         }
     })
-    const response = await request.json().then(async value => {
+    await request.json().then(async value => {
       if(value.success) {
         this.setState(prevState => {
           prevState.bookings = value.data
+          prevState.bookings[0].is_edit = value.data.status == "On the way"? true : false;
           return prevState
         })
       }
@@ -174,15 +194,15 @@ export default class RunningMyBookings extends Component {
             })
           })
 
-          let landmarkList = [];
-          value.data.landmark_list.forEach((landmark, ind) => {
-            landmarkList.push({
-              address: landmark.landmark,
-              latitude: landmark.latitude,
-              longitude: landmark.longitude,
-            })
-          })
-          model.landmark_list = landmarkList;
+          // let landmarkList = [];
+          // value.data.landmark_list.forEach((landmark, ind) => {
+          //   landmarkList.push({
+          //     address: landmark.landmark,
+          //     latitude: landmark.latitude,
+          //     longitude: landmark.longitude,
+          //   })
+          // })
+          // model.landmark_list = landmarkList;
 
           await DataController.setItem(DataController.BOOKING_MODEL, JSON.stringify(model))
           this.props.navigation.navigate('AddBooking', {
@@ -206,9 +226,6 @@ export default class RunningMyBookings extends Component {
         <ScrollView style={{display: this.state.bookings.length > 0? 'flex' : 'none'}}>
           {
             this.state.bookings.map((value, index) => {
-              value.status === "On the way"?
-                this.state.bookings[index].is_edit = true : this.state.bookings[index].is_edit = false
-
               return(
                 <TouchableHighlight key={index} underlayColor='rgba(0, 0, 0, 0.06)'
                 onPress={async () => {
@@ -311,7 +328,8 @@ export default class RunningMyBookings extends Component {
                         }}
                         style={{
                           borderWidth: 1, borderColor: ACCENT, borderRadius: 3,
-                          paddingVertical: 5, paddingHorizontal: 10
+                          paddingVertical: 5, paddingHorizontal: 10,
+                          display: value.is_cancel? 'flex' : 'none'
                         }}>
                           <Text style={{color: ACCENT, fontSize: 13}}>Cancel</Text>
                         </TouchableOpacity>
@@ -325,7 +343,8 @@ export default class RunningMyBookings extends Component {
                         }}
                         style={{
                           borderWidth: 1, borderColor: ACCENT, borderRadius: 3,
-                          paddingVertical: 5, paddingHorizontal: 10, marginStart: 10
+                          paddingVertical: 5, paddingHorizontal: 10, marginStart: 10,
+                          display: value.is_edit? 'flex' : 'none'
                         }}>
                           <Text style={{color: ACCENT, fontSize: 13}}>Edit</Text>
                         </TouchableOpacity>

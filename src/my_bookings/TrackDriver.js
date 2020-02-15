@@ -7,7 +7,7 @@ import {
 } from 'react-native';
 import MapView, { PROVIDER_GOOGLE, Marker, PROVIDER_DEFAULT } from 'react-native-maps';
 import MapViewDirections from 'react-native-maps-directions';
-import { BASE_URL, TRIP_ROUTE, FIELDS, KEY, GOOGLE_MAPS_APIKEY } from '../utils/AppConstants';
+import { BASE_URL, TRIP_ROUTE, FIELDS, KEY, GOOGLE_MAPS_APIKEY, ERROR_GET_DETAILS } from '../utils/AppConstants';
 import ToastComp from '../utils/ToastComp'
 
 const ACCENT = '#FFCB28' // 255, 203, 40
@@ -97,7 +97,7 @@ export default class TrackDriver extends Component {
 
         }).catch(err => {
             console.log(err)
-            this.showToast(Constants.ERROR_GET_DETAILS);
+            this.showToast(ERROR_GET_DETAILS);
         })
     }
 
