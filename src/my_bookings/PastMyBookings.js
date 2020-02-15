@@ -110,7 +110,7 @@ export default class PastMyBookings extends Component {
         }
         else {
           let model = value.data;
-          model.booking_event_type = BookingEventType.EDIT
+          model.booking_event_type = BookingEventType.RE_BOOK
           model.booking_time = formatDate();
 
           model.booking_id = 0;

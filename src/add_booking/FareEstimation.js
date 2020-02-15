@@ -704,7 +704,7 @@ export default class FareEstimation extends Component {
                         if(isBookingAllow){
                             if (!this.bookingModel.book_later) {
                                 if (this.bookingModel.booking_event_type == BookingModel.BookingEventType.EDIT) {
-                                    this.setModalVisible(true, true)
+                                    this.setModalVisible(true, false, true);
                                     this.editBooking();
                                 } else {
                                     this.setModalVisible(true, true);
