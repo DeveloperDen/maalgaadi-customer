@@ -117,6 +117,11 @@ export default class AddBooking extends Component {
         })
         
         this.bookingModel.booking_event_type == BookingEventType.EDIT? this.setupFieldsForEdit() : null;
+        if(this.bookingModel.booking_event_type == BookingEventType.EDIT) {
+            this.bookingModel.book_later = false;
+            this.bookingModel.booking_estimate = "";
+            this.bookingModel.allot_to_exclu_driver = false;
+        }
 
         this.getFavDrivers();
     }
@@ -268,9 +273,13 @@ export default class AddBooking extends Component {
             this.bookingModel.landmark_list = this.bookingModel.landmark_list.slice(0, 1)
             let list = this.bookingModel.landmark_list
 
-            list[0].landmark = this.state.origin.address
-            list[0].latitude = this.state.origin.latitude
-            list[0].longitude = this.state.origin.longitude
+            list[0].landmark = this.state.origin.address;
+            list[0].latitude = this.state.origin.latitude;
+            list[0].longitude = this.state.origin.longitude;
+            list[0].is_pickup = true;
+            list[0].is_favorite = false;
+            list[0].is_footer = false;
+            list[0].is_filled = true;
 
             this.state.locations.forEach(loc => {
                 let dropModel = new LandmarkModel()

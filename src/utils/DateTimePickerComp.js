@@ -66,8 +66,12 @@ export default class DateTimePickerComp extends Component {
                         prevState.overlayOpacity= new Animated.Value(0);
                         prevState.pickerTranslateY= new Animated.Value(200);
                         prevState.boxOpacity= new Animated.Value(0);
-                        prevState.showDateTime= false;
                         return prevState;
+                    }, () => {
+                        this.setState(prevState=> {
+                            prevState.showDateTime = false;
+                            return prevState;
+                        })
                     })
                 }
             });

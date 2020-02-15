@@ -32,7 +32,7 @@ export default class FareEstimation extends Component {
     constructor(props) {
         super(props)
         this.state = {
-            loadingModalVisible: false,
+            loadingModalVisible: true,
             modalVisible: false,
             noDrivAvailModalVisible: false,
             noDrivAvailModalMessage: '',
@@ -151,6 +151,8 @@ export default class FareEstimation extends Component {
             console.log(err)
             this.showToast(Constants.ERROR_GET_DETAILS);
         })
+
+        this.setModalVisible(false, false, true);
     }
 
     confirmBooking = async () => {
@@ -234,7 +236,38 @@ export default class FareEstimation extends Component {
         // TODO: Remove it. Presently, it is unnecessary but still required in request.
         this.bookingModel.booking_estimate.data.cashback_amount = 0
 
-        const reqURL = Constants.BASE_URL + Constants.EDIT_CUSTOMER_BOOKING
+        // "booking_time": "14 Dec 2019 01:00 PM"
+        let timeArr = this.bookingModel.booking_time.split(' ');
+        const bookTime = timeArr[3];
+        let hrsMin = bookTime.split(':');
+        let hrs = parseInt(hrsMin[0]);
+        if(hrs > 12) {
+            hrs = hrs - 12;
+            hrs = hrs < 10? '0' + hrs : hrs.toString();
+        }
+        else {
+            hrs = hrs.toString();
+        }
+        hrsMin[0] = hrs;
+        hrsMin = hrsMin.join(':');
+        timeArr[3] = hrsMin;
+        this.bookingModel.booking_time = timeArr.join(' ');
+        this.bookingModel.booking_estimate.data.booking_time = timeArr.join(' ');
+
+        this.bookingModel.booking_estimate.data.customer_balance = parseInt(this.bookingModel.booking_estimate.data.customer_balance);
+
+        this.bookingModel.booking_estimate.data.lower_estimated_distance_in_km = parseInt(this.bookingModel.booking_estimate.data.lower_estimated_distance_in_km);
+
+        this.bookingModel.booking_estimate.data.upper_customer_own_price = parseInt(this.bookingModel.booking_estimate.data.upper_customer_own_price);
+
+        this.bookingModel.booking_estimate.data.upper_estimated_distance_in_km = parseInt(this.bookingModel.booking_estimate.data.upper_estimated_distance_in_km);
+
+        this.bookingModel.booking_estimate.data.upper_estimated_distance_in_meter = this.bookingModel.booking_estimate.data.upper_estimated_distance_in_meter.toString();
+
+        delete this.bookingModel.vehicle.allow_auto_allotment
+        delete this.bookingModel.vehicle.allow_driver_distance_from_pickup
+
+        const reqURL = Constants.BASE_URL + Constants.ADD_CUSTOMER_BOOKING
         console.log("Req URL: ", reqURL)
         console.log("Request: ", this.bookingModel)
         const request = await fetch(reqURL, {
@@ -246,7 +279,7 @@ export default class FareEstimation extends Component {
             body: JSON.stringify(this.bookingModel)
         })
     
-        const response = await request.json().then(value => {
+        await request.json().then(value => {
             console.log(value)
             if(value.success) {
                 const bookingID = value.data.booking_id
@@ -671,10 +704,10 @@ export default class FareEstimation extends Component {
                         if(isBookingAllow){
                             if (!this.bookingModel.book_later) {
                                 if (this.bookingModel.booking_event_type == BookingModel.BookingEventType.EDIT) {
-                                    this.setModalVisible(true, true, true)
+                                    this.setModalVisible(true, true)
                                     this.editBooking();
                                 } else {
-                                    this.setModalVisible(true, true)
+                                    this.setModalVisible(true, true);
                                     this.confirmBooking();
                                 }
                             } else {
@@ -990,23 +1023,12 @@ export default class FareEstimation extends Component {
                     return;
                 }}>
                     <View style={{
-                    backgroundColor: 'rgba(0, 0, 0, 0.7)',
+                    backgroundColor: 'rgba(255, 255, 255, 0.9)',
                     height: '100%',
                     alignItems: "center",
                     justifyContent: 'center'
                     }}>
-                        <View
-                        style={{backgroundColor: 'white', width: '80%',
-                        paddingTop: 20, borderRadius: 3,
-                        elevation: 10, overflow: 'hidden'}}>
                             <ActivityIndicator size="large" color={ACCENT} style={{alignSelf: 'center', marginTop: 15}}/>
-                            <Text style={{
-                                textAlign: 'center', alignSelf: 'center', marginVertical: 15,
-                                opacity: 0.3, marginHorizontal: 15,
-                            }}>
-                                Updating Booking details
-                            </Text>
-                        </View>
                     </View>
                 </Modal>
             

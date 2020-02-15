@@ -51,7 +51,6 @@ const MyBookingsTabs = createMaterialTopTabNavigator({
 },
 {
   initialRouteName: "Running",
-  lazy: true,
   tabBarOptions: {
     scrollEnabled: false,
     pressColor: 'rgba(0, 0, 0, 0.1)',
