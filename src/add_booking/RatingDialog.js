@@ -8,11 +8,12 @@ import {
   Text,
   Picker,
   TouchableOpacity,
+  Platform,
 } from 'react-native';
 import { RATING_RESPONSE, CUSTOMER_ID, BOOKING_ID, RATING, getItem, DESCRIPTION} from '../utils/DataStorageController';
 import { AirbnbRating } from 'react-native-ratings';
 import { TouchableHighlight, TextInput} from 'react-native-gesture-handler';
-import { GET_CUSTOMER_RATING, BASE_URL, KEY } from './../utils/AppConstants';
+import { GET_CUSTOMER_RATING, BASE_URL, KEY, ICONS } from './../utils/AppConstants';
 import ToastComp from '../utils/ToastComp'
 
 const ACCENT = '#FFCB28' // 255, 203, 40
@@ -42,7 +43,8 @@ export default class RatingDialog extends Component {
             selectedIndex: 0,
             rating: 1,
             showingDetails: false,
-            isLoading: false
+            isLoading: false,
+            reasonPickerOpen: false,
         }
 
         // To avoid going back on pressing the back button.
@@ -164,7 +166,7 @@ export default class RatingDialog extends Component {
                     alignItems: 'center', justifyContent: 'center',
                 }}>
                     <View
-                    style={{backgroundColor: 'white', width: '70%',
+                    style={{backgroundColor: 'white', width: '75%',
                     paddingTop: 20, borderRadius: 3,
                     elevation: 10, overflow: 'hidden'}}>
                         <View
@@ -175,10 +177,10 @@ export default class RatingDialog extends Component {
                             borderRadius: 4,
                             borderWidth: 1, display: this.state.showingDetails? 'flex' : 'none'
                         }}>
-                            <View style={{flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginHorizontal: 15}}>
-                                <Image source={require('../../assets/driver_icon.png')} style={{width: 60, height: 60}}/>
-                                <View>
-                                    <Text style={{fontSize: 18, fontWeight: '700'}} numberOfLines={1} ellipsizeMode='tail'>{this.state.drivName}</Text>
+                            <View style={{flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginHorizontal: 15, overflow: 'hidden'}}>
+                                <Image source={require('../../assets/driver_icon.png')} style={{width: 40, height: 40, marginEnd: 10}}/>
+                                <View style={{flex: 1}}>
+                                    <Text style={{fontSize: 16, fontWeight: '700'}} numberOfLines={1} ellipsizeMode='tail'>{this.state.drivName}</Text>
                                     <Text style={{fontSize: 12, opacity: 0.4}} numberOfLines={1} ellipsizeMode='tail'>{this.state.vehicle}</Text>
                                     <Text style={{fontSize: 12, opacity: 0.4}} numberOfLines={1} ellipsizeMode='tail'>{this.state.vehNum}</Text>
                                 </View>
@@ -255,34 +257,92 @@ export default class RatingDialog extends Component {
                         </View>
 
                         {/* Reason picker */}
-                        <View style={{marginTop: 15, backgroundColor: 'rgba(0, 0, 0, 0.05)', marginHorizontal: 15, borderRadius: 4}}>
-                            {this.state.rating < 3 && this.state.reasonList !== 'NA' &&
-                                <Picker
-                                selectedValue={this.state.selectedIndex}
-                                style={{
-                                    height: 50, marginHorizontal: 15
-                                }}
-                                onValueChange={(itemValue, itemIndex) =>
-                                    this.setState(prevState => {
-                                        prevState.selectedIndex = itemValue
-                                        prevState.reason = prevState.reasonList[itemValue]
-                                        return prevState
-                                    })
-                                }>
-                                    { 
-                                        this.state.reasonList.map((value, index) => {
-                                            return(
-                                                <Picker.Item label={value} value={index} key={value}/>
-                                            )
+                        <View style={{marginTop: 15, backgroundColor: Platform.OS == "android"? 'rgba(0, 0, 0, 0.05)' : 'transparent', marginHorizontal: 15, borderRadius: 4}}>
+                            { Platform.OS == "android"?
+                                    <Picker
+                                    selectedValue={this.state.selectedIndex}
+                                    style={{
+                                        height: 50, marginHorizontal: 15, display: this.state.rating < 3 && this.state.reasonList !== 'NA'? 'flex' : 'none'
+                                    }}
+                                    onValueChange={(itemValue, itemIndex) =>
+                                        this.setState(prevState => {
+                                            prevState.selectedIndex = itemValue
+                                            prevState.reason = prevState.reasonList[itemValue]
+                                            return prevState
                                         })
-                                    }
-                                </Picker>
+                                    }>
+                                        { 
+                                            this.state.reasonList.map((value, index) => {
+                                                return(
+                                                    <Picker.Item label={value} value={index} key={value}/>
+                                                )
+                                            })
+                                        }
+                                    </Picker>
+                                :
+                                    <TouchableOpacity
+                                    style={{
+                                        backgroundColor: this.state.reasonPickerOpen? 'rgba(0, 0, 0, 0.1)' : 'rgba(0, 0, 0, 0.05)', padding: 15, justifyContent: 'center',
+                                        borderRadius: 4, marginTop: 5,
+                                        display: this.state.rating < 3 && this.state.reasonList !== 'NA'? 'flex' : 'none'
+                                    }}
+                                    onPress={() => {
+                                        this.setState(prevState => {
+                                            prevState.reasonPickerOpen = !prevState.reasonPickerOpen;
+                                            return prevState;
+                                        })
+                                    }}>
+                                        <View style={{flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between'}}>
+                                            <Text
+                                            style={{
+                                                fontSize: 16, opacity: 0.6, flex: 1, marginEnd: 5
+                                            }}>
+                                                {this.state.reasonList[this.state.selectedIndex]}
+                                            </Text>
+
+                                            <Image source={ICONS.forward}
+                                            style={{width: 18, height: 18, transform: [{rotate: this.state.reasonPickerOpen? '-90deg' : '90deg'}], opacity: 0.6}}/>
+                                        </View>
+                                    </TouchableOpacity>
                             }
+                        </View>
+
+                        {/* Reason Picker for iOS */}
+                        <View style={{backgroundColor: 'rgba(0, 0, 0, 0.02)', marginHorizontal: 15,
+                        display: this.state.reasonPickerOpen && this.state.reasonList !== 'NA' && this.state.rating < 3 && Platform.OS == "ios"? 'flex' : 'none'
+                        }}>
+                            {this.state.reasonList !== 'NA' && this.state.reasonList.map((value, index) => {
+                                return(
+                                    <View style={{backgroundColor: this.state.selectedIndex == index? 'rgba(0, 0, 0, 0.05)' : 'transparent'}}>
+                                        <TouchableOpacity style={{padding: 10}}
+                                        onPress={() => {
+                                            this.setState(prevState => {
+                                                prevState.selectedIndex = index;
+                                                prevState.reasonPickerOpen = false;
+                                                prevState.reason = prevState.reasonList[index];
+                                                return prevState;
+                                            })
+                                        }}>
+                                            <Text>{value}</Text>
+                                        </TouchableOpacity>
+                                        
+                                        <View 
+                                        style={{
+                                            borderTopColor:'rgba(0, 0, 0, 0.06)',
+                                            borderTopWidth: 1
+                                        }}/>
+                                    </View>
+                                )
+                            })}
                         </View>
 
                         {/* Comment input */}
                         <View style={{
-                            marginTop: 15, backgroundColor: 'rgba(0, 0, 0, 0.05)', marginHorizontal: 15, borderRadius: 4, paddingHorizontal: 15, borderBottomColor: 'rgba(0, 0, 0, 0.2)', borderBottomWidth: 1, display: this.state.reason == "Others"? 'flex' : 'none'
+                            marginTop: 15, backgroundColor: 'rgba(0, 0, 0, 0.05)',
+                            marginHorizontal: 15, borderRadius: 4, paddingHorizontal: 15,
+                            borderBottomColor: 'rgba(0, 0, 0, 0.2)', borderBottomWidth: 1,
+                            display: this.state.reason == "Others"? 'flex' : 'none',
+                            paddingVertical: 15
                         }}>
                             <TextInput
                             placeholder="What went wrong?" numberOfLines={1} returnKeyType="done"
