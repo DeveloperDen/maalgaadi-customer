@@ -55,6 +55,7 @@ export default class AddBooking extends Component {
         this.formatDate = formatDate
         
         this.state = {
+            remark: '',
             favExcDialogMessage: '',
             noFavDrivModalVisible: false,
             fromView: null,
@@ -109,6 +110,7 @@ export default class AddBooking extends Component {
             prevState.goodsType = goodsType;
             prevState.goodsId = goodsId;
             prevState.number = num
+            prevState.remark = this.bookingModel.remark
             prevState.physicalPODCharge = this.bookingModel.vehicle.pod_charge
             prevState.origin = this.props.navigation.getParam('origin')
             prevState.locations = this.props.navigation.getParam('destination') !== ''?
@@ -258,6 +260,7 @@ export default class AddBooking extends Component {
 
     estimateFare = async () => {
         if(this.isValidModel(this.bookingModel)) {
+            this.bookingModel.remark = this.state.remark
             this.bookingModel.loading = this.state.isLoadingSelected
             this.bookingModel.unloading = this.state.isUnLoadingSelected
             this.bookingModel.physical_pod = this.state.isPhysicalSelected
@@ -878,7 +881,15 @@ export default class AddBooking extends Component {
                             multiline={true}
                             textAlignVertical="top"
                             placeholder='Description'
-                            style={{padding: 10, fontSize: 15, minHeight: 80,}}/>
+                            value={this.state.remark}
+                            style={{padding: 10, fontSize: 15, minHeight: 80,}}
+                            onChangeText={(text) => {
+                                this.setState(prevState => {
+                                    prevState.remark = text;
+                                    return prevState;
+                                })
+                            }}
+                            />
                         </View>
                     </View>
                 </Animated.ScrollView>

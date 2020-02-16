@@ -94,8 +94,8 @@ export default class DateTimePickerComp extends Component {
                             prevState.mode = 'date';
                             return prevState;
                         }, () => {
-                            this.updatedDate.setHours(this.state.date.getHours());
-                            this.updatedDate.setMinutes(this.state.date.getMinutes());
+                            this.updatedDate.setHours(date.getHours());
+                            this.updatedDate.setMinutes(date.getMinutes());
                             this.props.dateTimeSetter(this.updatedDate);
                         })
                     }

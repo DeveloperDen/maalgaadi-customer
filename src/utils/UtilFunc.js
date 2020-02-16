@@ -7,6 +7,7 @@ export const formatDate = (date = new Date()) => {
   let dateTimeStr;
 
   const dateArr = date.toLocaleString().split(" ");
+  console.log("Formatting: Array: ", dateArr, " Date: ", date);
   // ["Wed", "Jan", "15", "11:14:13", "2020"] or ["Sat", "Jan", "", "4", "11:13:48", "2020"] <-- Android
   // ["1/9/2020,", "5:41:18", "PM"] <-- iOS (MM/DD/YYYY)
 
@@ -29,11 +30,14 @@ export const formatDate = (date = new Date()) => {
     const ampm = dateArr[2];
     dateTimeStr = dd + ' ' + MMM + ' ' + yyyy + ' ' + hhmm + ' ' + ampm
   }
+
+  console.log("Returning Formatted date: ", dateTimeStr);
   return(dateTimeStr)
 }
 
 export const unFormatDate = (dateStr) => {
   // dateStr => 2019-11-15 18:57:30
+  console.log("Unformatting date: ", dateStr);
 
   date = new Date(dateStr)
   return date

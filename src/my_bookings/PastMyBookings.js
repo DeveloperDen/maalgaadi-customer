@@ -140,7 +140,7 @@ export default class PastMyBookings extends Component {
             origin: model.landmark_list[0],
             destination: model.landmark_list.slice(1),
             vehicle: model.vehicle,
-            dateTime: unFormatDate(model.booking_time)
+            dateTime: unFormatDate(new Date()) // Using present date time since model.booking_time = formatDate() used the same on line 114.
           });
         }
 

@@ -269,7 +269,7 @@ export default class FareEstimation extends Component {
         delete this.bookingModel.vehicle.allow_auto_allotment
         delete this.bookingModel.vehicle.allow_driver_distance_from_pickup
 
-        const reqURL = Constants.BASE_URL + Constants.ADD_CUSTOMER_BOOKING
+        const reqURL = Constants.BASE_URL + Constants.EDIT_CUSTOMER_BOOKING
         console.log("Req URL: ", reqURL)
         console.log("Request: ", this.bookingModel)
         const request = await fetch(reqURL, {
@@ -1052,18 +1052,9 @@ export default class FareEstimation extends Component {
                         prevState.responseModalVisible = false;
                         return prevState;
                     }, () => {
-                        const navAction = StackActions.reset({
-                            index: 1,
-                            actions: [
-                                NavigationActions.navigate({
-                                    routeName: 'Main',
-                                }),
-                                NavigationActions.navigate({
-                                    routeName: 'MyBookings',
-                                })
-                            ]
-                        })
-                        this.props.navigation.dispatch(navAction)
+                        this.props.navigation.reset([
+                            NavigationActions.navigate({routeName: "Main"}),
+                            NavigationActions.navigate({routeName: "MyBookings"})])
                     })
                 }}>
                     <View style={{
@@ -1090,18 +1081,9 @@ export default class FareEstimation extends Component {
                                         prevState.responseModalVisible = false;
                                         return prevState;
                                     }, () => {
-                                        const navAction = StackActions.reset({
-                                            index: 1,
-                                            actions: [
-                                                NavigationActions.navigate({
-                                                    routeName: 'Main',
-                                                }),
-                                                NavigationActions.navigate({
-                                                    routeName: 'MyBookings',
-                                                })
-                                            ]
-                                        })
-                                        this.props.navigation.dispatch(navAction)
+                                        this.props.navigation.reset([
+                                            NavigationActions.navigate({routeName: "Main"}),
+                                            NavigationActions.navigate({routeName: "MyBookings"})])
                                     })
                                 }}
                                 style={{

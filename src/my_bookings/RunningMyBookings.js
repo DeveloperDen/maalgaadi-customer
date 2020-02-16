@@ -89,7 +89,6 @@ export default class RunningMyBookings extends Component {
       if(value.success) {
         this.setState(prevState => {
           prevState.bookings = value.data
-          prevState.bookings[0].is_edit = value.data.status == "On the way"? true : false;
           return prevState
         })
       }
@@ -175,7 +174,7 @@ export default class RunningMyBookings extends Component {
     })
 
     await request.json().then(async value => {
-        console.log(value)
+        console.log("Edit booking: ", value)
 
         if (!value.success) {
             this.showToast(value.message);
@@ -194,23 +193,24 @@ export default class RunningMyBookings extends Component {
             })
           })
 
-          // let landmarkList = [];
-          // value.data.landmark_list.forEach((landmark, ind) => {
-          //   landmarkList.push({
-          //     address: landmark.landmark,
-          //     latitude: landmark.latitude,
-          //     longitude: landmark.longitude,
-          //   })
-          // })
-          // model.landmark_list = landmarkList;
+          let landmarkList = [];
+          value.data.landmark_list.forEach((landmark, ind) => {
+            landmarkList.push({
+              address: landmark.landmark,
+              latitude: landmark.latitude,
+              longitude: landmark.longitude,
+            })
+          })
+          model.landmark_list = landmarkList;
 
           await DataController.setItem(DataController.BOOKING_MODEL, JSON.stringify(model))
+          console.log("Unformat Date: ", unFormatDate(model.booking_time))
           this.props.navigation.navigate('AddBooking', {
             covered: model.covered? 'Covered' : 'Uncovered',
             origin: model.landmark_list[0],
             destination: model.landmark_list.slice(1),
             vehicle: model.vehicle,
-            dateTime: unFormatDate(model.booking_time)
+            dateTime: unFormatDate(new Date()) // Using present date time since model.booking_time = formatDate() used the same on line 185.
           });
         }
 
@@ -226,6 +226,8 @@ export default class RunningMyBookings extends Component {
         <ScrollView style={{display: this.state.bookings.length > 0? 'flex' : 'none'}}>
           {
             this.state.bookings.map((value, index) => {
+              value.is_edit = value.status == "On the way"? true : false;
+
               return(
                 <TouchableHighlight key={index} underlayColor='rgba(0, 0, 0, 0.06)'
                 onPress={async () => {

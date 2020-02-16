@@ -494,6 +494,11 @@ export default class Home extends Component {
   }
 
   async componentDidMount() {
+    if(this.props.navigation.state.params){
+      this.props.navigation.getParam('toMyBookings', '')?
+      this.props.navigation.navigate("MyBookings") : null;
+    }
+    
     // Profile completed check
     const isProfileCompleted = await DataController.getItem(DataController.IS_PROFILE_COMPLETED);
     isProfileCompleted === "false" ? this.props.navigation.navigate("CreateProfile", {
@@ -514,12 +519,14 @@ export default class Home extends Component {
     this.willFocusListener = this.props.navigation.
     addListener('didFocus', async () => {
       if(this.props.navigation.state.params){
+        this.props.navigation.getParam('toMyBookings', '')?
+        this.props.navigation.navigate("MyBookings") : null;
         this.mapView.animateToRegion({
           latitude: this.props.navigation.getParam('latitude'),
           longitude: this.props.navigation.getParam('longitude'),
           latitudeDelta: LATITUDE_DELTA,
           longitudeDelta: LONGITUDE_DELTA
-        }, 500)
+        }, 500);
       }
 
       // Profile update check
