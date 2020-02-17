@@ -7,6 +7,8 @@ import {
   Modal,
   TouchableHighlight,
   ActivityIndicator,
+  Animated,
+  Easing
 } from 'react-native';
 import { TextInput, ScrollView} from 'react-native-gesture-handler';
 import uuid from 'uuid-random'
@@ -48,7 +50,8 @@ export default class FareEstimation extends Component {
             timer: 0,
             showWaitModal: false,
             waitingArray: null,
-            selectedWaitingTime: 0
+            selectedWaitingTime: 0,
+            messageBoxTrans: new Animated.Value(-100)
         }
         this.destinations = props.navigation.getParam('destination')
         this.bookingModel = ''
@@ -112,6 +115,25 @@ export default class FareEstimation extends Component {
 
     showToast(text) {
         this.toast.show(text);
+    }
+
+    showMessage(show=true) {
+        if(!show) {
+            Animated.timing(this.state.messageBoxTrans, {
+                toValue: -100,
+                duration: 100,
+                easing: Easing.ease,
+                useNativeDriver: true,
+            }).start();
+        }
+        else {
+            Animated.timing(this.state.messageBoxTrans, {
+                toValue: 0,
+                duration: 100,
+                easing: Easing.ease,
+                useNativeDriver: true,
+            }).start();
+        }
     }
 
     getBookingEstimate = async () => {
@@ -585,6 +607,7 @@ export default class FareEstimation extends Component {
                             }}>
                                 <Text style={{fontSize: 35}}>{String.fromCharCode(8377)}</Text>
                                 <TextInput value={this.state.yourPrice.toString()}
+                                placeholder={this.state.tripEstimate.toString()}
                                 style={{
                                     fontSize: 40, padding: 5
                                 }} keyboardType="decimal-pad" returnKeyType="done"
@@ -597,7 +620,7 @@ export default class FareEstimation extends Component {
                                             return prevState
                                         })
 
-                                        this.showToast("Entered Price is too Low. Please update it.");
+                                        this.showMessage();
                                     }
                                     else {
                                         let inValidPrice = false
@@ -633,9 +656,9 @@ export default class FareEstimation extends Component {
                                         })
 
                                         if(inValidPrice)
-                                            this.showToast("Entered Price is too Low. Please update it.");
+                                            this.showMessage();
                                         else
-                                            this.toast.close();
+                                            this.showMessage(false);
                                     }
                                 }}/>
                             </View>
@@ -690,7 +713,7 @@ export default class FareEstimation extends Component {
                 underlayColor={ACCENT_DARK}
                 onPress={() => {
                     if(this.state.inValidPrice || this.state.yourPrice === ''){
-                        this.showToast("Entered Price is too Low. Please update it.")
+                        this.showMessage()
                     }
                     else {
                         let isBookingAllow = false;
@@ -1096,6 +1119,21 @@ export default class FareEstimation extends Component {
                     </View>
                 </Modal>
                 
+                <Animated.View
+                style={{
+                    flexDirection: 'row', alignItems:'center',
+                    justifyContent: 'space-between', backgroundColor: 'red',
+                    transform: [{translateY: this.state.messageBoxTrans}], position: 'absolute',
+                    top: 0, width: '100%', padding: 15
+                }}>
+                    <Image source={Constants.ICONS.warning}
+                    style={{
+                        tintColor: 'white',
+                        height: 20, width: 20
+                    }}/>
+                    <Text style={{color: 'white'}}>{Constants.LOW_PRICE}</Text>
+                </Animated.View>
+
                 <ToastComp ref={t => this.toast = t}/>
             </View>
         )

@@ -107,6 +107,7 @@ export const RETROFIT_TIME_OUT = 60;
 export const MESSAGE_DURATION = 2000
 export const SPLASH_TIMEOUT = 1500
 
+export const LOW_PRICE = "Entered Price is too Low. Please update it."
 export const UPDATE_APP_MESSAGE = "A new version of the App is available. Please update your App"
 export const OTP_MISMATCH = "OTP did not match"
 export const PASS_CHANGE_SUCCESS = "Password changed successfully. Please Login to continue."
