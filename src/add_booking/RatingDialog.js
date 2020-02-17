@@ -314,7 +314,7 @@ export default class RatingDialog extends Component {
                         }}>
                             {this.state.reasonList !== 'NA' && this.state.reasonList.map((value, index) => {
                                 return(
-                                    <View style={{backgroundColor: this.state.selectedIndex == index? 'rgba(0, 0, 0, 0.05)' : 'transparent'}}>
+                                    <View style={{backgroundColor: this.state.selectedIndex == index? 'rgba(0, 0, 0, 0.05)' : 'transparent'}} key={index}>
                                         <TouchableOpacity style={{padding: 10}}
                                         onPress={() => {
                                             this.setState(prevState => {

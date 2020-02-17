@@ -107,6 +107,8 @@ export default class AddBooking extends Component {
         const num = await DataController.getItem(DataController.CUSTOMER_MOBILE)
         this.bookingModel = JSON.parse(await DataController.getItem(DataController.BOOKING_MODEL))
         this.setState(prevState => {
+            prevState.favDriverSelected = this.bookingModel.allot_to_fav_driver;
+            prevState.excDriverSelected = this.bookingModel.allot_to_exclu_driver;
             prevState.goodsType = goodsType;
             prevState.goodsId = goodsId;
             prevState.number = num

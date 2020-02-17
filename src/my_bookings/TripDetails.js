@@ -27,18 +27,6 @@ export default class TripDetails extends Component {
     static navigationOptions = ({ navigation }) => {
         return {
             headerTitle: 'Trip Details',
-            headerRight:
-                <Text style={{
-                    backgroundColor: navigation.getParam('status', '-') == "Pending" ? ACCENT :
-                    navigation.getParam('status', '-') == "Cancelled"? 'red' : 
-                    navigation.getParam('status', '-') == "Unknown"? 'gray' : GREEN,
-                    paddingHorizontal: 12, paddingVertical: 6, marginEnd: 16, borderRadius: 3,
-                    color: navigation.getParam('status', '-') == "Unknown"? 'rgba(255, 255, 255, 0.4)' : 'white',
-                    display: (navigation.getParam('status', '-') !== "Cancelled" ||
-                        navigation.getParam('status', '-') !== "Completed")? 'none' : 'flex'
-                }}>
-                    {navigation.getParam('status', '-')}
-                </Text>
         }
     }
 
@@ -75,8 +63,8 @@ export default class TripDetails extends Component {
                 shadowRadius: 4, shadowOpacity: 0.2, shadowOffset: {height: -2}, shadowColor: 'rgba(0, 0, 0)'
             }]}>
                 <TouchableHighlight underlayColor='rgba(0, 0, 0, 0.02)'
-                    disabled={(this.state.status != PENDING && this.state.status != CANCELLED) ? false : true}
-                    style={{ opacity: (this.state.status != PENDING && this.state.status != CANCELLED) ? 1 : 0.3 }}
+                    disabled={(this.state.status != PENDING && this.state.status != CANCELLED && this.state.status != "Completed") ? false : true}
+                    style={{ opacity: (this.state.status != PENDING && this.state.status != CANCELLED && this.state.status != "Completed") ? 1 : 0.3 }}
                     onPress={() => this.trackDriver()}>
                     <View style={{ alignItems: 'center', marginHorizontal: 30, marginVertical: 10 }}>
                         <Image source={Constants.ICONS.curr_location}
@@ -290,8 +278,7 @@ export default class TripDetails extends Component {
             <View style={{ flex: 1, backgroundColor: 'rgba(0, 0, 0, 0.05)' }}>
                 <StatusBar backgroundColor='white' barStyle='dark-content'/>
 
-                <ScrollView style={{marginTop: (this.props.navigation.getParam('status', '-') == "Cancelled" ||
-                        this.props.navigation.getParam('status', '-') == "Completed")? 0 : 30}}>
+                <ScrollView style={{marginTop: 30}}>
                     <View style={styles.container}>
                         <View style={{ flexDirection: 'row', alignItems: 'center', marginHorizontal: 15 }}>
                             <View style={{
@@ -498,13 +485,11 @@ export default class TripDetails extends Component {
 
                 {/* Status text */}
                 <Text style={{
-                    position: 'absolute', width: '100%', height: 25, textAlign: 'center', textAlignVertical: 'center',
+                    position: 'absolute', width: '100%', textAlignVertical: 'center', paddingVertical: 8, textAlign: 'center',
                     backgroundColor: this.props.navigation.getParam('status', '-') == "Pending" ? ACCENT :
                     this.props.navigation.getParam('status', '-') == "Cancelled"? 'red' : 
                     this.props.navigation.getParam('status', '-') == "Unknown"? 'gray' : GREEN,
                     color: this.props.navigation.getParam('status', '-') == "Unknown"? 'rgba(255, 255, 255, 0.4)' : 'white',
-                    display: (this.props.navigation.getParam('status', '-') == "Cancelled" ||
-                        this.props.navigation.getParam('status', '-') == "Completed")? 'none' : 'flex'
                 }}>
                     {this.props.navigation.getParam('status', '-')}
                 </Text>

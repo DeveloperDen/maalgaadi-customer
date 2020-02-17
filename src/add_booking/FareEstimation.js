@@ -387,7 +387,6 @@ export default class FareEstimation extends Component {
             this.setModalVisible(false, true)
             this.showNoDriverAvailableDialog(false)
             if(value.success) {
-                this.showToast("Booking Cancelled!")
                 this.props.navigation.popToTop()
             }
             else if(value.data.responseCode === 1) {
@@ -395,7 +394,7 @@ export default class FareEstimation extends Component {
                 this.showToast(value.message);
                 // TODO
                 // DataController.setItem(DataController.RUNNING_TRIP_DATA, JSON.stringify(tripObj))
-                // this.props.navigation.replace("TripDetails", {/* Add Some Params */})
+                // this.props.navigation.replace("TripDetails", {/* Add Some Params */})sk0
             }
             else {
                 console.log(value.message);
