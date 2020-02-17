@@ -592,6 +592,7 @@ export default class Home extends Component {
           this.paymentModel = paymentModel;
           await DataController.setItem(DataController.PAYMENT_TRANS_DATA, JSON.stringify(paymentModel));
           this.showPaymentDialog();
+          this.getRatingResponse();
         }
       }
 

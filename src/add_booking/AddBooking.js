@@ -124,7 +124,6 @@ export default class AddBooking extends Component {
         if(this.bookingModel.booking_event_type == BookingEventType.EDIT) {
             this.bookingModel.book_later = false;
             this.bookingModel.booking_estimate = "";
-            this.bookingModel.allot_to_exclu_driver = false;
         }
 
         this.getFavDrivers();
@@ -269,6 +268,7 @@ export default class AddBooking extends Component {
             this.bookingModel.goods_id = this.state.goodsId
             this.bookingModel.goods_type = this.state.goodsType
             this.bookingModel.allot_to_fav_driver = this.state.favDriverSelected
+            this.bookingModel.allot_to_exclu_driver = this.state.excDriverSelected
 
             const selectedVehicle = this.props.navigation.getParam('vehicle')
             this.bookingModel.selected_vehicle_category = selectedVehicle.id
