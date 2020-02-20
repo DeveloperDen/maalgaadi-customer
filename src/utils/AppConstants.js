@@ -1,5 +1,6 @@
-export const CITY_INDORE = 1;
 import { Platform } from 'react-native';
+
+export const CITY_INDORE = 1;
 export const CITY_JAIPUR = 2;
 export const CITY_PUNE = 3;
 

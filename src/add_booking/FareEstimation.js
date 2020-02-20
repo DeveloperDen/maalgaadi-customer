@@ -731,19 +731,21 @@ export default class FareEstimation extends Component {
                         }
 
                         if(isBookingAllow){
-                            if (!this.bookingModel.book_later) {
-                                if (this.bookingModel.booking_event_type == BookingModel.BookingEventType.EDIT) {
-                                    this.setModalVisible(true, false, true);
-                                    this.editBooking();
-                                } else {
-                                    this.setModalVisible(true, true);
-                                    this.confirmBooking();
-                                }
+                            if (this.bookingModel.booking_event_type == BookingModel.BookingEventType.EDIT) {
+                                this.setModalVisible(true, false, true);
+                                this.editBooking();
                             } else {
+                                this.setModalVisible(true, true);
                                 this.confirmBooking();
                             }
 
-                            this.startFindDrivInterval();
+                            this.setState(prevState => {
+                                prevState.findDrivTime = 100;
+                                prevState.timer = 0;
+                                return prevState;
+                            }, () => {
+                                this.startFindDrivInterval();
+                            })
                         }
                             
                     }

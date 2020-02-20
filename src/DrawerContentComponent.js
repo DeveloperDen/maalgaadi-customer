@@ -156,10 +156,11 @@ const showAlert = (props) => {
 }
 
  DrawerContentComponent = (props) => {
+    
     const [rating, setRating] = useState("")
     const [name, setName] = useState("")
     const [number, setNumber] = useState("")
-    const [profCheck, setProfCheck] = useState("")
+    const [profCompleted, setprofCompleted] = useState("")
 
     const toGet = new Array()
         toGet.push(DataController.RATING, DataController.CUSTOMER_NAME,
@@ -167,31 +168,26 @@ const showAlert = (props) => {
 
     DataController.getItems(toGet)
         .then(res => {
-            setRating(res[0][1])
-            setName(res[1][1])
-            setNumber("+91 " + res[2][1])
-            setProfCheck(res[3][1])
+            setRating(res[0][1] == "" || res[0][1] == null? "" : res[0][1])
+            setName(res[1][1] == "" || res[1][1] == null? "" : res[1][1])
+            setNumber(res[2][1] == "" || res[2][1] == null? "" : "+91 " + res[2][1])
+            setprofCompleted(res[3][1] == "" || res[3][1] == null? "" : res[3][1])
         })
 
     return (
         <View style={{flex: 1}}>
-            <TouchableHighlight
-            style={styles.headerContainer}
+            <TouchableHighlight disabled={profCompleted == "true"? false : true}
+            style={[styles.headerContainer, {opacity: profCompleted == "true"? 1 : 0.8}]}
                 underlayColor={ACCENT}
                 onPress={() => {
-                    if(profCheck === "true"){
-                        console.log("Completed Profile!")
-                        props.navigation.navigate("Profile")
-                    }
-                    else
-                        console.log("Incomplete Profile")
+                    props.navigation.navigate("Profile")
                 }}>
                 <View 
                 style={{
                     flex: 1, justifyContent: 'center',
                 }} >
                     <Text style={styles.titleText}>
-                        {rating !== ""?
+                        {profCompleted !== "true"? "Incomplete Profile" : rating !== ""?
                             "Profile (" + rating + String.fromCharCode(9733) + ")"
                             :
                             "Profile " + String.fromCharCode(9888)
@@ -199,8 +195,8 @@ const showAlert = (props) => {
                     </Text>
                     <Text style={styles.subtitleText}>
                         {
-                            ((number === "") || (name === ""))?
-                            "(Incomplete Profile)" :
+                            ((number === "") || (name === "") || (profCompleted !== "true"))?
+                            "(Please complete your profile to access other options)" :
                             name + " (" + number + ")"
                         }
                     </Text>
@@ -211,6 +207,7 @@ const showAlert = (props) => {
                 {screens.map((screen, index) => {
                     return(
                         <TouchableHighlight underlayColor='#EBEBEB'
+                        disabled={profCompleted == "true"? false : true}
                         onPress={() => {
                             if(screen.name !== "Logout"){
                                 props.navigation.closeDrawer()
@@ -223,7 +220,7 @@ const showAlert = (props) => {
                             
                         }}
                         key={index}>
-                            <View style={styles.screenListItem}>
+                            <View style={[styles.screenListItem, {opacity: profCompleted == "true"? 1 : 0.2}]}>
                                 <Image source={screen.icon}
                                 style={{width: 20, height: 20, tintColor: ACCENT_DARK}}/>
                                 <Text

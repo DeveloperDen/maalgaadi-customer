@@ -152,7 +152,7 @@ export default class AddBooking extends Component {
             }
             else {
                 this.favExcDrivList = value.data;
-                if(value.data.length != 0)
+                if(value.data.length != 0) {
                     value.data.forEach((val, i, arr) => {
                         if(this.props.navigation.getParam('vehicle').id == val.vehicle_id)
                             val.status_exclusive?
@@ -160,6 +160,13 @@ export default class AddBooking extends Component {
                             :
                             this.favDrivers.push(val);
                     })
+
+                    this.setState(prevState => {
+                        prevState.favDriverSelected = this.favDrivers.length > 0? prevState.favDriverSelected : false;
+                        prevState.excDriverSelected = this.excDrivers.length > 0? prevState.excDriverSelected : false;
+                        return prevState;
+                    })
+                }
             }
             
         }).catch(err => {
@@ -223,7 +230,7 @@ export default class AddBooking extends Component {
         this.excDrivers = [];
         this.favDrivers = [];
         
-        if(this.favExcDrivList.length != 0)
+        if(this.favExcDrivList.length != 0) {
             this.favExcDrivList.forEach((val, i, arr) => {
                 console.log(this.selectedVehicleId, val.vehicle_id)
                 if(this.selectedVehicleId == val.vehicle_id) {
@@ -233,6 +240,13 @@ export default class AddBooking extends Component {
                     this.favDrivers.push(val);
                 }
             })
+
+            this.setState(prevState => {
+                prevState.favDriverSelected = this.favDrivers.length > 0? prevState.favDriverSelected : false;
+                prevState.excDriverSelected = this.excDrivers.length > 0? prevState.excDriverSelected : false;
+                return prevState;
+            })
+        }
     }
 
     setGoodsType = (goods) => {
