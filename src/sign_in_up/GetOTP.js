@@ -89,7 +89,7 @@ export default class GetOTP extends Component {
             }
         })
 
-        const response = await request.json().then(async value => {
+        await request.json().then(async value => {
             const dataToWrite = new FormData()
             dataToWrite.append(DataController.IS_LOGIN, "true")
             dataToWrite.append(DataController.CUSTOMER_ID, value.data.id.toString())

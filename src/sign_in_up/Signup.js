@@ -49,7 +49,7 @@ export default class Signup extends Component {
             }
         })
 
-        const response = await request.json().then(value => {
+        await request.json().then(value => {
             console.log(value)
 
             if(!value.success){
@@ -230,4 +230,3 @@ export default class Signup extends Component {
 const styles = StyleSheet.create({
 
 });
-

@@ -101,7 +101,7 @@ export default class Profile extends Component {
                     <Text style={{fontSize: 13, color: 'white'}}>{"(+91 " + this.state.number + ")"}</Text>
                 </View>
 
-                <ScrollView style={{flex: 1, marginTop: 30}}>
+                <ScrollView style={{flex: 1, paddingTop: 30}}>
                     {
                         this.state.data.map((value, index) => {
                             return(

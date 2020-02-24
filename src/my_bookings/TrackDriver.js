@@ -5,10 +5,12 @@ import {
     Dimensions,
     Image
 } from 'react-native';
-import MapView, { PROVIDER_GOOGLE, Marker, PROVIDER_DEFAULT } from 'react-native-maps';
+import MapView, { PROVIDER_GOOGLE, Marker, PROVIDER_DEFAULT, MarkerAnimated } from 'react-native-maps';
 import MapViewDirections from 'react-native-maps-directions';
 import { BASE_URL, TRIP_ROUTE, FIELDS, KEY, GOOGLE_MAPS_APIKEY, ERROR_GET_DETAILS } from '../utils/AppConstants';
 import ToastComp from '../utils/ToastComp'
+import { GET_BOOKING_TRACKING_DATA } from './../utils/AppConstants';
+import { NavigationEvents } from 'react-navigation';
 
 const ACCENT = '#FFCB28' // 255, 203, 40
 const ACCENT_DARK = '#F1B800'
@@ -39,20 +41,76 @@ export default class TrackDriver extends Component {
                 latitude: parseFloat(props.navigation.getParam('dropLat')),
                 longitude: parseFloat(props.navigation.getParam('dropLng'))
             },
-            waypoints: []
+            waypoints: [],
+            driverCoord: {
+                latitude: 0,
+                longitude: 0
+            }
         }
     }
 
-    componentDidMount() {
-        this.getTripData()
+    async componentDidMount() {
+        await this.getTripData();
+        await this.getLiveTrackingData();
+        
+        // Get live tracking data after every 10 seconds
+        this.trackingInterval = setInterval(() => {
+            console.log("Interval complete. Getting tracking data.");
+            this.getLiveTrackingData();
+        }, 10000);
     }
 
     showToast(message) {
         this.toast.show(message);
     }
 
-    getTripData = async () => {
+    getLiveTrackingData = async () => {
 
+        const reqURL = BASE_URL + GET_BOOKING_TRACKING_DATA + '?' +
+            FIELDS.BOOKING_ID + '=' + this.props.navigation.getParam('bookingId');
+
+        const request = await fetch(reqURL, {
+            method: 'GET',
+            headers: {
+                key: KEY
+            }
+        })
+
+        await request.json().then(value => {
+            console.log(value)
+
+            if (!value.success) {
+                this.showToast(value.message);
+            }
+            else {
+                const drivLat = parseFloat(value.data.driver_lat);
+                const drivLong = parseFloat(value.data.driver_long);
+                
+                if(drivLat !== 0.0 && drivLong !== 0.0) {
+                    this.setState(prevState => {
+                        prevState.driverCoord = {
+                            latitude: drivLat,
+                            longitude: drivLong
+                        }
+                        return prevState;
+                    });
+
+                    this.mapView.animateCamera({
+                        center: {
+                            latitude: drivLat,
+                            longitude: drivLong,
+                        }
+                    })
+                }
+            }
+
+        }).catch(err => {
+            console.log(err)
+            this.showToast(ERROR_GET_DETAILS);
+        })
+    }
+
+    getTripData = async () => {
         const reqURL = BASE_URL + TRIP_ROUTE + '?' +
             FIELDS.BOOKING_ID + '=' + this.props.navigation.getParam('bookingId');
 
@@ -63,7 +121,7 @@ export default class TrackDriver extends Component {
             }
         })
 
-        const response = await request.json().then(value => {
+        await request.json().then(value => {
             console.log(value)
 
             if (!value.success) {
@@ -108,6 +166,10 @@ export default class TrackDriver extends Component {
         })
     }
 
+    componentWillUnmount() {
+        clearInterval(this.trackingInterval);
+    }
+
     render() {
         return (
             <View style={{ flex: 1 }}>
@@ -123,19 +185,14 @@ export default class TrackDriver extends Component {
                     longitudeDelta: LONGITUDE_DELTA,
                 }}
                 ref={c => this.mapView = c}>
-                    <Marker coordinate={{
-                      latitude: parseFloat(this.state.pickup.latitude),
-                      longitude: parseFloat(this.state.pickup.longitude),
-                    }} tracksViewChanges={this.state.trackViewChanges}>
-                      <Image source={require('../../assets/pin_red.png')} style={{width: 50, height: 50}}
-                      resizeMode="contain"/>
-                    </Marker>
-
-                    <Marker coordinate={{
-                      latitude: parseFloat(this.state.drop.latitude),
-                      longitude: parseFloat(this.state.drop.longitude),
-                    }} tracksViewChanges={this.state.trackViewChanges}>
-                      <Image source={require('../../assets/pin_green.png')} style={{width: 50, height: 50}}
+                    
+                    <Marker
+                    coordinate={this.state.driverCoord}
+                    trackViewChanges={this.state.trackViewChanges}>
+                      <Image source={require('../../assets/driver.png')}
+                      style={{
+                          width: 80, height: 80,
+                        }}
                       resizeMode="contain" onLoad={this.stopTrackingViewChanges}/>
                     </Marker>
                     
@@ -145,7 +202,7 @@ export default class TrackDriver extends Component {
                         destination={this.state.drop}
                         apikey={GOOGLE_MAPS_APIKEY}
                         strokeWidth={3}
-                        strokeColor={'black'}
+                        strokeColor={ACCENT_DARK}
                         optimizeWaypoints={true}
                         onStart={(params) => {
                             console.log(`Started routing between "${params.origin}" and "${params.destination}"`);
@@ -181,4 +238,3 @@ const styles = StyleSheet.create({
         ...StyleSheet.absoluteFillObject,
     },
 });
-

@@ -17,6 +17,7 @@ export default class DateTimePickerComp extends Component {
             boxOpacity: new Animated.Value(0),
             date: this.props.value? this.props.value : new Date,
             mode: 'date',
+            containerOpacity: 1
         }
     }
 
@@ -31,6 +32,7 @@ export default class DateTimePickerComp extends Component {
             if(show) {
                 this.setState(prevState => {
                     prevState.showDateTime = true;
+                    prevState.containerOpacity = 1;
                     return prevState;
                 })
             }
@@ -63,9 +65,7 @@ export default class DateTimePickerComp extends Component {
             this.animation.start(() => {
                 if(!show) {
                     this.setState(prevState => {
-                        prevState.overlayOpacity= new Animated.Value(0);
-                        prevState.pickerTranslateY= new Animated.Value(200);
-                        prevState.boxOpacity= new Animated.Value(0);
+                        prevState.containerOpacity = 0;
                         return prevState;
                     }, () => {
                         this.setState(prevState=> {
@@ -125,7 +125,7 @@ export default class DateTimePickerComp extends Component {
           onRequestClose={() => {
             this.showToggle(false)
           }}>
-              <View style={{justifyContent: 'flex-end', height: '100%',}}>
+              <View style={{justifyContent: 'flex-end', height: '100%', opacity: this.state.containerOpacity}}>
                 <Animated.View style={{opacity: this.state.overlayOpacity, backgroundColor: 'black', height: '100%', width: '100%', position: 'absolute'}}/>
                 <Animated.View
                 style={{
