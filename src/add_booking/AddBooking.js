@@ -781,9 +781,10 @@ export default class AddBooking extends Component {
                             }}/>
                         </View>
                     
+                        {/* Exclusive driver switch is presently hidden */}
                         <View
                         style={{
-                            backgroundColor: 'white',
+                            backgroundColor: 'white', display: "none",
                             borderRadius: 3,
                             marginTop: 10,
                             flexDirection: 'row', justifyContent: "space-between",
@@ -970,7 +971,7 @@ export default class AddBooking extends Component {
                                     </TouchableOpacity>
                                 </View>
 
-                                <Text style={{marginBottom: 20, marginHorizontal: 10}}>
+                                <Text style={{marginBottom: 20, marginHorizontal: 20}}>
                                     {this.state.favExcDialogMessage}
                                 </Text>
 

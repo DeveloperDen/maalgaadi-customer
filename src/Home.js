@@ -1225,16 +1225,19 @@ export default class Home extends Component {
         </View>
 
         <View style={[styles.footer]}>  
-          {/* <TouchableHighlight
+          {/* Covered/Uncovered switch is not needed presently and is not displayed */}
+          <TouchableHighlight
           ref={covVeh => {this.covVehSwitch = covVeh}}
           underlayColor={this.state.isCoveredVehicle? ACCENT : 'transparent'}
           style={{
-            borderWidth: 2, 
+            borderWidth: 2, display: "none",
             borderColor: this.state.isCoveredVehicle? ACCENT : 'black',
             backgroundColor: this.state.isCoveredVehicle? ACCENT : 'transparent',
             paddingVertical: 4, paddingHorizontal: 10, borderRadius: 5,
             opacity: this.state.isCoveredVehicle? 1 : 0.2,
-            display: this.state.vehiclesList.length > 0? 'flex' : 'none'
+            
+            // Uncomment below line when showing this switch
+            // display: this.state.vehiclesList.length > 0? 'flex' : 'none'
           }}
           onPress={() => {
             DataController.getItem(DataController.TUT_COV_VEH)
@@ -1266,7 +1269,7 @@ export default class Home extends Component {
                 style={{width: 15, height: 15, tintColor: this.state.isCoveredVehicle? 'white' : 'black'}}
                 />
             </View>
-          </TouchableHighlight> */}
+          </TouchableHighlight>
 
           <ScrollView 
           style={{marginVertical: 10, display: this.state.vehiclesList.length > 0? 'flex' : 'none'}}
@@ -1541,17 +1544,20 @@ export default class Home extends Component {
                 style={[styles.icon, {alignSelf: 'flex-end', tintColor: '#0092FE'}]}/>
             </TouchableHighlight>
           </View>
-        <View style={[styles.footer]}>  
-          {/* <TouchableHighlight
+        <View style={[styles.footer]}>
+          {/* Covered/Uncovered switch is not needed presently and is not displayed */}
+          <TouchableHighlight
           ref={covVeh => {this.covVehSwitch = covVeh}}
           underlayColor={this.state.isCoveredVehicle? ACCENT : 'transparent'}
           style={{
-            borderWidth: 2, 
+            borderWidth: 2, display: "none",
             borderColor: this.state.isCoveredVehicle? ACCENT : 'black',
             backgroundColor: this.state.isCoveredVehicle? ACCENT : 'transparent',
             paddingVertical: 4, paddingHorizontal: 10, borderRadius: 5,
             opacity: this.state.isCoveredVehicle? 1 : 0.2,
-            display: this.state.vehiclesList.length > 0? 'flex' : 'none'
+
+            // Uncomment below line when showing this switch
+            // display: this.state.vehiclesList.length > 0? 'flex' : 'none'
           }}
           onPress={() => {
             DataController.getItem(DataController.TUT_COV_VEH)
@@ -1583,7 +1589,7 @@ export default class Home extends Component {
                 style={{width: 15, height: 15, tintColor: this.state.isCoveredVehicle? 'white' : 'black'}}
                 />
             </View>
-          </TouchableHighlight> */}
+          </TouchableHighlight>
 
           <ScrollView 
           style={{marginVertical: 10, display: this.state.vehiclesList.length > 0? 'flex' : 'none'}}

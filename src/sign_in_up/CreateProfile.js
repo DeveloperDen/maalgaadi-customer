@@ -94,9 +94,9 @@ export default class CreateProfile extends Component {
                 prevState.email = res[2][1]
                 prevState.org = res[3][1]
                 prevState.address = res[4][1]
-                prevState.goodsType = res[5][1] !== "" && res[5][1] !== null? res[5][1] : DEFAULT_GOODS
-                prevState.goodsId = res[6][1] !== "" && res[6][1] !== null? res[6][1] : 0
-                prevState.tripFreq = res[7][1] !== "" && res[7][1] !== null? this.tripFreqArray.indexOf(res[7][1]) : 0
+                prevState.goodsType = res[5][1] !== "" && res[5][1] !== null && typeof res[5][1] !== "undefined"? res[5][1] : DEFAULT_GOODS
+                prevState.goodsId = res[6][1] !== "" && res[6][1] !== null && typeof res[6][1] !== "undefined"? res[6][1] : 0
+                prevState.tripFreq = res[7][1] !== "" && res[7][1] !== null && typeof res[7][1] !== "undefined"? this.tripFreqArray.indexOf(res[7][1]) : 0
                 return(prevState);
             })
         })
@@ -384,8 +384,9 @@ export default class CreateProfile extends Component {
                                 selectedValue={this.state.tripFreq}
                                 onValueChange={(itemValue, itemIndex) =>
                                     this.setState(prevState => {
-                                        prevState.tripFreq = itemValue
-                                        return prevState
+                                        prevState.tripFreq = itemValue;
+                                        prevState.tripPickerOpen = false;
+                                        return prevState;
                                     })
                                 }>
                                     {this.tripFreqArray.map((value, index) => {
