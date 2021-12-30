@@ -15,6 +15,7 @@ const notifications = require('../assets/notification.png')
 const rupee = require('../assets/rupee.png')
 const logout = require('../assets/logout.png')
 
+
 navigateToScreen = ( route, props ) =>(
     () => {
     const navigateAction = NavigationActions.navigate({
