@@ -116,11 +116,11 @@ export default class TripDetails extends Component {
                         prevState.total = value.total_charge
 
                     if (value.loading_charge != 0) {
-                        if (value.is_offered_billing != '1')
+                        
                             prevState.loading = value.loading_charge
                     }
                     if (value.unloading_charge != 0) {
-                        if (value.is_offered_billing != '1')
+                        
                             prevState.loading = value.unloading_charge
                     }
 

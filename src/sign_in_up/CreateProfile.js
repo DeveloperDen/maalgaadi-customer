@@ -9,6 +9,7 @@ import {
   Linking,
   Platform
 } from 'react-native';
+import { emailValidate } from '../utils/UtilFunc';
 import { ScrollView, TextInput, TouchableOpacity } from 'react-native-gesture-handler';
 import { PopOverComp } from '../utils/PopOverComp';
 import { ICONS } from '../utils/AppConstants';
@@ -69,7 +70,11 @@ export default class CreateProfile extends Component {
         this.state.address != "" && this.state.number != "" &&
         this.state.email != "" && this.state.org != "" &&
         this.state.goodsType != DEFAULT_GOODS && this.state.goodsId != 0) {
+            
+            if(emailValidate(this.state.email))
             this.updateUserProfile()
+            else
+            this.showToast("Please enter correct E-mail")
         }
         else {
             this.showToast("Please fill the fields");

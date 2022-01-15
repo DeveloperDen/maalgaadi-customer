@@ -16,16 +16,19 @@ import { formatDate } from './../utils/UtilFunc';
 import { BookingEventType } from '../models/bookings_model';
 import { PopOverComp } from '../utils/PopOverComp';
 import ToastComp from '../utils/ToastComp';
+import { getUniqueNumber } from './../utils/UtilFunc';
 
 const DataController = require('../utils/DataStorageController')
 const Constants = require('../utils/AppConstants')
 const BookingModel = require('../models/bookings_model')
 const vehicleIcon = require('../../assets/vehicle.png')
 
+var currtime ;
 
 const ACCENT = '#FFCB28' // 255, 203, 40
 const ACCENT_DARK = '#F1B800'
 const DEF_GOODS = 'Select Goods Type'
+
 
 export default class AddBooking extends Component {
     static navigationOptions = ({navigation}) => {
@@ -62,7 +65,7 @@ export default class AddBooking extends Component {
             popOverText: '',
             tutCompFieldActive: null,
             isVisible: false,
-
+            phone: '',
             goodsType: DEF_GOODS,
             goodsId: 0,
             physicalPODCharge: 0,
@@ -112,6 +115,7 @@ export default class AddBooking extends Component {
             prevState.goodsType = goodsType;
             prevState.goodsId = goodsId;
             prevState.number = num
+            prevState.phone = num
             prevState.remark = this.bookingModel.remark
             prevState.physicalPODCharge = this.bookingModel.vehicle.pod_charge
             prevState.origin = this.props.navigation.getParam('origin')
@@ -206,6 +210,7 @@ export default class AddBooking extends Component {
     }
 
     showDateTimePicker = (show) => {
+        currtime = getUniqueNumber()
         this.dateTimePicker.showToggle(show);
     }
     
@@ -275,6 +280,12 @@ export default class AddBooking extends Component {
 
     estimateFare = async () => {
         if(this.isValidModel(this.bookingModel)) {
+            console.log("date",currtime)
+            console.log("selected date", this.state.selectedDateTime )
+            console.log("add", currtime-this.state.selectedDateTime)
+            if(this.state.selectedDateTime >
+                 currtime){
+            
             this.bookingModel.remark = this.state.remark
             this.bookingModel.loading = this.state.isLoadingSelected
             this.bookingModel.unloading = this.state.isUnLoadingSelected
@@ -320,6 +331,10 @@ export default class AddBooking extends Component {
                 vehicle: this.props.navigation.getParam('vehicle'),
                 dateTime: this.state.selectedDateTime
               })
+            }
+            else{
+                this.toast.show("please select 1 min more then current date");
+            }
         }
         else {
             this.toast.show("Please complete the details to get fare estimation");
@@ -358,6 +373,14 @@ export default class AddBooking extends Component {
         });
 
         DataController.setItem(this.state.tutCompFieldActive, "true")
+    }
+
+    showToast = (text = '') => {
+        if(text !== '') {
+            this.toast.show(text);
+        }
+        else
+            this.toast.show(this.state.message);
     }
 
     render() {
@@ -576,7 +599,14 @@ export default class AddBooking extends Component {
                                     flex: 1, backgroundColor: 'white',
                                     paddingHorizontal: 15, height: '100%'
                                 }}
-                                placeholder="Drop off mobile number"/>
+                                defaultValue={this.state.phone}
+                                placeholder="Drop off mobile number"
+                                onChangeText={(text) => {
+                                    this.setState(prevState => {
+                                        prevState.phone = text
+                                        return prevState
+                                    })
+                                }}/>
                             </View>
                         </View>
                     
@@ -914,7 +944,12 @@ export default class AddBooking extends Component {
                 {/* Fare Estimate button. */}
                 <TouchableHighlight
                 underlayColor={ACCENT_DARK}
-                onPress={() => this.estimateFare()}
+                onPress={
+                    () => {
+                            this.estimateFare()
+                    }
+                    
+                    }
                 style={{
                     backgroundColor: ACCENT,
                     paddingVertical: 15,
