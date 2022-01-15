@@ -136,11 +136,13 @@ export default class Splash extends Component {
     // Update FCM token on the server.
     async updateFCMToken(token = '') {
         if(token == ''){
-            console.log("No token provided, getting token now...");
+            console.log("updateFCMToken: ","No token provided, getting token now...");
             console.log("APNS Token: ", await firebase.messaging().ios.getAPNSToken());
             token = await firebase.messaging().getToken();
+            console.log("Splash: ", "updateFCMToken >> " , "" + token);
         }
         DataController.setItem(DataController.FCM_TOKEN, token);
+        console.log("Splash: ", "updateFCMToken >> ", DataController.getItem(DataController.FCM_TOKEN));
 
         const reqURL = Constants.BASE_URL + Constants.APP_DOWNLOAD + '?' + 
                         Constants.FIELDS_LOGIN.DEVICE_ID + '=' + getDeviceId() + '&' +

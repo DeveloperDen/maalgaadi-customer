@@ -1,14 +1,14 @@
 import React, { Component } from 'react';
 import {
-  StyleSheet,
-  View,
-  Text,
-  TouchableHighlight, 
-  Image,
-  Animated,
-  Switch,
-  TextInput,
-  TouchableOpacity, Modal,
+    StyleSheet,
+    View,
+    Text,
+    TouchableHighlight,
+    Image,
+    Animated,
+    Switch,
+    TextInput,
+    TouchableOpacity, Modal,
 } from 'react-native';
 import DateTimePickerComp from '../utils/DateTimePickerComp';
 import { LandmarkModel } from '../models/landmark_model';
@@ -26,24 +26,25 @@ const vehicleIcon = require('../../assets/vehicle.png')
 const ACCENT = '#FFCB28' // 255, 203, 40
 const ACCENT_DARK = '#F1B800'
 const DEF_GOODS = 'Select Goods Type'
+const TAG = "AddBooking: ";
 
 export default class AddBooking extends Component {
-    static navigationOptions = ({navigation}) => {
-        return{
+    static navigationOptions = ({ navigation }) => {
+        return {
             headerTitle: navigation.getParam('title', 'Add Booking'),
-            headerRight: 
-            <TouchableHighlight
-            onPress={() => {
-                navigation.navigate('RateCard', {
-                    vehicle: navigation.getParam('vehicle')
-                })
-            }}
-            underlayColor='white'>
-                <Image
-                source={Constants.ICONS.info}
-                tintColor='black'
-                style={{width: 22, height: 22, marginEnd: 22}}/>
-            </TouchableHighlight>
+            headerRight:
+                <TouchableHighlight
+                    onPress={() => {
+                        navigation.navigate('RateCard', {
+                            vehicle: navigation.getParam('vehicle')
+                        })
+                    }}
+                    underlayColor='white'>
+                    <Image
+                        source={Constants.ICONS.info}
+                        tintColor='black'
+                        style={{ width: 22, height: 22, marginEnd: 22 }} />
+                </TouchableHighlight>
         }
     }
 
@@ -51,9 +52,9 @@ export default class AddBooking extends Component {
         super(props)
 
         this.months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug",
-                                "Sep", "Oct", "Nov", "Dec"];
+            "Sep", "Oct", "Nov", "Dec"];
         this.formatDate = formatDate
-        
+
         this.state = {
             remark: '',
             favExcDialogMessage: '',
@@ -115,13 +116,13 @@ export default class AddBooking extends Component {
             prevState.remark = this.bookingModel.remark
             prevState.physicalPODCharge = this.bookingModel.vehicle.pod_charge
             prevState.origin = this.props.navigation.getParam('origin')
-            prevState.locations = this.props.navigation.getParam('destination') !== ''?
-                                    this.props.navigation.getParam('destination') : []
+            prevState.locations = this.props.navigation.getParam('destination') !== '' ?
+                this.props.navigation.getParam('destination') : []
             return prevState
         })
-        
-        this.bookingModel.booking_event_type == BookingEventType.EDIT? this.setupFieldsForEdit() : null;
-        if(this.bookingModel.booking_event_type == BookingEventType.EDIT) {
+
+        this.bookingModel.booking_event_type == BookingEventType.EDIT ? this.setupFieldsForEdit() : null;
+        if (this.bookingModel.booking_event_type == BookingEventType.EDIT) {
             this.bookingModel.book_later = false;
             this.bookingModel.booking_estimate = "";
         }
@@ -132,9 +133,9 @@ export default class AddBooking extends Component {
     getFavDrivers = async () => {
         const customerId = await DataController.getItem(DataController.CUSTOMER_ID);
 
-        const reqURL = Constants.BASE_URL + Constants.GET_ACTIVE_DRIVER_LIST + '?' + 
-        Constants.FIELDS.CUSTOMER_ID + '=' + customerId
-        
+        const reqURL = Constants.BASE_URL + Constants.GET_ACTIVE_DRIVER_LIST + '?' +
+            Constants.FIELDS.CUSTOMER_ID + '=' + customerId
+
         console.log("Request: ", reqURL)
 
         const request = await fetch(reqURL, {
@@ -147,28 +148,28 @@ export default class AddBooking extends Component {
         await request.json().then(value => {
             console.log(value)
 
-            if(!value.success){
+            if (!value.success) {
                 this.showToast(value.message)
             }
             else {
                 this.favExcDrivList = value.data;
-                if(value.data.length != 0) {
+                if (value.data.length != 0) {
                     value.data.forEach((val, i, arr) => {
-                        if(this.props.navigation.getParam('vehicle').id == val.vehicle_id)
-                            val.status_exclusive?
-                            this.excDrivers.push(val)
-                            :
-                            this.favDrivers.push(val);
+                        if (this.props.navigation.getParam('vehicle').id == val.vehicle_id)
+                            val.status_exclusive ?
+                                this.excDrivers.push(val)
+                                :
+                                this.favDrivers.push(val);
                     })
 
                     this.setState(prevState => {
-                        prevState.favDriverSelected = this.favDrivers.length > 0? prevState.favDriverSelected : false;
-                        prevState.excDriverSelected = this.excDrivers.length > 0? prevState.excDriverSelected : false;
+                        prevState.favDriverSelected = this.favDrivers.length > 0 ? prevState.favDriverSelected : false;
+                        prevState.excDriverSelected = this.excDrivers.length > 0 ? prevState.excDriverSelected : false;
                         return prevState;
                     })
                 }
             }
-            
+
         }).catch(err => {
             console.log(err)
             this.showToast(Constants.ERROR_GET_FAV_DRIV);
@@ -182,8 +183,8 @@ export default class AddBooking extends Component {
     setModalVisible(show, excDriv = false) {
         this.setState(prevState => {
             prevState.noFavDrivModalVisible = show;
-            prevState.favExcDialogMessage = excDriv? Constants.NO_EXC_DRIV : Constants.NO_FAV_DRIV
-                
+            prevState.favExcDialogMessage = excDriv ? Constants.NO_EXC_DRIV : Constants.NO_FAV_DRIV
+
             return prevState;
         })
     }
@@ -208,7 +209,7 @@ export default class AddBooking extends Component {
     showDateTimePicker = (show) => {
         this.dateTimePicker.showToggle(show);
     }
-    
+
     // To set date time from the DateTimePicker component.
     setDateTime = (date) => {
         this.setState(prevState => {
@@ -229,21 +230,21 @@ export default class AddBooking extends Component {
     updateFavExcDrivList() {
         this.excDrivers = [];
         this.favDrivers = [];
-        
-        if(this.favExcDrivList.length != 0) {
+
+        if (this.favExcDrivList.length != 0) {
             this.favExcDrivList.forEach((val, i, arr) => {
                 console.log(this.selectedVehicleId, val.vehicle_id)
-                if(this.selectedVehicleId == val.vehicle_id) {
-                    val.status_exclusive?
-                    this.excDrivers.push(val)
-                    :
-                    this.favDrivers.push(val);
+                if (this.selectedVehicleId == val.vehicle_id) {
+                    val.status_exclusive ?
+                        this.excDrivers.push(val)
+                        :
+                        this.favDrivers.push(val);
                 }
             })
 
             this.setState(prevState => {
-                prevState.favDriverSelected = this.favDrivers.length > 0? prevState.favDriverSelected : false;
-                prevState.excDriverSelected = this.excDrivers.length > 0? prevState.excDriverSelected : false;
+                prevState.favDriverSelected = this.favDrivers.length > 0 ? prevState.favDriverSelected : false;
+                prevState.excDriverSelected = this.excDrivers.length > 0 ? prevState.excDriverSelected : false;
                 return prevState;
             })
         }
@@ -274,7 +275,14 @@ export default class AddBooking extends Component {
     }
 
     estimateFare = async () => {
-        if(this.isValidModel(this.bookingModel)) {
+        let isNumberThere = true;
+        this.state.locations.forEach(loc => {
+           if (loc.number == undefined || loc.number.length === 0) {
+               isNumberThere = false;
+            // this.toast.show("Please complete the details to get fare estimation"); 
+           }
+        });
+        if (this.isValidModel(this.bookingModel) && isNumberThere) {
             this.bookingModel.remark = this.state.remark
             this.bookingModel.loading = this.state.isLoadingSelected
             this.bookingModel.unloading = this.state.isUnLoadingSelected
@@ -288,7 +296,7 @@ export default class AddBooking extends Component {
             this.bookingModel.selected_vehicle_category = selectedVehicle.id
             this.bookingModel.selected_vehicle_category_name = selectedVehicle.vehicle_name
             this.bookingModel.vehicle = selectedVehicle
-            
+
             this.bookingModel.landmark_list = this.bookingModel.landmark_list.slice(0, 1)
             let list = this.bookingModel.landmark_list
 
@@ -306,6 +314,7 @@ export default class AddBooking extends Component {
                 dropModel.setLat(loc.latitude)
                 dropModel.setLng(loc.longitude)
                 dropModel.setLandmark(loc.address)
+                dropModel.setNumber(loc.number)
                 list.push(dropModel.getModel())
             });
 
@@ -319,7 +328,7 @@ export default class AddBooking extends Component {
                 destination: this.state.locations,
                 vehicle: this.props.navigation.getParam('vehicle'),
                 dateTime: this.state.selectedDateTime
-              })
+            })
         }
         else {
             this.toast.show("Please complete the details to get fare estimation");
@@ -334,7 +343,7 @@ export default class AddBooking extends Component {
             }
         }
 
-        if(this.state.goodsType === DEF_GOODS){
+        if (this.state.goodsType === DEF_GOODS) {
             return false
         }
 
@@ -343,14 +352,14 @@ export default class AddBooking extends Component {
 
     showPopover(compField, comp) {
         this.setState(prevState => {
-          prevState.isVisible = true;
-          prevState.fromView = comp;
-          prevState.popOverText = Constants[compField];
-          prevState.tutCompFieldActive = compField;
-          return prevState;
+            prevState.isVisible = true;
+            prevState.fromView = comp;
+            prevState.popOverText = Constants[compField];
+            prevState.tutCompFieldActive = compField;
+            return prevState;
         });
     }
-     
+
     closePopover() {
         this.setState(prevState => {
             prevState.isVisible = false;
@@ -372,27 +381,27 @@ export default class AddBooking extends Component {
             extrapolate: 'clamp',
         });
 
-        return(
+        return (
             <View style={{
                 flex: 1,
                 backgroundColor: '#EEEEEE'
             }}>
                 {/* Header with Vehicle type, Date and Time. */}
-                <Animated.View style={[styles.header, {opacity: headerOpacity, transform: [{translateY: headerTransY}]}]}>
-                    <View style={[styles.bar, {paddingTop: 20, paddingBottom: 35}]}>
+                <Animated.View style={[styles.header, { opacity: headerOpacity, transform: [{ translateY: headerTransY }] }]}>
+                    <View style={[styles.bar, { paddingTop: 20, paddingBottom: 35 }]}>
                         <View>
                             <TouchableHighlight disabled={!this.state.vehicleEnabled}
-                            underlayColor='white'
-                            onPress={() => {
-                                this.props.navigation.navigate('VehicleList', {setVehicle: this.setVehicle.bind(this)})
-                            }}>
-                                <Image source={vehicleIcon} style={{width: 50, height: 50, opacity: this.state.vehicleEnabled? 1 : 0.4}}/>
+                                underlayColor='white'
+                                onPress={() => {
+                                    this.props.navigation.navigate('VehicleList', { setVehicle: this.setVehicle.bind(this) })
+                                }}>
+                                <Image source={vehicleIcon} style={{ width: 50, height: 50, opacity: this.state.vehicleEnabled ? 1 : 0.4 }} />
                             </TouchableHighlight>
                         </View>
-                        <Text style={{fontSize: 22, fontWeight: '700', marginTop: 10, opacity: this.state.vehicleEnabled? 1 : 0.4}}>
+                        <Text style={{ fontSize: 22, fontWeight: '700', marginTop: 10, opacity: this.state.vehicleEnabled ? 1 : 0.4 }}>
                             {this.props.navigation.getParam('vehicle').vehicle_name}
                         </Text>
-                        <Text style={{fontSize: 10, opacity: 0.4, marginTop: 5}}>
+                        <Text style={{ fontSize: 10, opacity: 0.4, marginTop: 5 }}>
                             {this.props.navigation.getParam('covered')}
                         </Text>
                     </View>
@@ -406,42 +415,42 @@ export default class AddBooking extends Component {
                             borderRadius: 100,
                             paddingVertical: 8,
                             width: '75%',
-                            backgroundColor: this.state.dateTouchableEnabled? 'black' : 'gray',
+                            backgroundColor: this.state.dateTouchableEnabled ? 'black' : 'gray',
                             alignItems: 'center',
                             justifyContent: 'center',
                             marginTop: -20, alignSelf: 'center',
                         }}>
-                        <Text style={{color: 'white', opacity: this.state.dateTouchableEnabled? 1 : 0.4}}>
+                        <Text style={{ color: 'white', opacity: this.state.dateTouchableEnabled ? 1 : 0.4 }}>
                             {this.formatDate(this.state.selectedDateTime)}
                         </Text>
                     </TouchableHighlight>
                 </Animated.View>
 
-                <Animated.ScrollView 
-                showsVerticalScrollIndicator={false}
-                style={{flex: 1}}
-                onScroll={Animated.event(
-                    [{nativeEvent: {contentOffset: {y: this.state.scrollY}}}],
-                    {useNativeDriver: true}
-                )}>
+                <Animated.ScrollView
+                    showsVerticalScrollIndicator={false}
+                    style={{ flex: 1 }}
+                    onScroll={Animated.event(
+                        [{ nativeEvent: { contentOffset: { y: this.state.scrollY } } }],
+                        { useNativeDriver: true }
+                    )}>
                     <View style={styles.scrollViewContent}>
-                        <View 
+                        <View
                             style={{
-                            backgroundColor: 'white', paddingVertical: 10, paddingStart: 20,
-                            borderRadius: 3
-                        }}>
-                            <TouchableHighlight disabled={!this.state.pickupEnabled}
-                            underlayColor='white'
-                            onPress={() => {
-                                this.props.navigation.navigate('Search', {type: 'origin', setOrigin: this.setOrigin.bind(this)})
+                                backgroundColor: 'white', paddingVertical: 10, paddingStart: 20,
+                                borderRadius: 3
                             }}>
-                                <View
-                                style={{
-                                    flexDirection: 'row', opacity: this.state.pickupEnabled? 1 : 0.4,
-                                    alignItems: "center",
-                                    marginVertical: 12,
-                                    paddingEnd: 20
+                            <TouchableHighlight disabled={!this.state.pickupEnabled}
+                                underlayColor='white'
+                                onPress={() => {
+                                    this.props.navigation.navigate('Search', { type: 'origin', setOrigin: this.setOrigin.bind(this) })
                                 }}>
+                                <View
+                                    style={{
+                                        flexDirection: 'row', opacity: this.state.pickupEnabled ? 1 : 0.4,
+                                        alignItems: "center",
+                                        marginVertical: 12,
+                                        paddingEnd: 20
+                                    }}>
                                     <View style={{
                                         backgroundColor: 'green',
                                         elevation: 3,
@@ -450,59 +459,63 @@ export default class AddBooking extends Component {
                                         width: 10,
                                         height: 10,
                                         borderRadius: 100
-                                        }}/>
+                                    }} />
                                     <Text numberOfLines={1} ellipsizeMode='tail'
-                                    style={{flex: 1, marginStart: 12, fontSize: 15}}>
+                                        style={{ flex: 1, marginStart: 12, fontSize: 15 }}>
                                         {this.state.origin.address}
                                     </Text>
                                 </View>
                             </TouchableHighlight>
-                            
+
                             {this.state.locations !== [] && this.state.locations.map((item, index) => {
-                                return(
+                                return (
                                     <TouchableHighlight disabled={!this.state.dropPointsEnabled}
-                                    key={index}
-                                    underlayColor='white'
-                                    onPress={() => {
-                                        this.props.navigation
-                                        .navigate('Search', {type: 'destination', index: index, setDestination: this.setDestination.bind(this)})
-                                    }}>
+                                        key={index}
+                                        underlayColor='white'
+                                        onPress={() => {
+                                            this.props.navigation
+                                                .navigate('Search', { type: 'destination', index: index, setDestination: this.setDestination.bind(this) })
+                                        }}>
                                         <View>
                                             <View style={{
-                                            marginStart: 20,
-                                            borderTopColor:'rgba(0, 0, 0, 0.1)',
-                                            borderTopWidth: index < (this.state.locations.length)? 1 : 0}}/>
-                                            <View 
-                                            style={{
-                                                flexDirection: 'row', opacity: this.state.dropPointsEnabled? 1 : 0.4,
-                                                alignItems: "center",
-                                                marginVertical: 12,
-                                                paddingEnd: 20
-                                            }}>
-                                                <View style={{backgroundColor: 'red', elevation: 3,
+                                                marginStart: 20,
+                                                borderTopColor: 'rgba(0, 0, 0, 0.1)',
+                                                borderTopWidth: index < (this.state.locations.length) ? 1 : 0
+                                            }} />
+                                            <View
+                                                style={{
+                                                    flexDirection: 'row', opacity: this.state.dropPointsEnabled ? 1 : 0.4,
+                                                    alignItems: "center",
+                                                    marginVertical: 12,
+                                                    paddingEnd: 20
+                                                }}>
+                                                <View style={{
+                                                    backgroundColor: 'red', elevation: 3,
                                                     borderWidth: 1, borderColor: 'white',
                                                     width: 10, height: 10, borderRadius: 100,
-                                                    }}/>
+                                                }} />
 
-                                                    <Text numberOfLines={1} ellipsizeMode='tail'
-                                                    style={{flex: 1, marginStart: 12, fontSize: 15}}>
-                                                        {!item.address? `Drop off location` : item.address}
-                                                    </Text>
-                                                    <TouchableOpacity disabled={!this.state.dropPointsEnabled}
-                                                    style={{width: 30, height: 30, opacity: 0.3, 
+                                                <Text numberOfLines={1} ellipsizeMode='tail'
+                                                    style={{ flex: 1, marginStart: 12, fontSize: 15 }}>
+                                                    {!item.address ? `Drop off location` : item.address}
+                                                </Text>
+                                                <TouchableOpacity disabled={!this.state.dropPointsEnabled}
+                                                    style={{
+                                                        width: 30, height: 30, opacity: 0.3,
                                                         justifyContent: 'center',
-                                                        alignItems: 'center'}}
+                                                        alignItems: 'center'
+                                                    }}
                                                     onPress={() => {
                                                         this.setState(prevState => {
                                                             prevState.locations.splice(index, 1)
                                                             return prevState
                                                         })
                                                     }}>
-                                                        <Image
+                                                    <Image
                                                         resizeMode="contain"
                                                         source={Constants.ICONS.cancel}
-                                                        style={{width: 15, height: 15,}}/>
-                                                    </TouchableOpacity>
+                                                        style={{ width: 15, height: 15, }} />
+                                                </TouchableOpacity>
                                             </View>
                                         </View>
                                     </TouchableHighlight>
@@ -510,20 +523,21 @@ export default class AddBooking extends Component {
                             })}
 
                             <TouchableOpacity disabled={!this.state.dropPointsEnabled}
-                            onPress={() => {
-                                let index = this.state.locations.length
-                                this.props.navigation
-                                .navigate('Search', {type: 'destination', index: index, setDestination: this.setDestination.bind(this)})
-                            }}>
+                                onPress={() => {
+                                    let index = this.state.locations.length
+                                    this.props.navigation
+                                        .navigate('Search', { type: 'destination', index: index, setDestination: this.setDestination.bind(this) })
+                                }}>
                                 <View>
-                                    <View 
-                                    style={{
-                                    marginStart: 20,
-                                    borderTopColor:'rgba(0, 0, 0, 0.1)',
-                                    borderTopWidth: 1}}/>
-                                    <View 
+                                    <View
                                         style={{
-                                            flexDirection: 'row',  opacity: this.state.dropPointsEnabled? 1 : 0.4,
+                                            marginStart: 20,
+                                            borderTopColor: 'rgba(0, 0, 0, 0.1)',
+                                            borderTopWidth: 1
+                                        }} />
+                                    <View
+                                        style={{
+                                            flexDirection: 'row', opacity: this.state.dropPointsEnabled ? 1 : 0.4,
                                             alignItems: "center",
                                             marginVertical: 12,
                                             paddingEnd: 20
@@ -531,12 +545,12 @@ export default class AddBooking extends Component {
                                         <Image style={{
                                             width: 15,
                                             height: 15,
-                                            transform: [{ rotate: '45deg'}]
-                                            }}
+                                            transform: [{ rotate: '45deg' }]
+                                        }}
                                             source={Constants.ICONS.cancel}
-                                            tintColor='#0041BB'/>
+                                            tintColor='#0041BB' />
                                         <Text numberOfLines={1} ellipsizeMode='tail'
-                                        style={{flex: 1, marginStart: 15, fontSize: 15}}>
+                                            style={{ flex: 1, marginStart: 15, fontSize: 15 }}>
                                             Add Stop
                                         </Text>
                                     </View>
@@ -544,25 +558,56 @@ export default class AddBooking extends Component {
                             </TouchableOpacity>
                         </View>
 
-                        <View style={{paddingVertical: 5, opacity: this.state.mobNumEnabled? 1 : 0.4}}>
+                        {/* Drop off mobile number */}
+                        {this.state.locations !== [] && this.state.locations.map((item, index) => {
+                            console.log(TAG, 'locations >> ', index , item);
+                            return (<View style={{ paddingVertical: 2, opacity: this.state.mobNumEnabled ? 1 : 0.4 }}>
+
+                                <View style={{
+                                    flexDirection: 'row', backgroundColor: '#F5F5F5',
+                                    alignItems: 'center', marginVertical: 2,
+                                    borderRadius: 3, overflow: 'hidden'
+                                }}>
+                                    <Text style={{ margin: 10, opacity: 0.4 }}>
+                                        +91
+                                    </Text>
+                                    <TextInput editable={this.state.mobNumEnabled}
+                                        keyboardType="number-pad" returnKeyType="done"
+                                        maxLength={10}
+                                        onChangeText={(text)=> {
+                                            console.log(TAG, index, text);
+                                            this.state.locations[index].number = text;
+                                            console.log(TAG, index, this.state.locations);
+                                        }}
+                                        style={{
+                                            flex: 1, backgroundColor: 'white',
+                                            paddingHorizontal: 15, height: '100%'
+                                        }}
+
+                                        placeholder="Drop off mobile number" />
+                                </View>
+                            </View>)
+                        })}
+
+                        <View style={{ paddingVertical: 5, opacity: this.state.mobNumEnabled ? 1 : 0.4 }}>
                             <View style={{
                                 flexDirection: 'row', backgroundColor: '#F5F5F5',
                                 alignItems: 'center', marginVertical: 5,
                                 borderRadius: 3, overflow: 'hidden'
                             }}>
-                                <Text style={{margin: 10, opacity: 0.4}}>
+                                <Text style={{ margin: 10, opacity: 0.4 }}>
                                     +91
                                 </Text>
                                 <TextInput editable={this.state.mobNumEnabled}
-                                keyboardType="number-pad" returnKeyType="done"
-                                style={{
-                                    flex: 1, backgroundColor: 'white',
-                                    paddingHorizontal: 15, height: '100%'
-                                }}
-                                defaultValue={this.state.number}
-                                placeholder="Contact Person's mobile number"/>
+                                    keyboardType="number-pad" returnKeyType="done"
+                                    style={{
+                                        flex: 1, backgroundColor: 'white',
+                                        paddingHorizontal: 15, height: '100%'
+                                    }}
+                                    defaultValue={this.state.number}
+                                    placeholder="Contact Person's mobile number" />
                             </View>
-                            <View style={{
+                            {/* <View style={{
                                 flexDirection: 'row', backgroundColor: '#F5F5F5',
                                 alignItems: 'center', marginVertical: 5,
                                 borderRadius: 3, overflow: 'hidden'
@@ -577,366 +622,367 @@ export default class AddBooking extends Component {
                                     paddingHorizontal: 15, height: '100%'
                                 }}
                                 placeholder="Drop off mobile number"/>
-                            </View>
+                            </View> */}
                         </View>
-                    
+
                         <View
-                        style={{
-                            backgroundColor: 'white', borderRadius: 3, justifyContent: "space-between",
-                            opacity: this.state.loadEnabled? 1 : 0.4
-                        }}>
-                            <Text style={{opacity: 0.4, margin: 8, fontSize: 12}}>
+                            style={{
+                                backgroundColor: 'white', borderRadius: 3, justifyContent: "space-between",
+                                opacity: this.state.loadEnabled ? 1 : 0.4
+                            }}>
+                            <Text style={{ opacity: 0.4, margin: 8, fontSize: 12 }}>
                                 ADDITIONAL SERVICES
                             </Text>
-                            
-                            <View 
-                                style={{
-                                borderTopColor:'rgba(0, 0, 0, 0.1)',
-                                borderTopWidth: 1}}/>
 
-                            <View style={{flexDirection: 'row', justifyContent: "space-around"}}>
-                                <TouchableHighlight disabled={!this.state.loadEnabled}
-                                underlayColor='white'
+                            <View
                                 style={{
-                                    justifyContent: 'center'
-                                }}
-                                onPress={() => {
-                                    this.setState(prevState => {
-                                        prevState.isLoadingSelected = !prevState.isLoadingSelected
-                                        return prevState
-                                    })
-                                }}>
-                                    <View 
+                                    borderTopColor: 'rgba(0, 0, 0, 0.1)',
+                                    borderTopWidth: 1
+                                }} />
+
+                            <View style={{ flexDirection: 'row', justifyContent: "space-around" }}>
+                                <TouchableHighlight disabled={!this.state.loadEnabled}
+                                    underlayColor='white'
                                     style={{
-                                        flexDirection: 'row', alignItems: 'center', margin: 10
+                                        justifyContent: 'center'
+                                    }}
+                                    onPress={() => {
+                                        this.setState(prevState => {
+                                            prevState.isLoadingSelected = !prevState.isLoadingSelected
+                                            return prevState
+                                        })
                                     }}>
+                                    <View
+                                        style={{
+                                            flexDirection: 'row', alignItems: 'center', margin: 10
+                                        }}>
                                         <View>
                                             <Text
-                                            style={{
-                                                fontSize: 18, fontWeight: "700", opacity: this.state.isLoadingSelected? 1 : 0.4
-                                            }}>
+                                                style={{
+                                                    fontSize: 18, fontWeight: "700", opacity: this.state.isLoadingSelected ? 1 : 0.4
+                                                }}>
                                                 Loading
                                             </Text>
-                                            <Text style={{fontSize: 10, opacity: 0.4}}> Driver to load vehicle </Text>
+                                            <Text style={{ fontSize: 10, opacity: 0.4 }}> Driver to load vehicle </Text>
                                         </View>
                                         <Image source={Constants.ICONS.tick}
-                                        style={{width: 20, height: 20, margin: 10, tintColor: this.state.isLoadingSelected? '#00CF35' : 'rgba(0, 0, 0, 0.1)'}}
+                                            style={{ width: 20, height: 20, margin: 10, tintColor: this.state.isLoadingSelected ? '#00CF35' : 'rgba(0, 0, 0, 0.1)' }}
                                         />
                                     </View>
                                 </TouchableHighlight>
-                                
+
                                 <View style={{
-                                    borderStartColor:'rgba(0, 0, 0, 0.1)',
+                                    borderStartColor: 'rgba(0, 0, 0, 0.1)',
                                     borderStartWidth: 1,
-                                    }}/>
+                                }} />
 
                                 <TouchableHighlight disabled={!this.state.loadEnabled}
-                                underlayColor='white'
-                                style={{
-                                    justifyContent: 'center'
-                                }}
-                                onPress={() => {
-                                    this.setState(prevState => {
-                                        prevState.isUnLoadingSelected = !prevState.isUnLoadingSelected
-                                        return prevState
-                                    })
-                                }}>
+                                    underlayColor='white'
+                                    style={{
+                                        justifyContent: 'center'
+                                    }}
+                                    onPress={() => {
+                                        this.setState(prevState => {
+                                            prevState.isUnLoadingSelected = !prevState.isUnLoadingSelected
+                                            return prevState
+                                        })
+                                    }}>
                                     <View style={{
                                         flexDirection: 'row', alignItems: 'center', margin: 10
                                     }}>
                                         <View>
                                             <Text
-                                            style={{
-                                                fontSize: 18, fontWeight: "700", opacity: this.state.isUnLoadingSelected? 1 : 0.4
-                                            }}>
+                                                style={{
+                                                    fontSize: 18, fontWeight: "700", opacity: this.state.isUnLoadingSelected ? 1 : 0.4
+                                                }}>
                                                 Unloading
                                             </Text>
-                                            <Text style={{fontSize: 10, opacity: 0.4}}> Driver to unload vehicle </Text>
+                                            <Text style={{ fontSize: 10, opacity: 0.4 }}> Driver to unload vehicle </Text>
                                         </View>
                                         <Image source={Constants.ICONS.tick}
-                                        style={{width: 20, height: 20, margin: 10, tintColor: this.state.isUnLoadingSelected? '#00CF35' : 'rgba(0, 0, 0, 0.1)'}}
+                                            style={{ width: 20, height: 20, margin: 10, tintColor: this.state.isUnLoadingSelected ? '#00CF35' : 'rgba(0, 0, 0, 0.1)' }}
                                         />
                                     </View>
                                 </TouchableHighlight>
                             </View>
                         </View>
-                        
+
                         <View
-                        style={{
-                            backgroundColor: 'white',
-                            borderRadius: 3, justifyContent: "space-between",
-                            marginTop: 10, opacity: this.state.podEnabled? 1 : 0.4
-                        }}>
-                            <Text style={{opacity: 0.4, margin: 8, fontSize: 12}}>
+                            style={{
+                                backgroundColor: 'white',
+                                borderRadius: 3, justifyContent: "space-between",
+                                marginTop: 10, opacity: this.state.podEnabled ? 1 : 0.4
+                            }}>
+                            <Text style={{ opacity: 0.4, margin: 8, fontSize: 12 }}>
                                 PROOF OF DELIVERY
                             </Text>
-                            
-                            <View 
-                            style={{
-                                borderTopColor:'rgba(0, 0, 0, 0.1)',
-                                borderTopWidth: 1
-                            }}/>
-                            
-                            <View 
-                            style={{
+
+                            <View
+                                style={{
+                                    borderTopColor: 'rgba(0, 0, 0, 0.1)',
+                                    borderTopWidth: 1
+                                }} />
+
+                            <View
+                                style={{
                                     flex: 1, justifyContent: 'center',
                                     margin: 3,
                                 }}>
                                 <TouchableHighlight disabled={!this.state.podEnabled}
-                                underlayColor='white'
-                                style={{
-                                    flex: 1, justifyContent: 'center',
-                                    margin: 10
-                                }}
-                                onPress={() => {
-                                    this.setState(prevState => {
-                                        prevState.isPhysicalSelected = !prevState.isPhysicalSelected
-                                        return prevState
-                                    })
-                                }}>
+                                    underlayColor='white'
+                                    style={{
+                                        flex: 1, justifyContent: 'center',
+                                        margin: 10
+                                    }}
+                                    onPress={() => {
+                                        this.setState(prevState => {
+                                            prevState.isPhysicalSelected = !prevState.isPhysicalSelected
+                                            return prevState
+                                        })
+                                    }}>
                                     <View style={{
                                         flexDirection: 'row', alignItems: 'center', justifyContent: "space-between"
                                     }}>
                                         <View>
-                                            <Text 
-                                            style={{
-                                                fontSize: 18, fontWeight: "700", opacity: this.state.isPhysicalSelected? 1 : 0.4
-                                            }}>
+                                            <Text
+                                                style={{
+                                                    fontSize: 18, fontWeight: "700", opacity: this.state.isPhysicalSelected ? 1 : 0.4
+                                                }}>
                                                 Physical
                                             </Text>
-                                            <Text style={{fontSize: 10, opacity: 0.4}}>
+                                            <Text style={{ fontSize: 10, opacity: 0.4 }}>
                                                 POD to be delievered by driver
                                             </Text>
                                         </View>
-                                        
+
                                         <View>
                                             <Image source={Constants.ICONS.tick}
-                                            style={{width: 20, height: 20, margin: 5, tintColor: this.state.isPhysicalSelected? '#00CF35' : 'rgba(0, 0, 0, 0.1)'}}
+                                                style={{ width: 20, height: 20, margin: 5, tintColor: this.state.isPhysicalSelected ? '#00CF35' : 'rgba(0, 0, 0, 0.1)' }}
                                             />
-                                            <Text style={{fontSize: 15, opacity: 0.3}}>
+                                            <Text style={{ fontSize: 15, opacity: 0.3 }}>
                                                 {String.fromCharCode(8377) + this.state.physicalPODCharge}
                                             </Text>
                                         </View>
-                                        
+
                                     </View>
                                 </TouchableHighlight>
                             </View>
                         </View>
-                    
+
                         <View
-                        style={{
-                            backgroundColor: 'white',
-                            borderRadius: 3,
-                            marginTop: 10,
-                            flexDirection: 'row', justifyContent: "space-between",
-                            alignItems: 'center', opacity: this.state.favDrivEnabled? 1 : 0.3
-                        }}>
+                            style={{
+                                backgroundColor: 'white',
+                                borderRadius: 3,
+                                marginTop: 10,
+                                flexDirection: 'row', justifyContent: "space-between",
+                                alignItems: 'center', opacity: this.state.favDrivEnabled ? 1 : 0.3
+                            }}>
                             <TouchableHighlight disabled={!this.state.favDrivEnabled}
-                            underlayColor='white'
-                            style={{flex: 1, padding: 10}}
-                            onPress={() => {
-                                // Presently switch is off
-                                if(!this.state.favDriverSelected) {
-                                    if(this.favDrivers.length > 0) {
+                                underlayColor='white'
+                                style={{ flex: 1, padding: 10 }}
+                                onPress={() => {
+                                    // Presently switch is off
+                                    if (!this.state.favDriverSelected) {
+                                        if (this.favDrivers.length > 0) {
+                                            this.setState(prevState => {
+                                                prevState.favDriverSelected = !prevState.favDriverSelected
+                                                return prevState
+                                            })
+                                        }
+                                        else {
+                                            this.setModalVisible(true);
+                                        }
+                                    } else {
                                         this.setState(prevState => {
                                             prevState.favDriverSelected = !prevState.favDriverSelected
                                             return prevState
                                         })
                                     }
-                                    else {
-                                        this.setModalVisible(true);
-                                    }
-                                }else {
-                                    this.setState(prevState => {
-                                        prevState.favDriverSelected = !prevState.favDriverSelected
-                                        return prevState
-                                    })
-                                }
-                            }}>
-                                <Text style={{fontSize: 15, opacity: 0.5}}>Allot only favourite drivers</Text>
+                                }}>
+                                <Text style={{ fontSize: 15, opacity: 0.5 }}>Allot only favourite drivers</Text>
                             </TouchableHighlight>
                             <Switch disabled={!this.state.favDrivEnabled}
-                            trackColor= {{false: 'rgba(0, 0, 0, 0.3', true: 'rgba(255, 203, 40, 0.5)'}}
-                            thumbColor= {this.state.favDriverSelected? ACCENT : '#F0F0F0'}
-                            style={{padding: 10, marginEnd: 10}}
-                            value={this.state.favDriverSelected? true : false}
-                            onChange={() => {
-                                // Presently switch is off
-                                if(!this.state.favDriverSelected) {
-                                    if(this.favDrivers.length > 0) {
+                                trackColor={{ false: 'rgba(0, 0, 0, 0.3', true: 'rgba(255, 203, 40, 0.5)' }}
+                                thumbColor={this.state.favDriverSelected ? ACCENT : '#F0F0F0'}
+                                style={{ padding: 10, marginEnd: 10 }}
+                                value={this.state.favDriverSelected ? true : false}
+                                onChange={() => {
+                                    // Presently switch is off
+                                    if (!this.state.favDriverSelected) {
+                                        if (this.favDrivers.length > 0) {
+                                            this.setState(prevState => {
+                                                prevState.favDriverSelected = !prevState.favDriverSelected
+                                                return prevState
+                                            })
+                                        }
+                                        else {
+                                            this.setModalVisible(true);
+                                        }
+                                    } else {
                                         this.setState(prevState => {
                                             prevState.favDriverSelected = !prevState.favDriverSelected
                                             return prevState
                                         })
                                     }
-                                    else {
-                                        this.setModalVisible(true);
-                                    }
-                                }else {
-                                    this.setState(prevState => {
-                                        prevState.favDriverSelected = !prevState.favDriverSelected
-                                        return prevState
-                                    })
-                                }
-                            }}/>
+                                }} />
                         </View>
-                    
+
                         {/* Exclusive driver switch is presently hidden */}
                         <View
-                        style={{
-                            backgroundColor: 'white', display: "none",
-                            borderRadius: 3,
-                            marginTop: 10,
-                            flexDirection: 'row', justifyContent: "space-between",
-                            alignItems: 'center', opacity: this.state.excDrivEnabled? 1 : 0.4
-                        }}>
+                            style={{
+                                backgroundColor: 'white', display: "none",
+                                borderRadius: 3,
+                                marginTop: 10,
+                                flexDirection: 'row', justifyContent: "space-between",
+                                alignItems: 'center', opacity: this.state.excDrivEnabled ? 1 : 0.4
+                            }}>
                             <TouchableHighlight disabled={!this.state.excDrivEnabled}
-                            underlayColor='white'
-                            style={{flex: 1, padding: 10}}
-                            onPress={() => {
-                                // Presently switch is off
-                                if(!this.state.excDriverSelected) {
-                                    if(this.excDrivers.length > 0) {
+                                underlayColor='white'
+                                style={{ flex: 1, padding: 10 }}
+                                onPress={() => {
+                                    // Presently switch is off
+                                    if (!this.state.excDriverSelected) {
+                                        if (this.excDrivers.length > 0) {
+                                            this.setState(prevState => {
+                                                prevState.excDriverSelected = !prevState.excDriverSelected
+                                                return prevState
+                                            })
+                                        }
+                                        else {
+                                            this.setModalVisible(true, true);
+                                        }
+                                    } else {
                                         this.setState(prevState => {
                                             prevState.excDriverSelected = !prevState.excDriverSelected
                                             return prevState
                                         })
                                     }
-                                    else {
-                                        this.setModalVisible(true, true);
-                                    }
-                                }else {
-                                    this.setState(prevState => {
-                                        prevState.excDriverSelected = !prevState.excDriverSelected
-                                        return prevState
-                                    })
-                                }
-                            }}>
-                                <Text style={{fontSize: 15, opacity: 0.5}}>Allot only exclusive drivers</Text>
+                                }}>
+                                <Text style={{ fontSize: 15, opacity: 0.5 }}>Allot only exclusive drivers</Text>
                             </TouchableHighlight>
                             <Switch disabled={!this.state.excDrivEnabled}
-                            trackColor= {{false: 'rgba(0, 0, 0, 0.3', true: 'rgba(255, 203, 40, 0.5)'}}
-                            thumbColor= {this.state.excDriverSelected? ACCENT : '#F0F0F0'}
-                            style={{padding: 10, marginEnd: 10}}
-                            value={this.state.excDriverSelected? true : false}
-                            onChange={() => {
-                                // Presently switch is off
-                                if(!this.state.excDriverSelected) {
-                                    if(this.excDrivers.length > 0) {
+                                trackColor={{ false: 'rgba(0, 0, 0, 0.3', true: 'rgba(255, 203, 40, 0.5)' }}
+                                thumbColor={this.state.excDriverSelected ? ACCENT : '#F0F0F0'}
+                                style={{ padding: 10, marginEnd: 10 }}
+                                value={this.state.excDriverSelected ? true : false}
+                                onChange={() => {
+                                    // Presently switch is off
+                                    if (!this.state.excDriverSelected) {
+                                        if (this.excDrivers.length > 0) {
+                                            this.setState(prevState => {
+                                                prevState.excDriverSelected = !prevState.excDriverSelected
+                                                return prevState
+                                            })
+                                        }
+                                        else {
+                                            this.setModalVisible(true, true);
+                                        }
+                                    } else {
                                         this.setState(prevState => {
                                             prevState.excDriverSelected = !prevState.excDriverSelected
                                             return prevState
                                         })
                                     }
-                                    else {
-                                        this.setModalVisible(true, true);
-                                    }
-                                }else {
-                                    this.setState(prevState => {
-                                        prevState.excDriverSelected = !prevState.excDriverSelected
-                                        return prevState
-                                    })
-                                }
-                            }}/>
+                                }} />
                         </View>
-                    
+
                         <View
-                        style={{
-                            backgroundColor: 'white',
-                            borderRadius: 3,
-                            marginTop: 10, opacity: this.state.goodsTypeEnabled? 1 : 0.4
-                        }}>
-                            <TouchableHighlight disabled={!this.state.goodsTypeEnabled}
-                            ref={gType => {this.goodsType = gType}}
-                            underlayColor='white'
-                            onPress={() => {
-                                DataController.getItem(DataController.TUT_GOODS_TYPE)
-                                .then(status => {
-                                    if(status == 'true') {
-                                        this.props.navigation.navigate('GoodsList', {setGoodsType: this.setGoodsType.bind(this)})
-                                    }
-                                    else {
-                                        this.showPopover(DataController.TUT_GOODS_TYPE, this.goodsType)
-                                    }
-                                })
-                                .catch(err => {console.log(err)})
-                            }}
                             style={{
-                                padding: 10
+                                backgroundColor: 'white',
+                                borderRadius: 3,
+                                marginTop: 10, opacity: this.state.goodsTypeEnabled ? 1 : 0.4
                             }}>
+                            <TouchableHighlight disabled={!this.state.goodsTypeEnabled}
+                                ref={gType => { this.goodsType = gType }}
+                                underlayColor='white'
+                                onPress={() => {
+                                    DataController.getItem(DataController.TUT_GOODS_TYPE)
+                                        .then(status => {
+                                            if (status == 'true') {
+                                                this.props.navigation.navigate('GoodsList', { setGoodsType: this.setGoodsType.bind(this) })
+                                            }
+                                            else {
+                                                this.showPopover(DataController.TUT_GOODS_TYPE, this.goodsType)
+                                            }
+                                        })
+                                        .catch(err => { console.log(err) })
+                                }}
+                                style={{
+                                    padding: 10
+                                }}>
                                 <View>
                                     <View
-                                    style={{
-                                        flexDirection: 'row', alignItems: 'center',
-                                        justifyContent: 'space-between'
-                                    }}>
-                                        <Text style={{fontSize: 15}}>Type of Goods</Text>
+                                        style={{
+                                            flexDirection: 'row', alignItems: 'center',
+                                            justifyContent: 'space-between'
+                                        }}>
+                                        <Text style={{ fontSize: 15 }}>Type of Goods</Text>
                                         <Image source={Constants.ICONS.forward}
-                                        style={{width: 15, height: 15}}/>
+                                            style={{ width: 15, height: 15 }} />
                                     </View>
                                     <Text
-                                    style={{
-                                        paddingHorizontal: 20,
-                                        paddingVertical: 10,
-                                        fontSize: 15,
-                                        opacity: 0.4
-                                    }}>
+                                        style={{
+                                            paddingHorizontal: 20,
+                                            paddingVertical: 10,
+                                            fontSize: 15,
+                                            opacity: 0.4
+                                        }}>
                                         {this.state.goodsType}
                                     </Text>
                                 </View>
-                                
+
                             </TouchableHighlight>
                         </View>
 
                         <View
-                        style={{
-                            backgroundColor: 'white',
-                            borderRadius: 3,
-                            marginTop: 10,
-                        }}>
+                            style={{
+                                backgroundColor: 'white',
+                                borderRadius: 3,
+                                marginTop: 10,
+                            }}>
                             <TextInput returnKeyType="done"
-                            multiline={true}
-                            textAlignVertical="top"
-                            placeholder='Description'
-                            value={this.state.remark}
-                            style={{padding: 10, fontSize: 15, minHeight: 80,}}
-                            onChangeText={(text) => {
-                                this.setState(prevState => {
-                                    prevState.remark = text;
-                                    return prevState;
-                                })
-                            }}
+                                multiline={true}
+                                textAlignVertical="top"
+                                placeholder='Description'
+                                value={this.state.remark}
+                                style={{ padding: 10, fontSize: 15, minHeight: 80, }}
+                                onChangeText={(text) => {
+                                    this.setState(prevState => {
+                                        prevState.remark = text;
+                                        return prevState;
+                                    })
+                                }}
                             />
                         </View>
                     </View>
                 </Animated.ScrollView>
-                
+
                 {/* Fare Estimate button. */}
                 <TouchableHighlight
-                underlayColor={ACCENT_DARK}
-                onPress={() => this.estimateFare()}
-                style={{
-                    backgroundColor: ACCENT,
-                    paddingVertical: 15,
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                    elevation: 10,
-                    shadowColor: 'rgb(0, 0, 0)',
-                    shadowOffset: {width: 0, height: -2},
-                    shadowOpacity: 0.22,
-                    shadowRadius: 4,
-                }}>
-                    <Text style={{fontSize: 18, fontWeight: '700', color: 'white'}}>Estimate Fare</Text>
+                    underlayColor={ACCENT_DARK}
+                    onPress={() => this.estimateFare()}
+                    style={{
+                        backgroundColor: ACCENT,
+                        paddingVertical: 15,
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                        elevation: 10,
+                        shadowColor: 'rgb(0, 0, 0)',
+                        shadowOffset: { width: 0, height: -2 },
+                        shadowOpacity: 0.22,
+                        shadowRadius: 4,
+                    }}>
+                    <Text style={{ fontSize: 18, fontWeight: '700', color: 'white' }}>Estimate Fare</Text>
                 </TouchableHighlight>
-            
-                {/* Date Time picker*/}
-                <DateTimePickerComp dateTimeSetter={this.setDateTime} value={this.state.selectedDateTime} ref={p => this.dateTimePicker = p}/>
 
-                <ToastComp ref={t => this.toast = t}/>
+                {/* Date Time picker*/}
+                <DateTimePickerComp dateTimeSetter={this.setDateTime} value={this.state.selectedDateTime} ref={p => this.dateTimePicker = p} />
+
+                <ToastComp ref={t => this.toast = t} />
 
                 {/* Tutorials popover */}
                 <PopOverComp isVisible={this.state.isVisible} fromView={this.state.fromView}
-                closePopover={this.closePopover.bind(this)} text={this.state.popOverText}/>
+                    closePopover={this.closePopover.bind(this)} text={this.state.popOverText} />
 
                 {/* Modal to show when no Favourite Drivers are found */}
                 <Modal
@@ -946,36 +992,36 @@ export default class AddBooking extends Component {
                     onRequestClose={() => {
                         this.setModalVisible(false, 0)
                     }}>
-                        <View
+                    <View
                         style={{
-                        backgroundColor: 'rgba(0, 0, 0, 0.7)',
-                        height: '100%',
-                        alignItems: "center",
-                        justifyContent: 'center'
+                            backgroundColor: 'rgba(0, 0, 0, 0.7)',
+                            height: '100%',
+                            alignItems: "center",
+                            justifyContent: 'center'
                         }}>
-                            <View style={{
+                        <View style={{
                             borderRadius: 5, backgroundColor: 'white', overflow: 'hidden',
                             width: '75%'
-                            }}>
-                                <View style={{
+                        }}>
+                            <View style={{
                                 flexDirection: 'row', justifyContent: 'space-between',
                                 backgroundColor: 'white'
-                                }}>
-                                    <Text style={{margin: 20, fontWeight: '700', fontSize: 15}}> Add Driver </Text>
-                                    <TouchableOpacity
+                            }}>
+                                <Text style={{ margin: 20, fontWeight: '700', fontSize: 15 }}> Add Driver </Text>
+                                <TouchableOpacity
                                     onPress={() => {
                                         this.setModalVisible(false)
                                     }}>
-                                        <Image source={Constants.ICONS.close}
-                                        style={{width: 15, height: 15, margin: 20}}/>
-                                    </TouchableOpacity>
-                                </View>
+                                    <Image source={Constants.ICONS.close}
+                                        style={{ width: 15, height: 15, margin: 20 }} />
+                                </TouchableOpacity>
+                            </View>
 
-                                <Text style={{marginBottom: 20, marginHorizontal: 20}}>
-                                    {this.state.favExcDialogMessage}
-                                </Text>
+                            <Text style={{ marginBottom: 20, marginHorizontal: 20 }}>
+                                {this.state.favExcDialogMessage}
+                            </Text>
 
-                                <TouchableHighlight
+                            <TouchableHighlight
                                 underlayColor='rgba(255, 203, 40, 0.8)'
                                 onPress={() => {
                                     this.setModalVisible(false);
@@ -984,10 +1030,10 @@ export default class AddBooking extends Component {
                                     paddingVertical: 15, alignItems: 'center', justifyContent: 'center',
                                     backgroundColor: ACCENT
                                 }}>
-                                    <Text style={{color: 'white'}}>OK</Text>
-                                </TouchableHighlight>
-                            </View>
+                                <Text style={{ color: 'white' }}>OK</Text>
+                            </TouchableHighlight>
                         </View>
+                    </View>
                 </Modal>
             </View>
         )
@@ -1016,7 +1062,7 @@ const styles = StyleSheet.create({
         right: 0,
         backgroundColor: '#EEEEEE',
         overflow: 'hidden',
-      },
+    },
     bar: {
         marginTop: 0,
         backgroundColor: 'white',

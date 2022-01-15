@@ -37,6 +37,7 @@ import PaymentWebview from './src/wallet/PaymentWebview';
 import TransactionSuccess from './src/wallet/TransactionSuccess'
 import TransactionFailed from './src/wallet/TransactionFailed'
 import RatingDialog from './src/add_booking/RatingDialog'
+import PODScreen from './src/pod/PODScreen'
 
 import { createAppContainer, createSwitchNavigator } from 'react-navigation'
 import { createDrawerNavigator } from 'react-navigation-drawer'
@@ -139,6 +140,10 @@ const DrawerStackNavigator = createStackNavigator({
       gesturesEnabled: true,
     })},
   TripDetails: {screen: TripDetails},
+  PODScreen: {screen: PODScreen,
+    navigationOptions: () => ({
+      gesturesEnabled: true,
+    })},
   
   FareEstimation: {screen: FareEstimation},
 

@@ -188,7 +188,9 @@ dependencies {
     implementation 'com.google.maps.android:android-maps-utils:0.5'
     implementation 'androidx.appcompat:appcompat:1.1.0-rc01'
     implementation 'androidx.swiperefreshlayout:swiperefreshlayout:1.1.0-alpha02'
-    implementation project(':react-native-datetimepicker')
+    // implementation project(':react-native-datetimepicker')
+    // 04 jan 22-above datetimepicker was comment because it was not working that's why below line added
+    implementation project(':@react-native-community_datetimepicker')
 
     implementation 'org.jsoup:jsoup:1.8.3'
 

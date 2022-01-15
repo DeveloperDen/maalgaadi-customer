@@ -1,13 +1,13 @@
 import React, { Component } from 'react';
 import {
-  StyleSheet,
-  View,
-  Text,
-  Image,
-  StatusBar,
+    StyleSheet,
+    View,
+    Text,
+    Image,
+    StatusBar,
 } from 'react-native';
 import { TextInput, TouchableHighlight, TouchableOpacity } from 'react-native-gesture-handler';
-import {getDeviceId} from 'react-native-device-info';
+import { getDeviceId } from 'react-native-device-info';
 import firebase from 'react-native-firebase'
 import ToastComp from '../utils/ToastComp';
 import SmsListener from 'react-native-android-sms-listener'
@@ -20,8 +20,8 @@ const ACCENT_DARK = '#F1B800'
 const BLUE = '#0800B2'
 
 export default class GetOTP extends Component {
-    static navigationOptions = ({navigation}) => {
-        return{
+    static navigationOptions = ({ navigation }) => {
+        return {
             headerTitle: 'Verify Number',
         }
     }
@@ -53,14 +53,16 @@ export default class GetOTP extends Component {
                 prevState.otp = otp;
                 return prevState;
             }, () => {
-                this.parent === Constants.ADD_CUSTOMER_SIGNUP?
-                this.signupUser() : this.resetPassword()
+                this.parent === Constants.ADD_CUSTOMER_SIGNUP ?
+                    this.signupUser() : this.resetPassword()
             })
         })
     }
 
     componentWillUnmount() {
-        this.smsSubscriber.remove();
+        if (this.smsSubscriber != undefined) {
+            this.smsSubscriber.remove();
+        }
     }
 
     // API call to Signup user and navigate to Main screen.
@@ -107,7 +109,7 @@ export default class GetOTP extends Component {
             console.log("Written Data: ", dataToWrite)
 
             this.props.navigation.navigate("HomeDrawerNavigator")
-            
+
         }).catch(err => {
             console.log(err)
             this.showToast(Constants.ERROR_SIGNUP);
@@ -127,7 +129,7 @@ export default class GetOTP extends Component {
     }
 
     showToast = (text = '') => {
-        if(text !== '')
+        if (text !== '')
             this.toast.show(text);
         else
             this.toast.show(this.state.message);
@@ -140,8 +142,8 @@ export default class GetOTP extends Component {
             return prevState
         })
 
-        const reqURL = Constants.BASE_URL + Constants.ADD_CUSTOMER_SIGNUP + '?' + 
-                        Constants.FIELDS.CUSTOMER_PHONE + '=' + this.number
+        const reqURL = Constants.BASE_URL + Constants.ADD_CUSTOMER_SIGNUP + '?' +
+            Constants.FIELDS.CUSTOMER_PHONE + '=' + this.number
 
         const request = await fetch(reqURL, {
             method: 'GET',
@@ -168,7 +170,7 @@ export default class GetOTP extends Component {
             console.log(err)
             this.showToast(Constants.ERROR_OTP);
         })
-        
+
     }
 
     // API call to get OTP for Forgot Password
@@ -193,7 +195,7 @@ export default class GetOTP extends Component {
 
         const response = await request.json().then(value => {
             console.log(value)
-            if(!value.success){
+            if (!value.success) {
                 this.setState(prevState => {
                     prevState.isLoading = false
                     prevState.message = value.message
@@ -208,99 +210,99 @@ export default class GetOTP extends Component {
                     return prevState
                 })
             }
-            
+
         })
-        .catch(err => {
-            this.setState(prevState => {
-                prevState.isLoading = false
-                return prevState
+            .catch(err => {
+                this.setState(prevState => {
+                    prevState.isLoading = false
+                    return prevState
+                })
+                console.log(err)
+                this.showToast(Constants.ERROR_OTP);
             })
-            console.log(err)
-            this.showToast(Constants.ERROR_OTP);
-        })
     }
 
     render() {
-        return(
-            <View style={{flex: 1, }}>
-                <StatusBar backgroundColor='white' 
-                barStyle="dark-content"/>
+        return (
+            <View style={{ flex: 1, }}>
+                <StatusBar backgroundColor='white'
+                    barStyle="dark-content" />
 
-                <Text 
-                style={{
-                    textAlign: "center", marginTop: 50, marginHorizontal: 40, fontSize: 15,
-                    opacity: 0.3
-                }}>
+                <Text
+                    style={{
+                        textAlign: "center", marginTop: 50, marginHorizontal: 40, fontSize: 15,
+                        opacity: 0.3
+                    }}>
                     Please enter the OTP recieved on your registered mobile number {this.number}
                 </Text>
-                
+
                 <View
-                style={{
-                    flexDirection: 'row', alignItems: 'center', borderBottomColor: 'rgba(0, 0, 0, 0.3)',
-                    borderBottomWidth: 1, width: '80%', marginTop: 40, paddingHorizontal: 5, alignSelf: 'center',
-                    opacity: this.state.isLoading? 0.3 : 1, paddingBottom: Platform.OS == "ios"? 5 : 0
-                }}>
+                    style={{
+                        flexDirection: 'row', alignItems: 'center', borderBottomColor: 'rgba(0, 0, 0, 0.3)',
+                        borderBottomWidth: 1, width: '80%', marginTop: 40, paddingHorizontal: 5, alignSelf: 'center',
+                        opacity: this.state.isLoading ? 0.3 : 1, paddingBottom: Platform.OS == "ios" ? 5 : 0
+                    }}>
                     <TextInput editable={!this.state.isLoading} textContentType="oneTimeCode"
-                    value={this.state.otp}
-                    placeholder="Enter OTP" keyboardType='decimal-pad' maxLength={5} returnKeyType="done"
-                    style={{flex: 1, marginHorizontal: 10}}
-                    onChangeText={text => {
-                        this.setState(prevState => {
-                            prevState.otp = text
-                            return prevState
-                        })
-                    }}/>
+                        value={this.state.otp}
+                        placeholder="Enter OTP" keyboardType='decimal-pad' maxLength={5} returnKeyType="done"
+                        style={{ flex: 1, marginHorizontal: 10 }}
+                        onChangeText={text => {
+                            this.setState(prevState => {
+                                prevState.otp = text
+                                return prevState
+                            })
+                        }} />
                 </View>
 
-                <View 
-                style={{
-                    flexDirection: 'row', alignSelf: 'center', alignItems: 'center',
-                    width: '80%', justifyContent: 'space-between', marginTop: 30,
-                    opacity: this.state.isLoading? 0.3 : 1
-                }}>
-                    <TouchableOpacity
-                    disabled={this.state.isLoading}
-                    onPress={() => {
-                        this.parent === Constants.ADD_CUSTOMER_SIGNUP? 
-                            this.registerCustomer() : this.setPasswordByNumber()
+                <View
+                    style={{
+                        flexDirection: 'row', alignSelf: 'center', alignItems: 'center',
+                        width: '80%', justifyContent: 'space-between', marginTop: 30,
+                        opacity: this.state.isLoading ? 0.3 : 1
                     }}>
-                        <Text style={{color: BLUE, fontSize: 13}}>Resend OTP</Text>
+                    <TouchableOpacity
+                        disabled={this.state.isLoading}
+                        onPress={() => {
+                            this.parent === Constants.ADD_CUSTOMER_SIGNUP ?
+                                this.registerCustomer() : this.setPasswordByNumber()
+                        }}>
+                        <Text style={{ color: BLUE, fontSize: 13 }}>Resend OTP</Text>
                     </TouchableOpacity>
                     <TouchableOpacity
-                    disabled={this.state.isLoading}
-                    onPress={() => {
-                        this.props.navigation.goBack();
-                    }}>
-                        <Text style={{color: BLUE, fontSize: 13}}>Change Number</Text>
+                        disabled={this.state.isLoading}
+                        onPress={() => {
+                            this.props.navigation.goBack();
+                        }}>
+                        <Text style={{ color: BLUE, fontSize: 13 }}>Change Number</Text>
                     </TouchableOpacity>
                 </View>
-            
+
                 <TouchableHighlight
-                disabled={this.state.isLoading}
-                underlayColor={ACCENT_DARK}
-                onPress={() => {
-                    if(this.state.otp !== this.otp) {
-                        this.showToast(Constants.OTP_MISMATCH)
-                    }
-                    else {
-                        this.parent === Constants.ADD_CUSTOMER_SIGNUP?
-                        this.signupUser() : this.resetPassword()
-                    }
-                    
-                }}
-                style={{
-                    justifyContent:'center', alignItems: 'center',
-                    borderRadius: 4, width: '80%', alignSelf: 'center', paddingVertical: 15, marginTop: 25,
-                    backgroundColor: this.state.isLoading? 'gray' : ACCENT
-                }}>
-                    <Text style={{color: 'white', fontSize: 14, fontWeight: '700', opacity: this.state.isLoading? 0.3 : 1}}>
-                        {this.state.isLoading? "Processing..." : this.parent === Constants.ADD_CUSTOMER_SIGNUP? 
-                        "Next" : "Reset"}
+                    disabled={this.state.isLoading}
+                    underlayColor={ACCENT_DARK}
+                    onPress={() => {
+                        if (this.state.otp !== this.otp) {
+                            this.showToast(Constants.OTP_MISMATCH)
+                        }
+                        else {
+                            this.parent === Constants.ADD_CUSTOMER_SIGNUP ?
+                                this.signupUser() : this.resetPassword()
+                        }
+
+                    }}
+                    style={{
+                        justifyContent: 'center', alignItems: 'center',
+                        borderRadius: 4, width: '80%', alignSelf: 'center', paddingVertical: 15, marginTop: 25,
+                        backgroundColor: this.state.isLoading ? 'gray' : ACCENT
+                    }}>
+                    <Text style={{ color: 'white', fontSize: 14, fontWeight: '700', opacity: this.state.isLoading ? 0.3 : 1 }}>
+                        {this.state.isLoading ? "Processing..." : this.parent === Constants.ADD_CUSTOMER_SIGNUP ?
+                            "Next" : "Reset"}
                     </Text>
                 </TouchableHighlight>
-            
+
                 {/* Toast box */}
-                <ToastComp ref={t => this.toast = t}/>
+                <ToastComp ref={t => this.toast = t} />
             </View>
         )
     }
