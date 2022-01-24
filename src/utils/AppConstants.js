@@ -203,7 +203,9 @@ export const FIELDS = {
     MG_CODE: "mg_code",
     STATUS_EXC: "status_exclusive",
     BOOKING_TYPE: "booking_type",
-    FAV_DRIV_REQ: "fav_driver_required"
+    FAV_DRIV_REQ: "fav_driver_required",
+    CUST_EMAIL: "cust_email",
+    POD: "pod"
 }
 
 export const TRANS_PARAMS = {

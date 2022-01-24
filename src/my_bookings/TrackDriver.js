@@ -18,6 +18,8 @@ const { width, height } = Dimensions.get('window');
 const ASPECT_RATIO = width / height;
 const LATITUDE_DELTA = 0.0030;
 const LONGITUDE_DELTA = LATITUDE_DELTA * ASPECT_RATIO;
+const COMPLETED = "Completed"
+const TAG = "TrackDriver: "
 
 export default class TrackDriver extends Component {
     static navigationOptions = ({ navigation }) => {
@@ -45,14 +47,17 @@ export default class TrackDriver extends Component {
             driverCoord: {
                 latitude: 0,
                 longitude: 0
-            }
+            },
+            status: props.navigation.getParam('status')
         }
     }
 
     async componentDidMount() {
-        await this.getTripData();
-        await this.getLiveTrackingData();
-        
+        if (this.state.status != COMPLETED) {
+            await this.getTripData();
+            await this.getLiveTrackingData();
+        }
+
         // Get live tracking data after every 10 seconds
         this.trackingInterval = setInterval(() => {
             console.log("Interval complete. Getting tracking data.");
@@ -85,8 +90,8 @@ export default class TrackDriver extends Component {
             else {
                 const drivLat = parseFloat(value.data.driver_lat);
                 const drivLong = parseFloat(value.data.driver_long);
-                
-                if(drivLat !== 0.0 && drivLong !== 0.0) {
+
+                if (drivLat !== 0.0 && drivLong !== 0.0) {
                     this.setState(prevState => {
                         prevState.driverCoord = {
                             latitude: drivLat,
@@ -131,19 +136,28 @@ export default class TrackDriver extends Component {
                 if (value.data.routes.length > 2) {
                     this.setState(prevState => {
                         value.data.routes.slice(1, -1).forEach((route, index) => {
+                            console.log(TAG, 'route >> ', route);
                             latlng = {
-                                latitude: parseFloat(route.lat),
-                                longitude: parseFloat(route.lng),
+                                latitude: parseFloat(route === null ? 0.0 : route.lat),
+                                longitude: parseFloat(route === null ? 0.0 : route.lng),
                             }
                             prevState.waypoints.push(latlng)
                         })
+                        // prevState.pickup = {
+                        //     latitude: parseFloat(value.data.route[0].lat),
+                        //     longitude: parseFloat(value.data.route[0].lng)
+                        // }
+                        // prevState.drop = {
+                        //     latitude: parseFloat(value.data.route[-1].lat),
+                        //     longitude: parseFloat(value.data.route[-1].lng)
+                        // }
                         prevState.pickup = {
-                            latitude: parseFloat(value.data.route[0].lat),
-                            longitude: parseFloat(value.data.route[0].lng)
+                            latitude: parseFloat(value.data.routes[0] === null ? 0.0 : value.data.routes[0].lat),
+                            longitude: parseFloat(value.data.routes[0] === null ? 0.0 : value.data.routes[0].lng)
                         }
                         prevState.drop = {
-                            latitude: parseFloat(value.data.route[-1].lat),
-                            longitude: parseFloat(value.data.route[-1].lng)
+                            latitude: parseFloat(value.data.routes[-1] === null ? 0.0 : value.data.routes[-1].lat),
+                            longitude: parseFloat(value.data.routes[-1] === null ? 0.0 : value.data.routes[-1].lng)
                         }
                         return prevState
                     })
@@ -174,28 +188,28 @@ export default class TrackDriver extends Component {
         return (
             <View style={{ flex: 1 }}>
                 <MapView
-                showsMyLocationButton={false}
-                showsUserLocation={true}
-                provider={PROVIDER_DEFAULT}
-                style={styles.mapReg}
-                initialRegion={{
-                    latitude: (this.state.pickup.latitude),
-                    longitude: this.state.pickup.longitude,
-                    latitudeDelta: LATITUDE_DELTA,
-                    longitudeDelta: LONGITUDE_DELTA,
-                }}
-                ref={c => this.mapView = c}>
-                    
+                    showsMyLocationButton={false}
+                    showsUserLocation={true}
+                    provider={PROVIDER_DEFAULT}
+                    style={styles.mapReg}
+                    initialRegion={{
+                        latitude: (this.state.pickup.latitude),
+                        longitude: this.state.pickup.longitude,
+                        latitudeDelta: LATITUDE_DELTA,
+                        longitudeDelta: LONGITUDE_DELTA,
+                    }}
+                    ref={c => this.mapView = c}>
+
                     <Marker
-                    coordinate={this.state.driverCoord}
-                    trackViewChanges={this.state.trackViewChanges}>
-                      <Image source={require('../../assets/driver.png')}
-                      style={{
-                          width: 80, height: 80,
-                        }}
-                      resizeMode="contain" onLoad={this.stopTrackingViewChanges}/>
+                        coordinate={this.state.driverCoord}
+                        trackViewChanges={this.state.trackViewChanges}>
+                        <Image source={require('../../assets/driver.png')}
+                            style={{
+                                width: 80, height: 80,
+                            }}
+                            resizeMode="contain" onLoad={this.stopTrackingViewChanges} />
                     </Marker>
-                    
+
                     <MapViewDirections
                         waypoints={this.state.waypoints}
                         origin={this.state.pickup}
@@ -227,7 +241,7 @@ export default class TrackDriver extends Component {
 
                 </MapView>
 
-                <ToastComp ref={t => this.toast = t}/>
+                <ToastComp ref={t => this.toast = t} />
             </View>
         )
     }
