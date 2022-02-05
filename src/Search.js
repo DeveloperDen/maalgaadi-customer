@@ -4,6 +4,7 @@ import { GooglePlacesAutocomplete } from './GooglePlacesAutocomplete';
 import { getItem, CUSTOMER_ID } from './utils/DataStorageController';
 import { BASE_URL, VIEW_FAV_LOCATION_URL, FIELDS, KEY, ICONS, GOOGLE_MAPS_APIKEY } from './utils/AppConstants';
 import ToastComp from './utils/ToastComp';
+import { isServiceAvailable } from './utils/UtilFunc';
 
 const ACCENT = '#FFCB28' // 255, 203, 40
  
@@ -101,10 +102,12 @@ export default class Search extends Component {
                             source={row.favourite? ICONS.heart_filled : ICONS.location}
                             style={{width: 15, height:15, marginEnd: 10, opacity: 0.3,}}/>
                             <View>
-                                <Text style={{fontWeight: "700", fontSize: 15, ellipsizeMode: "tail",}} numberOfLines={1}>
+                                {/* <Text style={{fontWeight: "700", fontSize: 15, ellipsizeMode: "tail",}} numberOfLines={1}> */}
+                                <Text style={{fontWeight: "700", fontSize: 15}} numberOfLines={1}>
                                     {row.favourite? row.description : row.structured_formatting.main_text}
                                 </Text>
-                                <Text style={{fontSize:10, ellipsizeMode: "tail",}} numberOfLines={1}>
+                                {/* <Text style={{fontSize:10, ellipsizeMode: "tail",}} numberOfLines={1}> */}
+                                <Text style={{fontSize:10}} numberOfLines={1}>
                                     {row.favourite? row.landmark : row.structured_formatting.secondary_text}
                                 </Text>
                             </View>
@@ -112,7 +115,19 @@ export default class Search extends Component {
                     }
                     onPress={(data, details=null) => {
                         console.log(`Name: ${data.description} \n Coordinates: {${details.geometry.location.lat}, ${details.geometry.location.lng}}`)
-                        
+                        let DestinationLocation = {
+                            address: data.description,
+                            latitude: details.geometry.location.lat,
+                            longitude: details.geometry.location.lng,
+                          };
+                        if (!isServiceAvailable(DestinationLocation)) {
+                            this.showToast('Sorry, We don\'t serve this location yet.');
+                            this.setState(prevState => {
+                                prevState.placeSelected = false;
+                                return prevState;
+                            })
+                            return;
+                        }
                         if(this.props.navigation.getParam('screen') === 'Home') 
                             this.props.navigation.navigate('Main', {
                                 address: data.description,

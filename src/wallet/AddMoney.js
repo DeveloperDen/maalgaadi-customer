@@ -139,10 +139,12 @@ export default class AddMoney extends Component {
                 <TouchableHighlight
                 underlayColor={ACCENT_DARK}
                 onPress={() => {
-                    if(this.state.amount.length > 0 && !isNaN(this.state.amount))
+                    // if(this.state.amount.length > 0 && !isNaN(this.state.amount))
+                    if(this.state.amount.length > 2 && !isNaN(this.state.amount))
                         this.initTrans()
                     else
-                        this.showToast('Please enter valid amount',)
+                        // this.showToast('Please enter valid amount',)
+                        this.showToast('Please Enter  Minimum Amount 100 or More')
                 }}
                 style={{
                     backgroundColor: this.state.amount.length > 0? ACCENT : '#C9C9C9',

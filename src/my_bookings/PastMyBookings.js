@@ -20,6 +20,7 @@ const CANCELLED = 'Cancelled';
 const COMPLETED = 'Completed';
 const Constants = require('../utils/AppConstants');
 const DataController = require('../utils/DataStorageController');
+const TAG = 'PastMyBooking: ';
 
 export default class PastMyBookings extends Component {
   constructor(props) {
@@ -89,6 +90,7 @@ export default class PastMyBookings extends Component {
   };
 
   reBook(bookID) {
+    console.log(TAG, 'Booking ID >> ', bookID);
     this.getBookingDetails(bookID);
   }
 
@@ -99,7 +101,7 @@ export default class PastMyBookings extends Component {
       '?' +
       Constants.FIELDS.BOOKING_ID +
       '=' +
-      "bookID" +
+      bookID +
       '&' +
       Constants.FIELDS.BOOKING_TYPE +
       '=' +

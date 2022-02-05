@@ -13,7 +13,8 @@ import {
 import {BookingEventType} from '../models/bookings_model'
 import { formatDate, unFormatDate } from './../utils/UtilFunc';
 import ToastComp from '../utils/ToastComp';
-import firebase from 'react-native-firebase';
+// import firebase from 'react-native-firebase';
+import messaging from '@react-native-firebase/messaging';
 
 const Constants = require('../utils/AppConstants')
 const DataController = require('../utils/DataStorageController')
@@ -49,7 +50,8 @@ export default class RunningMyBookings extends Component {
     this.props.navigation.navigate("Past") : this.getRunningTrip();
 
     // Subscribe to FCM Message listener
-    this.unsubscribeFCM = firebase.messaging().onMessage(async message => {
+    // this.unsubscribeFCM = firebase.messaging().onMessage(async message => {
+    this.unsubscribeFCM = messaging().onMessage(async (message) => {
       let notifMessage = message.data.message;
       const title = message.data.title;
 
@@ -199,6 +201,7 @@ export default class RunningMyBookings extends Component {
               address: landmark.landmark,
               latitude: landmark.latitude,
               longitude: landmark.longitude,
+              mobile_number: landmark.mobile_number,
             })
           })
           model.landmark_list = landmarkList;

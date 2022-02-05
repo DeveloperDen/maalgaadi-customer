@@ -731,21 +731,41 @@ export default class FareEstimation extends Component {
                         }
 
                         if(isBookingAllow){
-                            if (this.bookingModel.booking_event_type == BookingModel.BookingEventType.EDIT) {
+                            if (this.bookingModel.book_later) {
                                 this.setModalVisible(true, false, true);
-                                this.editBooking();
-                            } else {
-                                this.setModalVisible(true, true);
                                 this.confirmBooking();
+                            } else {
+                                if (this.bookingModel.booking_event_type == BookingModel.BookingEventType.EDIT) {
+                                    this.setModalVisible(true, false, true);
+                                    this.editBooking();
+                                } else {
+                                    this.setModalVisible(true, true);
+                                    this.confirmBooking();
+                                }
+    
+                                this.setState(prevState => {
+                                    prevState.findDrivTime = 100;
+                                    prevState.timer = 0;
+                                    return prevState;
+                                }, () => {
+                                    this.startFindDrivInterval();
+                                })
                             }
+                            // if (this.bookingModel.booking_event_type == BookingModel.BookingEventType.EDIT) {
+                            //     this.setModalVisible(true, false, true);
+                            //     this.editBooking();
+                            // } else {
+                            //     this.setModalVisible(true, true);
+                            //     this.confirmBooking();
+                            // }
 
-                            this.setState(prevState => {
-                                prevState.findDrivTime = 100;
-                                prevState.timer = 0;
-                                return prevState;
-                            }, () => {
-                                this.startFindDrivInterval();
-                            })
+                            // this.setState(prevState => {
+                            //     prevState.findDrivTime = 100;
+                            //     prevState.timer = 0;
+                            //     return prevState;
+                            // }, () => {
+                            //     this.startFindDrivInterval();
+                            // })
                         }
                             
                     }
@@ -1023,7 +1043,13 @@ export default class FareEstimation extends Component {
                                 <TouchableHighlight
                                     underlayColor={ACCENT_DARK}
                                     onPress={() => {
-                                        this.saveBookingResponse();
+                                        if (this.state.selectedWaitingTime <= 0) {
+                                            
+                                            this.showToast('Please Select Waiting Time!')
+                                        } else {
+
+                                            this.saveBookingResponse();
+                                        }
                                     }}
                                     style={{
                                         paddingVertical: 15, alignItems: 'center', justifyContent: 'center',
@@ -1034,6 +1060,10 @@ export default class FareEstimation extends Component {
                                 <TouchableHighlight
                                     underlayColor={ACCENT_DARK}
                                     onPress={() => {
+                                        this.setState(prevState => {
+                                            prevState.selectedWaitingTime = 0;
+                                            return prevState;
+                                        })
                                         this.showNoDriverAvailableDialog(true, this.state.noDrivAvailModalMessage);
                                         this.showWaitDialog(false);
                                     }}

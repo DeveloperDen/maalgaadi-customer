@@ -194,7 +194,7 @@ dependencies {
 
     implementation 'org.jsoup:jsoup:1.8.3'
 
-    implementation 'com.google.firebase:firebase-messaging:20.1.0'
+    // implementation 'com.google.firebase:firebase-messaging:20.1.0'
 
     if (enableHermes) {
         def hermesPath = "../../node_modules/hermes-engine/android/";

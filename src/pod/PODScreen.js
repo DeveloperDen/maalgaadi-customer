@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, {Component} from 'react';
 import {
   StyleSheet,
   View,
@@ -11,8 +11,8 @@ import {
   Linking,
   StatusBar,
 } from 'react-native';
-import { ScrollView } from 'react-native-gesture-handler';
-import firebase from 'react-native-firebase';
+import {ScrollView} from 'react-native-gesture-handler';
+// import firebase from 'react-native-firebase';
 import ToastComp from '../utils/ToastComp';
 const DataController = require('../utils/DataStorageController');
 const Constants = require('../utils/AppConstants');
@@ -26,7 +26,7 @@ const driverIc = require('../../assets/driver_icon.png');
 const TAG = 'PODScreen: ';
 
 export default class PODScreen extends Component {
-  static navigationOptions = ({ navigation }) => {
+  static navigationOptions = ({navigation}) => {
     return {
       headerTitle: 'POD',
     };
@@ -36,23 +36,19 @@ export default class PODScreen extends Component {
     super(props);
     this.state = {
       isLoading: false,
+      isImageLoading: true,
     };
 
     this.url = props.navigation.getParam('podURL', '-');
     this.bookingID = props.navigation.getParam('bookingId', '-');
   }
 
-
   componentDidMount() {
     console.log(TAG, 'booking Id: ', this.bookingID);
     console.log(TAG, this.url.length, this.url);
   }
 
-  componentWillUnmount() {
-    if (this.props.navigation.getParam(DataController.RUNNING_TRIP_DATA)) {
-      this.unsubscribeFCM();
-    }
-  }
+  componentWillUnmount() {}
 
   showToast(message) {
     this.toast.show(message);
@@ -72,7 +68,9 @@ export default class PODScreen extends Component {
       '?' +
       Constants.FIELDS.CUSTOMER_ID +
       '=' +
-      '"' + custId + '"' +
+      '"' +
+      custId +
+      '"' +
       '&' +
       Constants.FIELDS.BOOKING_ID +
       '=' +
@@ -106,7 +104,6 @@ export default class PODScreen extends Component {
         this.showToast(Constants.ERROR_GET_BOOKINGS);
       });
 
-
     this.setState(prevState => {
       prevState.isLoading = false;
       return prevState;
@@ -115,16 +112,26 @@ export default class PODScreen extends Component {
 
   render() {
     return (
-      <View style={{ flex: 1, backgroundColor: 'rgba(0, 0, 0, 0.05)' }}>
+      <View style={{flex: 1, backgroundColor: 'rgba(0, 0, 0, 0.05)'}}>
         <StatusBar backgroundColor="white" barStyle="dark-content" />
 
         {/* <ScrollView style={{ marginTop: 30 }}> */}
-        <View style={styles.container} >
-          <View style={{ flex: 0.8 }}>
-
-            <Image style={{ height: '100%', width: '100%' }} source={{ uri: this.url }} />
+        <View style={styles.container}>
+          <View style={{flex: 0.8}}>
+            {this.state.isImageLoading ? (
+              <ActivityIndicator size="large" color="black" />
+            ) : null}
+            <Image
+              onLoadEnd={e => this.setState(prevState => {
+                prevState.isImageLoading = false;
+                return prevState;
+              })}
+              style={{height: '100%', width: '100%'}}
+              source={{uri: this.url}}
+            />
           </View>
-          <View style={{ flex: 0.2, alignItems: 'center', justifyContent: 'center' }}>
+          <View
+            style={{flex: 0.2, alignItems: 'center', justifyContent: 'center'}}>
             <TouchableHighlight
               disabled={this.state.isLoading}
               underlayColor="rgba(0, 0, 0, 0.02)"
@@ -132,19 +139,23 @@ export default class PODScreen extends Component {
                 console.log(TAG, 'Email press!!');
                 this.sendEmail();
               }}>
-
-              <View style={{ alignItems: 'center', backgroundColor: '#f7c117', padding: 10, borderRadius: 5, flexDirection: 'row' }}>
+              <View
+                style={{
+                  alignItems: 'center',
+                  backgroundColor: '#f7c117',
+                  padding: 10,
+                  borderRadius: 5,
+                  flexDirection: 'row',
+                }}>
                 <Image
                   source={Constants.ICONS.email}
-                  style={{ width: 20, height: 20, tintColor: 'white' }}
+                  style={{width: 20, height: 20, tintColor: 'white'}}
                 />
                 {this.state.isLoading ? (
                   <ActivityIndicator size="small" color="white" />
                 ) : (
-
-                  <Text style={{ color: 'white', fontSize: 15 }}>Email</Text>
+                  <Text style={{color: 'white', fontSize: 15}}>Email</Text>
                 )}
-
               </View>
             </TouchableHighlight>
           </View>
@@ -168,7 +179,6 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
     backgroundColor: 'white',
     borderRadius: 4,
-
   },
   containerTitle: {
     fontWeight: '700',

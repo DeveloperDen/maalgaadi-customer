@@ -125,7 +125,7 @@ export default class RateCard extends Component {
                     })}
 
                     <Text style={{textAlign: 'center', alignSelf: 'center', opacity: 0.4, fontSize: 10, padding: 15}}>
-                        *Loading/Unloading charges applicable only for fround floor goods with unit weight upto 60Kgs.
+                        *Loading/Unloading charges applicable only for ground floor goods with unit weight upto 60Kgs.
                         All other charges like Toll Tax etc. will be charged on actual basis.
                     </Text>
 

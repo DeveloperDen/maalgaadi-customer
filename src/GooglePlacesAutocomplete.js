@@ -112,17 +112,22 @@ export default class GooglePlacesAutocomplete extends Component {
     return [...res, ...results];
   }
 
-  componentWillMount() {
-    this._request = this.props.debounce
-      ? debounce(this._request, this.props.debounce)
-      : this._request;
-  }
+  // componentWillMount() {
+  //   this._request = this.props.debounce
+  //     ? debounce(this._request, this.props.debounce)
+  //     : this._request;
+  // }
 
   componentDidMount() {
     // This will load the default value's search results after the view has
     // been rendered
     this._handleChangeText(this.state.text);
     this._isMounted = true;
+
+    // added 👇 line from componentWillMount() 31-01-2022
+    this._request = this.props.debounce
+    ? debounce(this._request, this.props.debounce)
+    : this._request;
   }
 
   UNSAFE_componentWillReceiveProps(nextProps) {

@@ -327,7 +327,7 @@ export default class ActiveFleet extends Component {
                         <View style={{backgroundColor: 'white', borderRadius: 5, overflow: 'hidden'}}>
                             {/* Exclusive driver switch is hidden presently */}
                             <View style={{
-                                display: "none",
+                                display: "flex",
                                 flexDirection: 'row', alignItems: 'center',
                                 justifyContent: 'space-between', marginTop: 20, marginHorizontal: 20,
                             }}>

@@ -8,7 +8,8 @@ import {
 } from 'react-native';
 import { TextInput, TouchableHighlight, TouchableOpacity } from 'react-native-gesture-handler';
 import { getDeviceId } from 'react-native-device-info';
-import firebase from 'react-native-firebase'
+// import firebase from 'react-native-firebase'
+import messaging from '@react-native-firebase/messaging';
 import ToastComp from '../utils/ToastComp';
 import SmsListener from 'react-native-android-sms-listener'
 
@@ -31,18 +32,25 @@ export default class GetOTP extends Component {
         this.state = {
             otp: '',
             message: '',
-            isLoading: false
+            isLoading: false,
+            isNewSignUp: ''
         }
 
         this.number = this.props.navigation.getParam("number")
     }
 
     async componentDidMount() {
-        this.FCM_TOKEN = await firebase.messaging().getToken();
+        // this.FCM_TOKEN = await firebase.messaging().getToken();
+        this.FCM_TOKEN = await messaging().getToken();
         this.parent = this.props.navigation.getParam("parent")
         this.otp = this.props.navigation.getParam("otp").toString()
         this.refCode = this.props.navigation.getParam("refCode")
         this.pass = this.props.navigation.getParam("pass")
+        this.setState(prevState => {
+            prevState.isNewSignUp = this.props.navigation.getParam("parent");
+            return prevState;
+        });
+        console.log('GetOTP: ', 'this.parent >> ', this.parent);
 
         this.smsSubscriber = SmsListener.addListener(message => {
             // Replace all the non numeric characters with empty character('');
@@ -296,7 +304,7 @@ export default class GetOTP extends Component {
                         backgroundColor: this.state.isLoading ? 'gray' : ACCENT
                     }}>
                     <Text style={{ color: 'white', fontSize: 14, fontWeight: '700', opacity: this.state.isLoading ? 0.3 : 1 }}>
-                        {this.state.isLoading ? "Processing..." : this.parent === Constants.ADD_CUSTOMER_SIGNUP ?
+                        {this.state.isLoading ? "Processing..." : this.state.isNewSignUp === Constants.ADD_CUSTOMER_SIGNUP ?
                             "Next" : "Reset"}
                     </Text>
                 </TouchableHighlight>

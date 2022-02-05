@@ -15,7 +15,8 @@ import {
   TouchableOpacity,
 } from 'react-native-gesture-handler';
 import {getDeviceId} from 'react-native-device-info';
-import firebase from 'react-native-firebase';
+// import firebase from 'react-native-firebase';
+import messaging from '@react-native-firebase/messaging';
 import {NavigationEvents} from 'react-navigation';
 import ToastComp from '../utils/ToastComp';
 import {RESULTS} from 'react-native-permissions';
@@ -43,7 +44,8 @@ export default class Login extends Component {
   }
 
   async componentDidMount() {
-    this.FCM_TOKEN = await firebase.messaging().getToken();
+    // this.FCM_TOKEN = await firebase.messaging().getToken();
+    this.FCM_TOKEN = await messaging().getToken();
 
     if (this.props.navigation.getParam('status', '') === Constants.LOGOUT_API) {
       console.log(Constants.LOGOUT_SUCCESS);
