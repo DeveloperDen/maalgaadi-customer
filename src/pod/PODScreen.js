@@ -68,9 +68,7 @@ export default class PODScreen extends Component {
       '?' +
       Constants.FIELDS.CUSTOMER_ID +
       '=' +
-      '"' +
       custId +
-      '"' +
       '&' +
       Constants.FIELDS.BOOKING_ID +
       '=' +
@@ -95,9 +93,9 @@ export default class PODScreen extends Component {
     await request
       .json()
       .then(async value => {
-        this.props.navigation.goBack();
+        console.log(TAG, 'sendEmail: Response >> ', value);
         this.showToast(value.message);
-        console.log('Response: ', value);
+        // this.props.navigation.goBack();
       })
       .catch(err => {
         console.log(err);
@@ -122,42 +120,45 @@ export default class PODScreen extends Component {
               <ActivityIndicator size="large" color="black" />
             ) : null}
             <Image
-              onLoadEnd={e => this.setState(prevState => {
-                prevState.isImageLoading = false;
-                return prevState;
-              })}
+              onLoadEnd={e =>
+                this.setState(prevState => {
+                  prevState.isImageLoading = false;
+                  return prevState;
+                })
+              }
               style={{height: '100%', width: '100%'}}
               source={{uri: this.url}}
             />
           </View>
           <View
             style={{flex: 0.2, alignItems: 'center', justifyContent: 'center'}}>
-            <TouchableHighlight
-              disabled={this.state.isLoading}
-              underlayColor="rgba(0, 0, 0, 0.02)"
-              onPress={() => {
-                console.log(TAG, 'Email press!!');
-                this.sendEmail();
-              }}>
-              <View
-                style={{
-                  alignItems: 'center',
-                  backgroundColor: '#f7c117',
-                  padding: 10,
-                  borderRadius: 5,
-                  flexDirection: 'row',
+            {this.state.isLoading ? (
+              <ActivityIndicator size="small" color="#f7c117" />
+            ) : (
+              <TouchableHighlight
+                disabled={this.state.isLoading}
+                underlayColor="rgba(0, 0, 0, 0.02)"
+                onPress={() => {
+                  console.log(TAG, 'Email press!!');
+                  this.sendEmail();
                 }}>
-                <Image
-                  source={Constants.ICONS.email}
-                  style={{width: 20, height: 20, tintColor: 'white'}}
-                />
-                {this.state.isLoading ? (
-                  <ActivityIndicator size="small" color="white" />
-                ) : (
+                <View
+                  style={{
+                    alignItems: 'center',
+                    backgroundColor: '#f7c117',
+                    padding: 10,
+                    borderRadius: 5,
+                    flexDirection: 'row',
+                  }}>
+                  <Image
+                    source={Constants.ICONS.email}
+                    style={{width: 20, height: 20, tintColor: 'white'}}
+                  />
+
                   <Text style={{color: 'white', fontSize: 15}}>Email</Text>
-                )}
-              </View>
-            </TouchableHighlight>
+                </View>
+              </TouchableHighlight>
+            )}
           </View>
         </View>
         {/* </ScrollView> */}

@@ -91,6 +91,7 @@ export default class Home extends Component {
     this.state = {
       isLoading: false,
       showRatingModal: true,
+      isPaymentDialogShowing: false,
       fromView: null,
       popOverText: '',
       tutCompFieldActive: null,
@@ -265,6 +266,10 @@ export default class Home extends Component {
     this.eventEmitter.addListener('TransFinished', event => {
       const params = event.transParams;
       console.log('Transaction Params: ', params);
+      this.setState(prevState => {
+        prevState.isPaymentDialogShowing = false;
+        return prevState;
+      });
       DataController.setItem(
         DataController.PAYMENT_TRANS_DATA,
         JSON.stringify(params),
@@ -781,43 +786,68 @@ export default class Home extends Component {
   }
 
   showPaymentDialog() {
-    Alert.alert(
-      'Make Payment',
-      'Please complete the payment to MaalGaadi driver',
-      [
+    if (this.state.isPaymentDialogShowing) {
+      return;
+    } else {
+      Alert.alert(
+        'Make Payment',
+        'Please complete the payment to MaalGaadi driver',
+        [
+          {
+            text: 'PAY ONLINE',
+            style: 'default',
+            onPress: async () => {
+              const orderID = await this.generateOrderID();
+
+              console.log('Completing booking payment, order ID: ', orderID);
+
+              this.props.navigation.navigate('PaymentWebview', {
+                [Constants.TRANS_PARAMS.ORDER_ID]: orderID,
+                [Constants.TRANS_PARAMS.AMOUNT]: this.paymentModel[
+                  Constants.TRANS_PARAMS.AMOUNT
+                ],
+                [Constants.TRANS_PARAMS.PAY_NOW]: true,
+                [Constants.FIELDS.CUSTOMER_ID]: this.paymentModel[
+                  Constants.FIELDS.CUSTOMER_ID
+                ],
+                [Constants.FIELDS.BOOKING_ID]: this.paymentModel[
+                  Constants.FIELDS.BOOKING_ID
+                ],
+                onGoBack: () => {
+                  return;
+                },
+              });
+            },
+          },
+          {
+            text: 'COD',
+            style: 'cancel',
+            onPress: () => {
+              console.log('Deleting transaction data.');
+              this.setState(prevState => {
+                prevState.isPaymentDialogShowing = false;
+                return prevState;
+              });
+              DataController.removeItem(DataController.PAYMENT_TRANS_DATA);
+            },
+          },
+        ],
         {
-          text: 'PAY ONLINE',
-          style: 'default',
-          onPress: async () => {
-            const orderID = await this.generateOrderID();
-
-            console.log('Completing booking payment, order ID: ', orderID);
-
-            this.props.navigation.navigate('PaymentWebview', {
-              [Constants.TRANS_PARAMS.ORDER_ID]: orderID,
-              [Constants.TRANS_PARAMS.AMOUNT]: this.paymentModel[
-                Constants.TRANS_PARAMS.AMOUNT
-              ],
-              [Constants.TRANS_PARAMS.PAY_NOW]: true,
-              [Constants.FIELDS.CUSTOMER_ID]: this.paymentModel[
-                Constants.FIELDS.CUSTOMER_ID
-              ],
-              onGoBack: () => {
-                return;
-              },
+          onDismiss: () => {
+            console.log(TAG, 'showPaymentDialog: onDismiss >> ');
+            this.setState(prevState => {
+              prevState.isPaymentDialogShowing = false;
+              return prevState;
             });
-          },
-        },
-        {
-          text: 'COD',
-          style: 'cancel',
-          onPress: () => {
-            console.log('Deleting transaction data.');
-            DataController.removeItem(DataController.PAYMENT_TRANS_DATA);
-          },
-        },
-      ],
-    );
+          }
+        }
+      );
+      
+      this.setState(prevState => {
+        prevState.isPaymentDialogShowing = true;
+        return prevState;
+      });
+    }
   }
 
   getVehicleCategory = async () => {
@@ -1091,7 +1121,13 @@ export default class Home extends Component {
   };
 
   bookNow = async (isBookNow = true, date = new Date()) => {
-    console.log('Home: ', 'isBookNow >> ', isBookNow, this.state.selectedDateTime, date);
+    console.log(
+      'Home: ',
+      'isBookNow >> ',
+      isBookNow,
+      this.state.selectedDateTime,
+      date,
+    );
     let bookingModel = BookingModel.bookingJSON;
     bookingModel.selected_vehicle_category = this.state.selectedVehicleID;
     bookingModel.selected_vehicle_category_name = this.state.selectedVehicle;
@@ -1684,7 +1720,8 @@ export default class Home extends Component {
           </View>
         ) : (
           <View style={[styles.footer]}>
-            <Text style={{color: 'red', textAlign: 'center', fontWeight: 'bold'}}>
+            <Text
+              style={{color: 'red', textAlign: 'center', fontWeight: 'bold'}}>
               Sorry, We don't serve this location yet.
             </Text>
           </View>

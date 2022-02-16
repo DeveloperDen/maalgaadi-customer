@@ -120,7 +120,8 @@ export default class PaymentWebview extends Component {
                 amount: this.props.navigation.getParam(TRANS_PARAMS.AMOUNT),
                 amountCurrParam: TRANS_PARAMS.AMOUNT + '=' + this.props.navigation.getParam(TRANS_PARAMS.AMOUNT) + '&' + TRANS_PARAMS.CURRENCY + '=' + TRANS_PARAMS.CURRENT_CURRENCY,
                 redirectURL: Constants.CURRENT_REDIRECT_URL,
-                cancelURL: Constants.CURRENT_CANCEL_URL
+                cancelURL: Constants.CURRENT_CANCEL_URL,
+                booking_id: this.props.navigation.getParam(Constants.TRANS_PARAMS.BOOKING_ID)
             }
 
             // Before navigating to Payment Webview, navigate back to Add Money, which can further go back to Home Screen

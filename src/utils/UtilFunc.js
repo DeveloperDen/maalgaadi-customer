@@ -90,7 +90,7 @@ export const isServiceAvailable = location => {
       country: ' India',
       lat: '22.7195687',
       lon: '75.85772580000003',
-      allow_distance: 80,
+      allow_distance: 1000,
       created_at: '2017-09-11 17:05:12',
       updated_at: '2017-09-29 11:54:24',
     },

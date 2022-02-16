@@ -173,21 +173,27 @@ export default class TripDetails extends Component {
           prevState.vehicleNum = value.driver_vehicle_no;
           prevState.chargePayment = value.amount_to_be_paid;
           prevState.bookingType = value.booking_type;
+          prevState.drop_points = value.drop_points;
           prevState.chargeBill = value.billOffered;
+          prevState.bill = value.bill;
           prevState.tripCharge = value.amount_to_be_paid;
           prevState.status = value.status;
 
-          if (value.is_offered_billing == '1')
+          // if (value.is_offered_billing == '1')
+          if (value.is_offered_billing == '0')
             prevState.total = value.billOffered;
           else prevState.total = value.total_charge;
 
           if (value.loading_charge != 0) {
-            if (value.is_offered_billing != '1')
+            // if (value.is_offered_billing != '1')
               prevState.loading = value.loading_charge;
           }
           if (value.unloading_charge != 0) {
-            if (value.is_offered_billing != '1')
-              prevState.loading = value.unloading_charge;
+            // if (value.is_offered_billing != '1')
+              prevState.unloading = value.unloading_charge;
+          }
+          if (value.pod_charge != 0) {
+            prevState.pod_charge = value.pod_charge;
           }
 
           return prevState;

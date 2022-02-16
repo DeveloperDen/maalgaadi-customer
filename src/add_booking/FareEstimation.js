@@ -8,7 +8,8 @@ import {
   TouchableHighlight,
   ActivityIndicator,
   Animated,
-  Easing
+  Easing,
+  Alert
 } from 'react-native';
 import { TextInput, ScrollView} from 'react-native-gesture-handler';
 import uuid from 'uuid-random'
@@ -453,8 +454,13 @@ export default class FareEstimation extends Component {
 
             if(value.success) {
                 DataController.setItem(DataController.RUNNING_TRIP_DATA, JSON.stringify(value.data));
-                this.props.navigation.popToTop()
-                this.showToast(value.message);
+                this.setState(prevState => {
+                    prevState.responseMessage = value.message;
+                    prevState.responseModalVisible = true;
+                    return prevState;
+                })
+                // this.showToast(value.message);
+                // this.props.navigation.popToTop()
             }
             else{
                 this.showToast(value.message);

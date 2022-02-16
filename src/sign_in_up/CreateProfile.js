@@ -25,6 +25,7 @@ const DataController = require('../utils/DataStorageController');
 const ACCENT = '#FFCB28'; // 255, 203, 40
 const ACCENT_DARK = '#F1B800';
 const DEFAULT_GOODS = 'Select Goods Type';
+const TAG = 'CreateProfile:'
 
 export default class CreateProfile extends Component {
   static navigationOptions = ({navigation}) => {
@@ -108,8 +109,8 @@ export default class CreateProfile extends Component {
     );
 
     DataController.getItems(toGet)
-      .then((res) => {
-        this.setState((prevState) => {
+      .then(res => {
+        this.setState(prevState => {
           prevState.name = res[0][1];
           prevState.number = res[1][1];
           prevState.email = res[2][1];
@@ -136,14 +137,14 @@ export default class CreateProfile extends Component {
           return prevState;
         });
       })
-      .catch((err) => {
+      .catch(err => {
         console.log(err);
         this.showToast(Constants.ERROR_GET_DETAILS);
       });
   }
 
-  setGoodsType = (goods) => {
-    this.setState((prevState) => {
+  setGoodsType = goods => {
+    this.setState(prevState => {
       prevState.goodsType = goods.goods_name;
       prevState.goodsId = goods.id;
       return prevState;
@@ -151,7 +152,7 @@ export default class CreateProfile extends Component {
   };
 
   updateUserProfile = async () => {
-    this.setState((prevState) => {
+    this.setState(prevState => {
       prevState.isLoading = true;
       return prevState;
     });
@@ -176,7 +177,7 @@ export default class CreateProfile extends Component {
     reqBody.append(Constants.FIELDS.PAYMENT_DATA, this.paymentData),
       reqBody.append(Constants.FIELDS.IS_EXCLUSIVE, this.isExc);
 
-    console.log('Request: ', reqBody);
+    console.log(TAG, 'updateUserProfile: Request >> ',Constants.BASE_URL+Constants.UPDATE_CUSTOMER_PROFILE, reqBody);
 
     const request = await fetch(
       Constants.BASE_URL + Constants.UPDATE_CUSTOMER_PROFILE,
@@ -191,7 +192,8 @@ export default class CreateProfile extends Component {
 
     await request
       .json()
-      .then(async (value) => {
+      .then(async value => {
+        console.log(TAG,'updateUserProfile: Response >> ', value);
         if (value.success) {
           const dataToWrite = new FormData();
           dataToWrite.append(DataController.IS_PROFILE_COMPLETED, 'true');
@@ -253,19 +255,19 @@ export default class CreateProfile extends Component {
           this.showToast(value.message);
         }
       })
-      .catch((err) => {
+      .catch(err => {
         console.log(err);
         this.showToast(Constants.ERROR_UPDATE_PROFILE);
       });
 
-    this.setState((prevState) => {
+    this.setState(prevState => {
       prevState.isLoading = false;
       return prevState;
     });
   };
 
   showPopover(compFieldText, comp) {
-    this.setState((prevState) => {
+    this.setState(prevState => {
       prevState.isVisible = true;
       prevState.fromView = comp;
       prevState.popOverText = compFieldText;
@@ -274,7 +276,7 @@ export default class CreateProfile extends Component {
   }
 
   closePopover() {
-    this.setState((prevState) => {
+    this.setState(prevState => {
       prevState.isVisible = false;
       return prevState;
     });
@@ -311,8 +313,8 @@ export default class CreateProfile extends Component {
               returnKeyType="done"
               defaultValue={this.state.name}
               style={styles.inputs}
-              onChangeText={(text) =>
-                this.setState((prevState) => {
+              onChangeText={text =>
+                this.setState(prevState => {
                   prevState.name = text;
                   return prevState;
                 })
@@ -340,8 +342,8 @@ export default class CreateProfile extends Component {
                 keyboardType="email-address"
                 textContentType="emailAddress"
                 style={{flex: 1}}
-                onChangeText={(text) =>
-                  this.setState((prevState) => {
+                onChangeText={text =>
+                  this.setState(prevState => {
                     prevState.email = text;
                     return prevState;
                   })
@@ -349,7 +351,7 @@ export default class CreateProfile extends Component {
               />
 
               <TouchableOpacity
-                ref={(emH) => {
+                ref={emH => {
                   this.emailHint = emH;
                 }}
                 onPress={() => {
@@ -372,8 +374,8 @@ export default class CreateProfile extends Component {
                 returnKeyType="done"
                 placeholder="ORGANIZATION"
                 style={{flex: 1}}
-                onChangeText={(text) =>
-                  this.setState((prevState) => {
+                onChangeText={text =>
+                  this.setState(prevState => {
                     prevState.org = text;
                     return prevState;
                   })
@@ -381,7 +383,7 @@ export default class CreateProfile extends Component {
               />
 
               <TouchableOpacity
-                ref={(oH) => {
+                ref={oH => {
                   this.orgHint = oH;
                 }}
                 onPress={() => {
@@ -407,8 +409,8 @@ export default class CreateProfile extends Component {
               placeholder="ADDRESS"
               textContentType="fullStreetAddress"
               style={styles.inputs}
-              onChangeText={(text) =>
-                this.setState((prevState) => {
+              onChangeText={text =>
+                this.setState(prevState => {
                   prevState.address = text;
                   return prevState;
                 })
@@ -470,7 +472,7 @@ export default class CreateProfile extends Component {
                   selectedValue={this.state.tripFreq}
                   style={{height: 50, width: '100%'}}
                   onValueChange={(itemValue, itemIndex) =>
-                    this.setState((prevState) => {
+                    this.setState(prevState => {
                       prevState.tripFreq = itemValue;
                       return prevState;
                     })
@@ -492,7 +494,7 @@ export default class CreateProfile extends Component {
                     marginHorizontal: 10,
                   }}
                   onPress={() => {
-                    this.setState((prevState) => {
+                    this.setState(prevState => {
                       prevState.tripPickerOpen = !prevState.tripPickerOpen;
                       return prevState;
                     });
@@ -540,7 +542,7 @@ export default class CreateProfile extends Component {
                 <Picker
                   selectedValue={this.state.tripFreq}
                   onValueChange={(itemValue, itemIndex) =>
-                    this.setState((prevState) => {
+                    this.setState(prevState => {
                       prevState.tripFreq = itemValue;
                       prevState.tripPickerOpen = false;
                       return prevState;
@@ -562,7 +564,7 @@ export default class CreateProfile extends Component {
               <TouchableHighlight
                 underlayColor="white"
                 onPress={() => {
-                  Linking.openURL(Constants.TERMSANDCONDITION).catch((err) =>
+                  Linking.openURL(Constants.TERMSANDCONDITION).catch(err =>
                     console.log(err),
                   );
                 }}>
@@ -632,7 +634,7 @@ export default class CreateProfile extends Component {
         </TouchableHighlight>
 
         {/* Toast box */}
-        <ToastComp ref={(t) => (this.toast = t)} />
+        <ToastComp ref={t => (this.toast = t)} />
       </View>
     );
   }
