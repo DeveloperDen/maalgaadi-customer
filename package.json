@@ -26,7 +26,7 @@
     "geolib": "^3.2.1",
     "lodash.debounce": "^4.0.8",
     "punycode": "^1.2.4",
-    "qs": "^6.9.1",
+    "qs": "^6.9.7",
     "querystring-es3": "^0.2.1",
     "react": "16.13.1",
     "react-native": "0.63.4",
